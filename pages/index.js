@@ -1,7 +1,9 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import PropTypes from 'prop-types'
+import { i18n, Link, withTranslation } from '../i18n'
+import styles from "../styles/Home.module.css";
 
-export default function Home() {
+function Home({ t }) {
   return (
     <div>
       <Head>
@@ -9,7 +11,19 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main></main>
+      <main>
+        <h1>{t("title")}</h1>
+      </main>
     </div>
-  )
+  );
 }
+
+Home.getInitialProps = async () => ({
+  namespacesRequired: ['common'],
+})
+
+Home.propTypes = {
+  t: PropTypes.func.isRequired,
+}
+
+export default withTranslation('common')(Home)
