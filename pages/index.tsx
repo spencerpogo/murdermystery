@@ -12,7 +12,13 @@ function Home({ t }) {
       </Head>
 
       <main>
-        <h1>{t("title")}</h1>
+        <div class="mainMenu">
+          <h1 class="title">Murder Mystery</h1>
+          <div >
+            <button class="menu-btn">Join Game</button>
+            <button class="menu-btn">Create Game</button>
+          <div>
+        </div>
       </main>
     </div>
   );
