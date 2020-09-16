@@ -28,4 +28,5 @@
 .menu-btn {
   background-color: var(--blood);
   color: white;
+  margin: 5px;
 }
