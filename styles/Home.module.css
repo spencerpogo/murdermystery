@@ -25,7 +25,7 @@
   display: inline-block;
 }
 
-.menu-btn {
+.menuBtn {
   background-color: var(--blood);
   color: white;
   margin: 5px;
