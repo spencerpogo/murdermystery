@@ -11,7 +11,7 @@ function Home({ t }: { t: (id: string) => string }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
+      <main className={styles.night}>
         <div className={styles.mainMenu}>
           <h1 className={styles.title}>{t("title")}</h1>
           <div>
