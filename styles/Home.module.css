@@ -1,0 +1,31 @@
+.night {
+  background-color: #000;
+  color: #fff;
+}
+
+.day {
+  background-color: #fff;
+  color: #000;
+}
+
+.title {
+  color: var(--blood);
+  text-align: center;
+}
+
+.container {
+  /* Horizontally center children */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.mainMenu {
+  display: inline-block;
+}
+
+.menu-btn {
+  background-color: var(--blood);
+  color: white;
+}

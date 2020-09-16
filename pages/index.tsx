@@ -1,6 +1,6 @@
 import Head from "next/head";
-import PropTypes from 'prop-types'
-import { i18n, Link, withTranslation } from '../i18n'
+import PropTypes from "prop-types";
+import { i18n, Link, withTranslation } from "../i18n";
 import styles from "../styles/Home.module.css";
 
 function Home({ t }) {
@@ -12,12 +12,12 @@ function Home({ t }) {
       </Head>
 
       <main>
-        <div class="mainMenu">
-          <h1 class="title">Murder Mystery</h1>
-          <div >
-            <button class="menu-btn">Join Game</button>
-            <button class="menu-btn">Create Game</button>
+        <div className={styles.mainMenu}>
+          <h1 className={styles.title}>{t("title")}</h1>
           <div>
+            <button className={styles.menuBtn}>{t("join")}</button>
+            <button className={styles.menuBtn}>{t("create")}</button>
+          </div>
         </div>
       </main>
     </div>
@@ -25,11 +25,11 @@ function Home({ t }) {
 }
 
 Home.getInitialProps = async () => ({
-  namespacesRequired: ['common'],
-})
+  namespacesRequired: ["common"],
+});
 
 Home.propTypes = {
   t: PropTypes.func.isRequired,
-}
+};
 
-export default withTranslation('common')(Home)
+export default withTranslation("common")(Home);
