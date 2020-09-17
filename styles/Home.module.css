@@ -23,6 +23,7 @@
 
 .mainMenu {
   display: inline-block;
+  min-width: 300px;
 }
 
 .menuBtn {
