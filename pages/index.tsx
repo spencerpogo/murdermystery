@@ -23,7 +23,7 @@ function Home({ t }: { t: (id: string) => string }) {
                 className={styles.menuBtn}
                 onClick={() => setJoinShown(!joinShown)}
               >
-                {t("join")}
+                {t("joinGame")}
               </button>
               <button className={styles.menuBtn}>{t("createGame")}</button>
             </div>
