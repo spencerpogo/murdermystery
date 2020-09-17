@@ -25,9 +25,9 @@ function Home({ t }: { t: (id: string) => string }) {
               >
                 {t("join")}
               </button>
-              <button className={styles.menuBtn}>{t("create")}</button>
+              <button className={styles.menuBtn}>{t("createGame")}</button>
             </div>
-            {joinShown ? <JoinCodeDialog /> : null}
+            {joinShown ? <JoinCodeDialog text={t("join")} /> : null}
           </div>
         </main>
       </body>
