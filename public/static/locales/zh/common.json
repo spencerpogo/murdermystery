@@ -1,5 +1,6 @@
 {
   "title": "狼人杀",
-  "join": "加入游戏",
-  "create": "创建游戏"
+  "joinGame": "加入游戏",
+  "join": "加入",
+  "createGame": "创建游戏"
 }

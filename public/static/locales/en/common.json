@@ -1,5 +1,6 @@
 {
   "title": "Murder Mystery",
-  "join": "Join Game",
-  "create": "Create Game"
+  "join": "Join",
+  "joinGame": "Join Game",
+  "createGame": "Create Game"
 }
