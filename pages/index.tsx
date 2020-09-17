@@ -1,5 +1,5 @@
+import JoinCodeDialog from "components/JoinCodeDialog";
 import Head from "next/head";
-import { join } from "path";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { Link, withTranslation } from "../i18n";
@@ -27,7 +27,7 @@ function Home({ t }: { t: (id: string) => string }) {
               </button>
               <button className={styles.menuBtn}>{t("create")}</button>
             </div>
-            {joinShown ? <p>Hello</p> : null}
+            {joinShown ? <JoinCodeDialog /> : null}
           </div>
         </main>
       </body>
