@@ -14,6 +14,13 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello game id %s", gid)
 }
 
+// TODO:
+// - Create game endpoint that clients can request
+// - Upper limit for concurrent games to prevent DOS
+// - Lobbies expire if no one connected
+// - Clients disconnect if they don't respond to pings or are afk
+// - Figure out msg format: maybe <opcode><JSON arguments slice>
+
 func main() {
 	r := mux.NewRouter()
 	// routes
