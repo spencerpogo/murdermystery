@@ -1,4 +1,5 @@
 import JoinCodeDialog from "components/JoinCodeDialog";
+import MainMenu from "components/MainMenu";
 import Head from "next/head";
 import PropTypes from "prop-types";
 import { useState } from "react";
@@ -16,19 +17,8 @@ function Home({ t }: { t: (id: string) => string }) {
 
       <body className={styles.night}>
         <main>
-          <div className={styles.mainMenu}>
-            <h1 className={styles.title}>{t("title")}</h1>
-            <div>
-              <button
-                className={styles.menuBtn}
-                onClick={() => setJoinShown(!joinShown)}
-              >
-                {t("joinGame")}
-              </button>
-              <button className={styles.menuBtn}>{t("createGame")}</button>
-            </div>
-            {joinShown ? <JoinCodeDialog text={t("join")} /> : null}
-          </div>
+          {/* Todo: Use state to toggle between components */}
+          <MainMenu t={t} />
         </main>
       </body>
     </>
