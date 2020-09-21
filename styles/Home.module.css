@@ -30,4 +30,5 @@
   background-color: var(--blood);
   color: white;
   margin: 5px;
+  width: 100%;
 }
