@@ -1,6 +1,7 @@
 {
-  "title": "狼人杀",
-  "joinGame": "加入游戏",
-  "join": "加入",
-  "createGame": "创建游戏"
+  "Murder Mystery": "狼人杀",
+  "Join Game": "加入游戏",
+  "Join": "加入",
+  "Create Game": "创建游戏",
+  "Ask the host to send you their game link": "要求主持人向您发送指向他们游戏的链接"
 }

@@ -1,16 +1,14 @@
-import MainMenu from "components/MainMenu";
-import Head from "next/head";
-import PropTypes from "prop-types";
 import { Box } from "@chakra-ui/core";
-import { useState } from "react";
-import { Link, withTranslation } from "../i18n";
-import styles from "../styles/Home.module.css";
+import Head from "next/head";
+import MainMenu from "components/MainMenu";
+import PropTypes from "prop-types";
+import { withTranslation } from "../i18n";
 
 function Home({ t }: { t: (id: string) => string }) {
   return (
     <>
       <Head>
-        <title>Murder Mystery</title>
+        <title>{t("Murder Mystery")}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

@@ -26,7 +26,7 @@ export default function MainMenu({ t }: { t: (id: string) => string }) {
     <>
       <Box>
         <Heading>
-          <Text color="red.700">{t("title")}</Text>
+          <Text color="red.700">{t("Murder Mystery")}</Text>
         </Heading>
         <Stack>
           <MenuBtn text={t("joinGame")} onClick={() => onOpen()} />
@@ -39,7 +39,7 @@ export default function MainMenu({ t }: { t: (id: string) => string }) {
         <ModalContent>
           <ModalCloseButton />
           <ModalBody>
-            <Text>TODO: Translate</Text>
+            <Text>{t("Ask the host to send you their game link")}</Text>
           </ModalBody>
         </ModalContent>
       </Modal>
