@@ -9,11 +9,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func gameHandler(w http.ResponseWriter, r *http.Request) {
-	gid := mux.Vars(r)["id"]
-	fmt.Fprintf(w, "Hello game id %s", gid)
-}
-
 // TODO:
 // - Create game endpoint that clients can request
 // - Upper limit for concurrent games to prevent DOS
@@ -22,12 +17,22 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 // - Figure out msg format: maybe <opcode><JSON arguments slice>
 
 func main() {
+	games := make(map[string]*Game)
+
 	r := mux.NewRouter()
 	// routes
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Murder Mystery Backend v0.0.1")
 	})
-	r.HandleFunc("/game/{id}", gameHandler)
+	r.HandleFunc("/game/{id}", func(w http.ResponseWriter, r *http.Request) {
+		gid := mux.Vars(r)["id"]
+		//fmt.Fprintf(w, "Hello game id %s", gid)
+		log.Printf("New connection to id %s\n", gid)
+		if _, exists := games[gid]; !exists {
+			games[gid] = newGame()
+		}
+		serveWs(games[gid].hub, w, r)
+	})
 	// use mux
 	http.Handle("/", r)
 
