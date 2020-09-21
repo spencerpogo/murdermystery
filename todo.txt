@@ -1,0 +1,3 @@
+- Convert translations to use english as key and remove locales/en/
+- Add spinner from https://repl.it/@Scoder12/NiftyHandmadeMultiprocessing
+- Remove dialog component
