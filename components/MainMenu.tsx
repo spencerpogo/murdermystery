@@ -29,8 +29,8 @@ export default function MainMenu({ t }: { t: (id: string) => string }) {
           <Text color="red.700">{t("Murder Mystery")}</Text>
         </Heading>
         <Stack>
-          <MenuBtn text={t("joinGame")} onClick={() => onOpen()} />
-          <MenuBtn text={t("createGame")} />
+          <MenuBtn text={t("Join Game")} onClick={() => onOpen()} />
+          <MenuBtn text={t("Create Game")} />
         </Stack>
       </Box>
 
