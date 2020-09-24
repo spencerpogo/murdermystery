@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	//"github.com/olebedev/emitter"
 )
@@ -27,17 +26,12 @@ func handleClose(client *Client) {
 
 func handleMsg(client *Client, msg []byte) {
 	log.Printf("Got message: %s\n", string(msg))
-	// Unmarshal as JSON
-	var data map[string]interface{} // TODO: maybe other types?
-	if err := json.Unmarshal(msg, &data); err != nil {
+	err := decodeMsg(client, msg)
+	if err != nil {
 		log.Println(err)
 		client.Close()
 		return
 	}
-	// TODO: do something with the JSON
-
-	okJSON, _ := json.Marshal(map[string]bool{"ok": true})
-	client.send <- okJSON
 }
 
 func (game *Game) start() {
