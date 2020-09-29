@@ -113,7 +113,6 @@ func (c *Client) writePump() {
 			//	w.Write(newline)
 			//	w.Write(<-c.send)
 			//}
-			w.Write(<-c.send)
 
 			if err := w.Close(); err != nil {
 				return
