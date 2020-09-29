@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 )
 
 const (
@@ -12,7 +13,7 @@ const (
 
 // HelloMsg is a hello message
 type HelloMsg struct {
-	name string
+	Name string `json:"name"`
 }
 
 func helloHandler(client *Client, data []byte) error {
@@ -21,7 +22,7 @@ func helloHandler(client *Client, data []byte) error {
 		return err
 	}
 
-	resp, _ := json.Marshal(map[string]string{"msg": fmt.Sprintf("Hello, %s!", msg.name)})
+	resp, _ := json.Marshal(map[string]string{"msg": fmt.Sprintf("Hello, %s!", msg.Name)})
 	client.send <- resp
 	return nil
 }
@@ -45,11 +46,10 @@ func decodeMsg(client *Client, msg []byte) error {
 	err := callHandler(client, opcode, msg[1:])
 	// TODO: check error
 	if err != nil {
+		log.Printf("%s\n", err)
 		client.Close()
 		return nil
 	}
 
-	okJSON, _ := json.Marshal(map[string]bool{"ok": true})
-	client.send <- okJSON
 	return nil
 }
