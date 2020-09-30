@@ -11,6 +11,8 @@ func HandleJoin(client net.Client) {
 	if client.Hub.Started {
 		data, _ := json.Marshal(map[string]string{"error": "Game already started"})
 		client.Send(data)
+		client.Close()
+		return
 	}
 
 }
