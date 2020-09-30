@@ -8,7 +8,7 @@ package net
 // clients.
 type Hub struct {
 	// Registered clients.
-	clients map[*Client]bool
+	Clients map[*Client]bool
 
 	// Inbound messages from the clients.
 	broadcast chan []byte
@@ -19,9 +19,6 @@ type Hub struct {
 	// Unregister requests from clients.
 	unregister chan *Client
 
-	// Whether the game has started and can no longer accept players
-	Started bool
-
 	// Handler for messages from clients
 	handleMsg func(client *Client, data []byte)
 
@@ -30,6 +27,12 @@ type Hub struct {
 
 	// Handler for leaves
 	handleLeave func(client *Client)
+
+	// Whether the game has started and can no longer accept players
+	Started bool
+
+	// The host of the game
+	Host *Client
 }
 
 // NewHub creates a new *Hub object
@@ -38,7 +41,7 @@ func NewHub(handleMsg func(client *Client, data []byte), handleJoin func(client 
 		broadcast:   make(chan []byte),
 		register:    make(chan *Client),
 		unregister:  make(chan *Client),
-		clients:     make(map[*Client]bool),
+		Clients:     make(map[*Client]bool),
 		Started:     false,
 		handleMsg:   handleMsg,
 		handleJoin:  handleJoin,
@@ -51,16 +54,16 @@ func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.register:
-			h.clients[client] = true
+			h.Clients[client] = true
 			h.handleJoin(client)
 		case client := <-h.unregister:
-			if _, ok := h.clients[client]; ok {
+			if _, ok := h.Clients[client]; ok {
 				close(client.send)
 				h.handleLeave(client)
-				delete(h.clients, client)
+				delete(h.Clients, client)
 			}
 		case message := <-h.broadcast:
-			for client := range h.clients {
+			for client := range h.Clients {
 				select {
 				case client.send <- message:
 				default:

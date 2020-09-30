@@ -40,7 +40,8 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-// Client is a middleman between the websocket connection and the hub.
+// Client represents a player in the game.
+// It also acts as middleman between the websocket connection and the hub.
 type Client struct {
 	Hub *Hub
 
