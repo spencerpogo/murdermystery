@@ -18,7 +18,7 @@ type HelloMsg struct {
 	Name string `json:"name"`
 }
 
-func helloHandler(client net.Client, data []byte) error {
+func helloHandler(client *net.Client, data []byte) error {
 	var msg HelloMsg
 	if err := json.Unmarshal(data, &msg); err != nil {
 		return err
@@ -29,7 +29,7 @@ func helloHandler(client net.Client, data []byte) error {
 	return nil
 }
 
-func callHandler(client net.Client, op int, data []byte) error {
+func callHandler(client *net.Client, op int, data []byte) error {
 	switch op {
 	case hello:
 		return helloHandler(client, data)
@@ -39,10 +39,12 @@ func callHandler(client net.Client, op int, data []byte) error {
 }
 
 // HandleMsg handles a message from a client
-func HandleMsg(client net.Client, msg []byte) error {
+func HandleMsg(client *net.Client, msg []byte) {
 	log.Printf("Got message: %s\n", string(msg))
 	if len(msg) < 2 {
-		return fmt.Errorf("Message too short")
+		log.Println("Message too short")
+		client.Close()
+		return
 	}
 
 	// First byte is opcode
@@ -52,14 +54,11 @@ func HandleMsg(client net.Client, msg []byte) error {
 	if err != nil {
 		log.Printf("%s\n", err)
 		client.Close()
-		return nil
 	}
-
-	return nil
 }
 
-// HandleClose handles when a client connection is closed
-func HandleLeave(client net.Client) {
+// HandleLeave handles when a client connection is closed
+func HandleLeave(client *net.Client) {
 	// TODO: check for game over here
 	log.Println("Close received")
 }
