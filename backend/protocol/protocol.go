@@ -6,10 +6,16 @@ import (
 	"log"
 )
 
+// Hub represents net.Hub without triggering and import cycle
+type Hub interface {
+	Started() bool
+}
+
 // Client represents net.Client without triggering an import cycle
 type Client interface {
 	Send(msg []byte)
 	Close()
+	Hub() Hub
 }
 
 const (

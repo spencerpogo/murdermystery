@@ -4,8 +4,6 @@
 
 package net
 
-import "github.com/Scoder12/murdermystery/backend/protocol"
-
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
@@ -20,15 +18,31 @@ type Hub struct {
 
 	// Unregister requests from clients.
 	unregister chan *Client
+
+	// Whether the game has started and can no longer accept players
+	started bool
+
+	// Handler for messages from clients
+	handleMsg func(client *Client, data []byte)
+
+	// Handler for joins
+	handleJoin func(client *Client)
+
+	// Handler for leaves
+	handleLeave func(client *Client)
 }
 
 // NewHub creates a new *Hub object
-func NewHub() *Hub {
+func NewHub(handleMsg func(client *Client, data []byte), handleJoin func(client *Client), handleLeave func(client *Client)) *Hub {
 	return &Hub{
-		broadcast:  make(chan []byte),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		clients:    make(map[*Client]bool),
+		broadcast:   make(chan []byte),
+		register:    make(chan *Client),
+		unregister:  make(chan *Client),
+		clients:     make(map[*Client]bool),
+		started:     false,
+		handleMsg:   handleMsg,
+		handleJoin:  handleJoin,
+		handleLeave: handleLeave,
 	}
 }
 
@@ -38,10 +52,11 @@ func (h *Hub) Run() {
 		select {
 		case client := <-h.register:
 			h.clients[client] = true
+			h.handleJoin(client)
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				close(client.send)
-				protocol.HandleClose(client)
+				h.handleLeave(client)
 				delete(h.clients, client)
 			}
 		case message := <-h.broadcast:
