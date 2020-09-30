@@ -6,14 +6,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Scoder12/murdermystery/backend/game"
 	"github.com/Scoder12/murdermystery/backend/net"
 	"github.com/gorilla/mux"
 )
 
 // MakeServer definies HTTP handlers and returns an HTTP server
 func MakeServer() *http.Server {
-	games := make(map[string]*game.Game)
+	games := make(map[string]*net.Hub)
 
 	r := mux.NewRouter()
 	// routes
@@ -25,9 +24,10 @@ func MakeServer() *http.Server {
 		//fmt.Fprintf(w, "Hello game id %s", gid)
 		log.Printf("New connection to id %s\n", gid)
 		if _, exists := games[gid]; !exists {
-			games[gid] = game.NewGame()
+			games[gid] = net.NewHub()
+			go games[gid].Run()
 		}
-		net.ServeWs(games[gid].Hub, w, r)
+		net.ServeWs(games[gid], w, r)
 	})
 	// use mux
 	http.Handle("/", r)
