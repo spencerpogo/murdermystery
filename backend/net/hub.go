@@ -4,6 +4,8 @@
 
 package net
 
+import "github.com/Scoder12/murdermystery/backend/protocol"
+
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
@@ -39,7 +41,7 @@ func (h *Hub) Run() {
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				close(client.send)
-				handleClose(client)
+				protocol.HandleClose(client)
 				delete(h.clients, client)
 			}
 		case message := <-h.broadcast:

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Scoder12/murdermystery/backend/protocol"
 	"github.com/gorilla/websocket"
 )
 
@@ -51,6 +52,11 @@ type Client struct {
 	send chan []byte
 }
 
+// Send sends a message to the client
+func (c *Client) Send(msg []byte) {
+	c.send <- msg
+}
+
 // Close closes the client
 func (c *Client) Close() {
 	c.hub.unregister <- c
@@ -76,7 +82,7 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		handleMsg(c, message)
+		protocol.HandleMsg(c, message)
 	}
 }
 

@@ -1,10 +1,16 @@
-package net
+package protocol
 
 import (
 	"encoding/json"
 	"fmt"
 	"log"
 )
+
+// Client represents net.Client without triggering an import cycle
+type Client interface {
+	Send(msg []byte)
+	Close()
+}
 
 const (
 	// Hello is a hello
@@ -16,18 +22,18 @@ type HelloMsg struct {
 	Name string `json:"name"`
 }
 
-func helloHandler(client *Client, data []byte) error {
+func helloHandler(client Client, data []byte) error {
 	var msg HelloMsg
 	if err := json.Unmarshal(data, &msg); err != nil {
 		return err
 	}
 
 	resp, _ := json.Marshal(map[string]string{"msg": fmt.Sprintf("Hello, %s!", msg.Name)})
-	client.send <- resp
+	client.Send(resp)
 	return nil
 }
 
-func callHandler(client *Client, op int, data []byte) error {
+func callHandler(client Client, op int, data []byte) error {
 	switch op {
 	case hello:
 		return helloHandler(client, data)
@@ -36,7 +42,8 @@ func callHandler(client *Client, op int, data []byte) error {
 	}
 }
 
-func handleMsg(client *Client, msg []byte) error {
+// HandleMsg handles a message from a client
+func HandleMsg(client Client, msg []byte) error {
 	log.Printf("Got message: %s\n", string(msg))
 	if len(msg) < 2 {
 		return fmt.Errorf("Message too short")
@@ -55,7 +62,8 @@ func handleMsg(client *Client, msg []byte) error {
 	return nil
 }
 
-func handleClose(client *Client) {
+// HandleClose handles when a client connection is closed
+func HandleClose(client Client) {
 	// TODO: check for game over here
 	log.Println("Close received")
 }
