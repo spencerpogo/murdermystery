@@ -42,7 +42,7 @@ var upgrader = websocket.Upgrader{
 
 // Client is a middleman between the websocket connection and the hub.
 type Client struct {
-	hub *Hub
+	Hub *Hub
 
 	// The websocket connection.
 	conn *websocket.Conn
@@ -60,7 +60,7 @@ func (c *Client) Send(msg []byte) {
 
 // Close closes the client
 func (c *Client) Close() {
-	c.hub.unregister <- c
+	c.Hub.unregister <- c
 	c.conn.Close()
 }
 
@@ -85,7 +85,7 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.hub.handleMsg(c, message)
+		c.Hub.handleMsg(c, message)
 	}
 }
 
@@ -142,8 +142,8 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
-	client.hub.register <- client
+	client := &Client{Hub: hub, conn: conn, send: make(chan []byte, 256)}
+	client.Hub.register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.

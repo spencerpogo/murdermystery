@@ -4,19 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+
+	"github.com/Scoder12/murdermystery/backend/net"
 )
-
-// Hub represents net.Hub without triggering and import cycle
-type Hub interface {
-	Started() bool
-}
-
-// Client represents net.Client without triggering an import cycle
-type Client interface {
-	Send(msg []byte)
-	Close()
-	Hub() Hub
-}
 
 const (
 	// Hello is a hello
@@ -28,7 +18,7 @@ type HelloMsg struct {
 	Name string `json:"name"`
 }
 
-func helloHandler(client Client, data []byte) error {
+func helloHandler(client net.Client, data []byte) error {
 	var msg HelloMsg
 	if err := json.Unmarshal(data, &msg); err != nil {
 		return err
@@ -39,7 +29,7 @@ func helloHandler(client Client, data []byte) error {
 	return nil
 }
 
-func callHandler(client Client, op int, data []byte) error {
+func callHandler(client net.Client, op int, data []byte) error {
 	switch op {
 	case hello:
 		return helloHandler(client, data)
@@ -49,7 +39,7 @@ func callHandler(client Client, op int, data []byte) error {
 }
 
 // HandleMsg handles a message from a client
-func HandleMsg(client Client, msg []byte) error {
+func HandleMsg(client net.Client, msg []byte) error {
 	log.Printf("Got message: %s\n", string(msg))
 	if len(msg) < 2 {
 		return fmt.Errorf("Message too short")
@@ -69,7 +59,7 @@ func HandleMsg(client Client, msg []byte) error {
 }
 
 // HandleClose handles when a client connection is closed
-func HandleClose(client Client) {
+func HandleLeave(client net.Client) {
 	// TODO: check for game over here
 	log.Println("Close received")
 }

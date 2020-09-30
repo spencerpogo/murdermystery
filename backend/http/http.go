@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Scoder12/murdermystery/backend/protocol"
+
 	"github.com/Scoder12/murdermystery/backend/net"
 	"github.com/gorilla/mux"
 )
@@ -21,13 +23,15 @@ func MakeServer() *http.Server {
 	})
 	r.HandleFunc("/game/{id}", func(w http.ResponseWriter, r *http.Request) {
 		gid := mux.Vars(r)["id"]
-		//fmt.Fprintf(w, "Hello game id %s", gid)
+
 		log.Printf("New connection to id %s\n", gid)
+
 		if _, exists := games[gid]; !exists {
 			log.Println("Creating new server: ", gid)
-			games[gid] = net.NewHub()
+			games[gid] = net.NewHub(protocol.HandleMsg, protocol.HandleJoin, protocol.HandleLeave)
 			go games[gid].Run()
 		}
+
 		net.ServeWs(games[gid], w, r)
 	})
 	// use mux
