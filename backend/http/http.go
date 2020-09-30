@@ -13,7 +13,7 @@ import (
 )
 
 // MakeServer definies HTTP handlers and returns an HTTP server
-func MakeServer() *http.Server {
+func MakeServer(iface string) *http.Server {
 	games := make(map[string]*net.Hub)
 
 	r := mux.NewRouter()
@@ -37,11 +37,11 @@ func MakeServer() *http.Server {
 	// use mux
 	http.Handle("/", r)
 
-	log.Println("Starting server on :8080")
+	log.Printf("Starting server on http://%s\n", iface)
 
 	return &http.Server{
 		Handler: r,
-		Addr:    "0.0.0.0:8080",
+		Addr:    iface,
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

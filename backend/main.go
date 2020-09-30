@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/Scoder12/murdermystery/backend/http"
@@ -13,7 +14,10 @@ import (
 // - Clients disconnect if they don't respond to pings or are afk
 // - Figure out msg format: maybe <opcode><JSON arguments slice>
 
+var addr = flag.String("addr", "127.0.0.1:8080", "http service address")
+
 func main() {
-	srv := http.MakeServer()
+	flag.Parse()
+	srv := http.MakeServer(*addr)
 	log.Fatal(srv.ListenAndServe())
 }
