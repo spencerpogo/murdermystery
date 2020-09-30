@@ -24,6 +24,7 @@ func MakeServer() *http.Server {
 		//fmt.Fprintf(w, "Hello game id %s", gid)
 		log.Printf("New connection to id %s\n", gid)
 		if _, exists := games[gid]; !exists {
+			log.Println("Creating new server: ", gid)
 			games[gid] = net.NewHub()
 			go games[gid].Run()
 		}
