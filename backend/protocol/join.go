@@ -7,7 +7,7 @@ import (
 )
 
 // HandleJoin handles when a client joins a game
-func HandleJoin(client net.Client) {
+func HandleJoin(client *net.Client) {
 	if client.Hub.Started {
 		data, _ := json.Marshal(map[string]string{"error": "Game already started"})
 		client.Send(data)
