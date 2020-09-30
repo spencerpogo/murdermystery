@@ -20,7 +20,7 @@ type Hub struct {
 	unregister chan *Client
 
 	// Whether the game has started and can no longer accept players
-	started bool
+	Started bool
 
 	// Handler for messages from clients
 	handleMsg func(client *Client, data []byte)
@@ -39,7 +39,7 @@ func NewHub(handleMsg func(client *Client, data []byte), handleJoin func(client 
 		register:    make(chan *Client),
 		unregister:  make(chan *Client),
 		clients:     make(map[*Client]bool),
-		started:     false,
+		Started:     false,
 		handleMsg:   handleMsg,
 		handleJoin:  handleJoin,
 		handleLeave: handleLeave,
