@@ -1,4 +1,4 @@
-package main
+package net
 
 import (
 	"encoding/json"
@@ -36,7 +36,8 @@ func callHandler(client *Client, op int, data []byte) error {
 	}
 }
 
-func decodeMsg(client *Client, msg []byte) error {
+func handleMsg(client *Client, msg []byte) error {
+	log.Printf("Got message: %s\n", string(msg))
 	if len(msg) < 2 {
 		return fmt.Errorf("Message too short")
 	}
@@ -52,4 +53,9 @@ func decodeMsg(client *Client, msg []byte) error {
 	}
 
 	return nil
+}
+
+func handleClose(client *Client) {
+	// TODO: check for game over here
+	log.Println("Close received")
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package main
+package net
 
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
@@ -20,7 +20,8 @@ type Hub struct {
 	unregister chan *Client
 }
 
-func newHub() *Hub {
+// NewHub creates a new *Hub object
+func NewHub() *Hub {
 	return &Hub{
 		broadcast:  make(chan []byte),
 		register:   make(chan *Client),
@@ -29,7 +30,8 @@ func newHub() *Hub {
 	}
 }
 
-func (h *Hub) run() {
+// Run is a goroutine that starts the Hub's event loop
+func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.register:
