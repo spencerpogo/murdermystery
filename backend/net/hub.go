@@ -65,18 +65,15 @@ func (h *Hub) Run() {
 			go h.handleJoin(client)
 		case client := <-h.unregister:
 			if _, ok := h.Clients[client]; ok {
+				client.conn.Close()
 				close(client.send)
-				h.handleLeave(client)
+				go h.handleLeave(client)
 				delete(h.Clients, client)
 			}
 		case message := <-h.broadcast:
 			log.Println("[BROADCAST]", string(message), "[/BROADCAST]")
 			for client := range h.Clients {
-				select {
-				case client.send <- message:
-				default:
-					h.unregister <- client
-				}
+				client.Send(message)
 			}
 		}
 	}

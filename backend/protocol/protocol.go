@@ -8,13 +8,16 @@ import (
 )
 
 const (
-	setName = 0
+	setName   = 0
+	startGame = 1
 )
 
 func callHandler(c *net.Client, op int, d []byte) error {
 	switch op {
 	case setName:
 		return setNameHandler(c, d)
+	case startGame:
+		return startGameHandler(c, d)
 	default:
 		return fmt.Errorf("Unrecognized op")
 	}
@@ -23,7 +26,7 @@ func callHandler(c *net.Client, op int, d []byte) error {
 // HandleMsg handles a message from a client
 func HandleMsg(client *net.Client, msg []byte) {
 	log.Printf("Got message: %s\n", string(msg))
-	if len(msg) < 2 {
+	if len(msg) < 1 {
 		log.Println("Message too short")
 		client.Close()
 		return
@@ -42,4 +45,12 @@ func HandleMsg(client *net.Client, msg []byte) {
 func HandleLeave(client *net.Client) {
 	// TODO: check for game over here
 	log.Println("Close received")
+	h := client.Hub
+	if h.Host == client && len(h.Clients) > 0 {
+		// client picked is not guaranteed to be random, but is not predictable either
+		for newHost := range h.Clients {
+			h.Host = newHost
+			break
+		}
+	}
 }

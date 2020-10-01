@@ -57,13 +57,20 @@ type Client struct {
 
 	// Event Emitter for this client
 	Evt *emitter.Emitter
+
+	// The Character this player has
+	Role int
 }
 
 // Exported Functions
 
 // Send sends a message to the client
 func (c *Client) Send(msg []byte) {
-	c.send <- msg
+	select {
+	case c.send <- msg:
+	default:
+		c.Close()
+	}
 }
 
 // Close closes the client
@@ -155,6 +162,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		conn: conn,
 		send: make(chan []byte, 256),
 		Evt:  &emitter.Emitter{},
+		Role: 0,
 	}
 	client.Hub.register <- client
 

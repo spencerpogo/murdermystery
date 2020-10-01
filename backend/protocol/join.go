@@ -22,6 +22,7 @@ func HandleJoin(client *net.Client) {
 	isHost := false
 	// Is there no host set yet?
 	_, hostExists := h.Clients[h.Host]
+	hostExists = hostExists && h.Clients[h.Host]
 	if h.Host == nil || !hostExists {
 		// This player is now the host
 		h.Host = client
@@ -35,7 +36,7 @@ func HandleJoin(client *net.Client) {
 	case <-time.After(2 * time.Second):
 		log.Println("Client did not name themself, closing")
 		client.Close()
-	case <-client.Evt.Once("name"):
+	case <-client.Evt.Once("named"):
 		break
 	}
 }
