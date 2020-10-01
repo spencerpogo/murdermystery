@@ -4,6 +4,8 @@
 
 package net
 
+import "log"
+
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
@@ -49,13 +51,18 @@ func NewHub(handleMsg func(client *Client, data []byte), handleJoin func(client 
 	}
 }
 
+// Broadcast broadcasts a mess to all clients
+func (h *Hub) Broadcast(msg []byte) {
+	h.broadcast <- msg
+}
+
 // Run is a goroutine that starts the Hub's event loop
 func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.register:
 			h.Clients[client] = true
-			h.handleJoin(client)
+			go h.handleJoin(client)
 		case client := <-h.unregister:
 			if _, ok := h.Clients[client]; ok {
 				close(client.send)
@@ -63,6 +70,7 @@ func (h *Hub) Run() {
 				delete(h.Clients, client)
 			}
 		case message := <-h.broadcast:
+			log.Println("[BROADCAST]", string(message), "[/BROADCAST]")
 			for client := range h.Clients {
 				select {
 				case client.send <- message:

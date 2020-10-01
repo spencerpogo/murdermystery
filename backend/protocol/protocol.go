@@ -1,7 +1,6 @@
 package protocol
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 
@@ -9,30 +8,13 @@ import (
 )
 
 const (
-	// Hello is a hello
-	hello = 0
+	setName = 0
 )
 
-// HelloMsg is a hello message
-type HelloMsg struct {
-	Name string `json:"name"`
-}
-
-func helloHandler(client *net.Client, data []byte) error {
-	var msg HelloMsg
-	if err := json.Unmarshal(data, &msg); err != nil {
-		return err
-	}
-
-	resp, _ := json.Marshal(map[string]string{"msg": fmt.Sprintf("Hello, %s!", msg.Name)})
-	client.Send(resp)
-	return nil
-}
-
-func callHandler(client *net.Client, op int, data []byte) error {
+func callHandler(c *net.Client, op int, d []byte) error {
 	switch op {
-	case hello:
-		return helloHandler(client, data)
+	case setName:
+		return setNameHandler(c, d)
 	default:
 		return fmt.Errorf("Unrecognized op")
 	}
@@ -50,9 +32,8 @@ func HandleMsg(client *net.Client, msg []byte) {
 	// First byte is opcode
 	opcode := int(msg[0]) - 65
 	err := callHandler(client, opcode, msg[1:])
-	// TODO: check error
 	if err != nil {
-		log.Printf("%s\n", err)
+		log.Println(err)
 		client.Close()
 	}
 }

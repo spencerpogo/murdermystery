@@ -2,6 +2,8 @@ package protocol
 
 import (
 	"encoding/json"
+	"log"
+	"time"
 
 	"github.com/Scoder12/murdermystery/backend/net"
 )
@@ -28,4 +30,12 @@ func HandleJoin(client *net.Client) {
 
 	d, _ := json.Marshal(map[string]bool{"isHost": isHost})
 	client.Send(d)
+
+	// Sleep for 2 seconds, if the name has not been set then terminate
+	time.Sleep(2 * time.Second)
+	if client.Name == "" {
+		log.Println("Client did not name themself")
+		client.Close()
+		return
+	}
 }

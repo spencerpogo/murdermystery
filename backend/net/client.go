@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/olebedev/emitter"
 )
 
 const (
@@ -50,6 +51,12 @@ type Client struct {
 
 	// Buffered channel of outbound messages.
 	send chan []byte
+
+	// Name is the name of the player
+	Name string
+
+	// Event Emitter for this client
+	Evt *emitter.Emitter
 }
 
 // Exported Functions
@@ -143,7 +150,12 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	client := &Client{Hub: hub, conn: conn, send: make(chan []byte, 256)}
+	client := &Client{
+		Hub:  hub,
+		conn: conn,
+		send: make(chan []byte, 256),
+		Evt:  &emitter.Emitter{},
+	}
 	client.Hub.register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in
