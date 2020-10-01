@@ -31,11 +31,11 @@ func HandleJoin(client *net.Client) {
 	d, _ := json.Marshal(map[string]bool{"isHost": isHost})
 	client.Send(d)
 
-	// Sleep for 2 seconds, if the name has not been set then terminate
-	time.Sleep(2 * time.Second)
-	if client.Name == "" {
-		log.Println("Client did not name themself")
+	select {
+	case <-time.After(2 * time.Second):
+		log.Println("Client did not name themself, closing")
 		client.Close()
-		return
+	case <-client.Evt.Once("name"):
+		break
 	}
 }
