@@ -39,8 +39,11 @@ func setNameHandler(client *net.Client, data []byte) error {
 	client.Name = msg.Name
 
 	if oldName != "" && oldName != client.Name {
-		renJSON, _ := json.Marshal(map[string]string{"type": "rename", "from": oldName, "to": client.Name})
-		client.Hub.Broadcast(renJSON)
+		client.Hub.Broadcast(serialize(map[string]string{
+			"type": "rename",
+			"from": oldName,
+			"to":   client.Name,
+		}))
 	}
 
 	client.Evt.Emit("named")

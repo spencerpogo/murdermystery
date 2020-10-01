@@ -1,7 +1,6 @@
 package protocol
 
 import (
-	"encoding/json"
 	"log"
 	"time"
 
@@ -13,8 +12,7 @@ func HandleJoin(client *net.Client) {
 	h := client.Hub
 
 	if h.Started {
-		data, _ := json.Marshal(map[string]string{"error": "Game already started"})
-		client.Send(data)
+		client.Send(serialize(map[string]string{"error": "Game already started"}))
 		client.Close()
 		return
 	}
@@ -29,8 +27,7 @@ func HandleJoin(client *net.Client) {
 		isHost = true
 	}
 
-	d, _ := json.Marshal(map[string]bool{"isHost": isHost})
-	client.Send(d)
+	client.Send(serialize(map[string]bool{"isHost": isHost}))
 
 	select {
 	case <-time.After(2 * time.Second):

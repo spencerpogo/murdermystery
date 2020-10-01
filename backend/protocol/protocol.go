@@ -24,6 +24,11 @@ func callHandler(c *net.Client, op int, d []byte) error {
 	}
 }
 
+func serialize(data interface{}) []byte {
+	res, _ := json.Marshal(data)
+	return res
+}
+
 // HandleMsg handles a message from a client
 func HandleMsg(client *net.Client, msg []byte) {
 	log.Printf("Got message: %s\n", string(msg))
@@ -51,8 +56,7 @@ func HandleLeave(client *net.Client) {
 		// client picked is not guaranteed to be random, but is not predictable either
 		for newHost := range h.Clients {
 			h.Host = newHost
-			msg, _ := json.Marshal(map[string]bool{"isHost": true})
-			newHost.Send(msg)
+			newHost.Send(serialize(map[string]bool{"isHost": true}))
 			break
 		}
 	}
