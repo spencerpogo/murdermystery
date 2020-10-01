@@ -1,6 +1,7 @@
 package protocol
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -50,6 +51,8 @@ func HandleLeave(client *net.Client) {
 		// client picked is not guaranteed to be random, but is not predictable either
 		for newHost := range h.Clients {
 			h.Host = newHost
+			msg, _ := json.Marshal(map[string]bool{"isHost": true})
+			newHost.Send(msg)
 			break
 		}
 	}
