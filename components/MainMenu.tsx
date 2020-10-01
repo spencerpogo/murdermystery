@@ -24,12 +24,12 @@ export default function MainMenu({ t }: { t: (id: string) => string }) {
   return (
     <>
       <Box>
-        <Heading>
+        <Heading mb="6">
           <Text color="red.700">{t("Murder Mystery")}</Text>
         </Heading>
         <Stack>
           <MenuBtn text={t("Join Game")} onClick={() => onOpen()} />
-          <MenuBtn text={t("Create Game")} />
+          <MenuBtn text={t("Create Game")} isDisabled={true} />
         </Stack>
       </Box>
 

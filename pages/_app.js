@@ -1,8 +1,6 @@
-import App from "next/app";
-import { ThemeProvider, CSSReset } from "@chakra-ui/core";
-import { appWithTranslation } from "../i18n";
-
 import "../styles/globals.css";
+
+import { CSSReset, ThemeProvider } from "@chakra-ui/core";
 
 const MyApp = ({ Component, pageProps }) => {
   return (
@@ -13,8 +11,4 @@ const MyApp = ({ Component, pageProps }) => {
   );
 };
 
-MyApp.getInitialProps = async (appContext) => ({
-  ...(await App.getInitialProps(appContext)),
-});
-
-export default appWithTranslation(MyApp);
+export default MyApp;

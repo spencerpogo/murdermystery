@@ -1,10 +1,9 @@
 import { Box } from "@chakra-ui/core";
 import Head from "next/head";
 import MainMenu from "components/MainMenu";
-import PropTypes from "prop-types";
-import { withTranslation } from "../i18n";
+import t from "../translate";
 
-function Home({ t }: { t: (id: string) => string }) {
+function Home() {
   return (
     <>
       <Head>
@@ -22,12 +21,4 @@ function Home({ t }: { t: (id: string) => string }) {
   );
 }
 
-Home.getInitialProps = async () => ({
-  namespacesRequired: ["common"],
-});
-
-Home.propTypes = {
-  t: PropTypes.func.isRequired,
-};
-
-export default withTranslation("common")(Home);
+export default Home;
