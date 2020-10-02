@@ -15,7 +15,8 @@
     "next": "9.5.3",
     "next-i18next": "^6.0.2",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "react-websocket": "^2.1.0"
   },
   "devDependencies": {
     "@types/node": "^14.10.2",
