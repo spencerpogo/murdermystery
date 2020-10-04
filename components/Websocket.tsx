@@ -24,7 +24,7 @@ class Websocket extends Component {
   }) {
     super(props);
     this.state = {
-      ws: new window.WebSocket(this.props.url, this.props.protocol),
+      ws: new window.WebSocket(props.url, props.protocol),
     };
     this.sendMessage = this.sendMessage.bind(this);
     this.setupWebsocket = this.setupWebsocket.bind(this);
