@@ -60,17 +60,17 @@ class GameClient extends Component {
     self.msgs.emit(msg.type || "unknown", msg);
   }
 
-  connect() {
+  connect(): Promise<void> {
     return new Promise((res) => {
       this.ws = new WebSocket(`${this.props.server}/game/${this.props.id}`);
       this.addListeners();
       this.ws.addEventListener("open", () => {
-        this.handshake();
+        this.handshake().then(() => res());
       });
     });
   }
 
-  disconnect() {
+  disconnect(): void {
     try {
       this.ws.close();
     } catch (e) {}
@@ -78,7 +78,7 @@ class GameClient extends Component {
     this.disconnected = true;
   }
 
-  rpc(call: string, arg: any) {
+  rpc(call: string, arg: any): void {
     const rpcID = RPC_CALLS[call];
     if (!rpcID) {
       console.error(new Error(`Invalid RPC call ${call}`));
@@ -88,17 +88,21 @@ class GameClient extends Component {
   }
 
   // Awaits a message to be received
-  recv(type: string) {
+  recv(type: string): Promise<any> {
     const self = this;
     return new Promise((resolve) => {
       self.msgs.once(type, (...args) => resolve(args));
     });
   }
 
-  async handshake() {
+  async handshake(): Promise<void> {
     this.rpc("setName", this.props.name);
     // TODO: handle isHost
-    await this.recv("handshake");
+    const handshake = await this.recv("handshake");
+    if (handshake.error) {
+      console.error("Error in handshake:", handshake);
+      await this.disconnect();
+    }
   }
 
   render() {

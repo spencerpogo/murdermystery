@@ -17,6 +17,8 @@ func HandleJoin(client *net.Client) {
 		return
 	}
 
+	SendRPC(client, "handshake", map[string]interface{}{})
+
 	isHost := false
 	// Is there no host set yet?
 	_, hostExists := h.Clients[h.Host]
