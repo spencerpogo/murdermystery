@@ -1,5 +1,6 @@
 import { Alert, AlertIcon, AlertTitle, Box, Skeleton } from "@chakra-ui/core";
 
+import GameClient from "lib/GameClient";
 import NameSelector from "components/NameSelector";
 import WebsocketComponent from "../components/Websocket";
 import t from "../translate";
@@ -17,7 +18,8 @@ function Loader() {
 }
 
 function setupWs(ws: WebSocket, name: string) {
-  // TODO: finish this
+  const client = new GameClient(ws);
+  client.handshake(name); // TODO: make this a promise
 }
 
 function ConnectionIndicator({ name }: { name: string }) {
@@ -38,7 +40,10 @@ function ConnectionIndicator({ name }: { name: string }) {
   const wsComponent = (
     <WebsocketComponent
       url={server + `/game/${encodeURIComponent((id || "").toString())}`}
-      onOpen={() => setLoading(false)}
+      onOpen={(ws) => {
+        setupWs(ws, name);
+        setLoading(false);
+      }}
       onClose={(_) => setDidDisconnect(true)}
       onMessage={(msg: string) => console.log(msg)}
     />

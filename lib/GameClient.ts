@@ -5,9 +5,8 @@ const RPC_CALLS = {
 class GameClient {
   ws: WebSocket;
 
-  constructor(ws: WebSocket, name: string) {
+  constructor(ws: WebSocket) {
     this.ws = ws;
-    this.handshake(name);
   }
 
   rpc(call: string, arg: any) {
