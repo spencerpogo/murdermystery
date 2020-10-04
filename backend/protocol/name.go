@@ -8,10 +8,6 @@ import (
 	"github.com/Scoder12/murdermystery/backend/net"
 )
 
-type setNameMsg struct {
-	Name string `json:"name"`
-}
-
 // Treat like const!
 var badStrings = []string{
 	"\u200B", // zero width space
@@ -21,12 +17,11 @@ var badStrings = []string{
 }
 
 func setNameHandler(client *net.Client, data []byte) error {
-	var msg setNameMsg
-	if err := json.Unmarshal(data, &msg); err != nil {
+	var name string
+	if err := json.Unmarshal(data, &name); err != nil {
 		return err
 	}
 
-	name := msg.Name
 	for _, bad := range badStrings {
 		name = strings.ReplaceAll(name, bad, "")
 	}
