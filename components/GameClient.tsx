@@ -21,6 +21,7 @@ class GameClient extends Component {
   ws: WebSocket;
   msgs: EventEmitter;
   disconnected: true;
+  state: { error: string | undefined };
 
   constructor(props: { server: string; id: string; name: string }) {
     super(props);
@@ -108,7 +109,7 @@ class GameClient extends Component {
   render() {
     if (this.ws && this.ws.readyState == ReadyState.OPEN) {
       return <p>Looks good to me</p>;
-    } else if (this.disconnected) {
+    } else if (this.disconnected || this.state.error) {
       return (
         <Alert status="error">
           <AlertIcon />
