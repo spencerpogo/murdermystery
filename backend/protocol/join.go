@@ -27,7 +27,7 @@ func HandleJoin(client *net.Client) {
 		isHost = true
 	}
 
-	SendRPC(client, "handshake", map[string]interface{}{"isHost": isHost})
+	SendRPC(client, "host", map[string]interface{}{"isHost": isHost})
 
 	select {
 	case <-time.After(2 * time.Second):
