@@ -31,7 +31,7 @@ func setNameHandler(client *net.Client, data []byte) error {
 		return fmt.Errorf("Invalid name")
 	}
 	oldName := client.Name
-	client.Name = msg.Name
+	client.Name = name
 
 	if oldName != "" && oldName != client.Name {
 		client.Hub.Broadcast(serialize(map[string]string{
