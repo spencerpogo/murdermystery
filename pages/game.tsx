@@ -1,101 +1,95 @@
-import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  Button,
-  Heading,
-  Input,
-  Skeleton,
-  Stack,
-  Text,
-} from "@chakra-ui/core";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { Alert, AlertIcon, AlertTitle, Box, Skeleton } from "@chakra-ui/core";
 
-import Websocket from "react-websocket";
+import NameSelector from "components/NameSelector";
+import WebsocketComponent from "../components/Websocket";
 import t from "../translate";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
-function getGameComponents(name: string) {
+function Loader() {
+  return (
+    <Box>
+      <Skeleton height="20px" my="10px" />
+      <Skeleton height="20px" my="10px" />
+      <Skeleton height="20px" my="10px" />
+    </Box>
+  );
+}
+
+function setupWs(ws: WebSocket, name: string) {
+  // TODO: finish this
+}
+
+function ConnectionIndicator({ name }: { name: string }) {
+  if (typeof window === "undefined") {
+    // we're pre-rendering
+    return <Loader />;
+  }
+
   const { query } = useRouter();
   const { id } = query;
   const server = query.srv || "ws://localhost:8080";
 
   //let [shouldConnect, setShouldConnect] = useState(true);
-  const shouldConnect = true;
-  const [connected, setConnected] = useState(false);
+  // Set to true when websocket connection is opened and handshaked
+  const [loading, setLoading] = useState(true);
   const [didDisconnect, setDidDisconnect] = useState(false);
 
-  let content;
-  if (typeof window !== "undefined" && !id) {
-    // For some reason, this flash-renders whenever the page loads
-    // so its a small <p> to be less noticeable
-    content = <p>{t("Invalid game link")}</p>;
-  } else if (
-    typeof window === "undefined" || // pre-rendering
-    didDisconnect
-  ) {
-    content = (
+  const wsComponent = (
+    <WebsocketComponent
+      url={server + `/game/${encodeURIComponent((id || "").toString())}`}
+      onOpen={() => setLoading(false)}
+      onClose={(_) => setDidDisconnect(true)}
+      onMessage={(msg: string) => console.log(msg)}
+    />
+  );
+
+  if (!id) {
+    return <p>{t("Invalid game link")}</p>;
+  } else if (didDisconnect) {
+    return (
       <Alert status="error">
         <AlertIcon />
         <AlertTitle mr={2}>{t("Disconnected from server")}</AlertTitle>
       </Alert>
     );
-  } else if (!connected) {
-    content = (
-      <Box>
-        <Skeleton height="20px" my="10px" />
-        <Skeleton height="20px" my="10px" />
-        <Skeleton height="20px" my="10px" />
-      </Box>
-    );
-  } else {
-    content = <p>Connected successfully</p>;
-  }
-
-  let wsComponent;
-  if (typeof window !== "undefined" && shouldConnect && id) {
-    wsComponent = (
-      <Websocket
-        url={server + `/game/${encodeURIComponent((id || "").toString())}`}
-        onOpen={() => setConnected(true)}
-        onClose={() => [setConnected(false), setDidDisconnect(true)]}
-        reconnect={false}
-        onMessage={(msg: string) => console.log(msg)}
-      />
+  } else if (loading) {
+    return (
+      <>
+        <Loader />
+        {wsComponent}
+      </>
     );
   }
-
-  return [content, wsComponent];
+  return (
+    <>
+      <p>Connected successfully</p>
+      {wsComponent}
+    </>
+  );
 }
 
 export default function Game() {
   const [name, setName] = useState("");
   const [nameSet, setNameSet] = useState(false);
 
-  let content, wsComponent;
   if (nameSet) {
-    [content, wsComponent] = getGameComponents(name);
+    return (
+      <main>
+        <ConnectionIndicator name={name} />
+      </main>
+    );
   } else {
-    content = (
-      <Box>
-        <Stack>
-          <Input
-            placeholder={t("Enter name")}
-            onChange={(evt: ChangeEvent<HTMLInputElement>) =>
-              setName(evt.target.value)
-            }
-          />
-          <Button onClick={() => setNameSet(true)}>{t("Join Game")}</Button>
-        </Stack>
-      </Box>
+    // Name selector
+    return (
+      <main>
+        <NameSelector
+          onSubmit={(name) => {
+            setName(name);
+            setNameSet(true);
+          }}
+        />
+      </main>
     );
   }
-
-  return (
-    <>
-      <main>{content}</main>
-      {wsComponent}
-    </>
-  );
 }
