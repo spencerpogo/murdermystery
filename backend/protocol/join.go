@@ -12,7 +12,7 @@ func HandleJoin(client *net.Client) {
 	h := client.Hub
 
 	if h.Started {
-		client.Send(serialize(map[string]string{"error": "Game already started"}))
+		SendRPC(client, "handshake", map[string]interface{}{"error": "started"})
 		client.Close()
 		return
 	}
@@ -27,7 +27,7 @@ func HandleJoin(client *net.Client) {
 		isHost = true
 	}
 
-	client.Send(serialize(map[string]bool{"isHost": isHost}))
+	SendRPC(client, "handshake", map[string]interface{}{"isHost": isHost})
 
 	select {
 	case <-time.After(2 * time.Second):

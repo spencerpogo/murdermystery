@@ -65,7 +65,7 @@ class GameClient extends Component {
       this.ws = new WebSocket(`${this.props.server}/game/${this.props.id}`);
       this.addListeners();
       this.ws.addEventListener("open", () => {
-        this.handshake(name);
+        this.handshake();
       });
     });
   }

@@ -30,6 +30,9 @@ type Hub struct {
 	// Handler for leaves
 	handleLeave func(client *Client)
 
+	// Handler for when the game starts
+	HandleStart func(hub *Hub)
+
 	// Whether the game has started and can no longer accept players
 	Started bool
 
@@ -38,7 +41,10 @@ type Hub struct {
 }
 
 // NewHub creates a new *Hub object
-func NewHub(handleMsg func(client *Client, data []byte), handleJoin func(client *Client), handleLeave func(client *Client)) *Hub {
+func NewHub(handleMsg func(client *Client, data []byte),
+	handleJoin func(client *Client),
+	handleLeave func(client *Client),
+	handleStart func(hub *Hub)) *Hub {
 	return &Hub{
 		broadcast:   make(chan []byte),
 		register:    make(chan *Client),
@@ -48,6 +54,7 @@ func NewHub(handleMsg func(client *Client, data []byte), handleJoin func(client 
 		handleMsg:   handleMsg,
 		handleJoin:  handleJoin,
 		handleLeave: handleLeave,
+		HandleStart: handleStart,
 	}
 }
 

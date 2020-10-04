@@ -34,8 +34,7 @@ func setNameHandler(client *net.Client, data []byte) error {
 	client.Name = name
 
 	if oldName != "" && oldName != client.Name {
-		client.Hub.Broadcast(serialize(map[string]string{
-			"type": "rename",
+		client.Hub.Broadcast(SerializeRPC("rename", map[string]interface{}{
 			"from": oldName,
 			"to":   client.Name,
 		}))

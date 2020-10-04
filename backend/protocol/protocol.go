@@ -24,11 +24,6 @@ func callHandler(c *net.Client, op int, d []byte) error {
 	}
 }
 
-func serialize(data interface{}) []byte {
-	res, _ := json.Marshal(data)
-	return res
-}
-
 // HandleMsg handles a message from a client
 func HandleMsg(client *net.Client, msg []byte) {
 	log.Printf("Got message: %s\n", string(msg))
@@ -56,8 +51,20 @@ func HandleLeave(client *net.Client) {
 		// client picked is not guaranteed to be random, but is not predictable either
 		for newHost := range h.Clients {
 			h.Host = newHost
-			newHost.Send(serialize(map[string]bool{"isHost": true}))
+			SendRPC(newHost, "host", map[string]interface{}{"isHost": true})
 			break
 		}
 	}
+}
+
+// SerializeRPC serializes an RPC given the type of the message and any arguments to send.
+func SerializeRPC(name string, data map[string]interface{}) []byte {
+	data["type"] = name
+	out, _ := json.Marshal(data)
+	return out
+}
+
+// SendRPC works the same way as SerializeRPC but also send the serialized data
+func SendRPC(client *net.Client, name string, data map[string]interface{}) {
+	client.Send(SerializeRPC(name, data))
 }

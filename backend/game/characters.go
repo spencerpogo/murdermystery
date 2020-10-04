@@ -1,11 +1,11 @@
 package game
 
 import (
-	"encoding/json"
 	"log"
 	"math/rand"
 
 	"github.com/Scoder12/murdermystery/backend/net"
+	"github.com/Scoder12/murdermystery/backend/protocol"
 )
 
 // Role represents a role in the game
@@ -42,7 +42,6 @@ func AssignCharacters(h *net.Hub) {
 	log.Println("Assigning characters")
 	for c := range h.Clients {
 		c.Role = rand.Intn(5) + 1 // A random character number, [1,5]
-		msg, _ := json.Marshal(map[string]string{"type": "setCharacter", "value": CharacterMap[c.Role]})
-		c.Send(msg)
+		protocol.SendRPC(c, "setCharacter", map[string]interface{}{"value": CharacterMap[c.Role]})
 	}
 }

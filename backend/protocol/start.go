@@ -3,7 +3,6 @@ package protocol
 import (
 	"log"
 
-	"github.com/Scoder12/murdermystery/backend/game"
 	"github.com/Scoder12/murdermystery/backend/net"
 )
 
@@ -17,7 +16,7 @@ func startGameHandler(client *net.Client, d []byte) error {
 	// Lock out new players from joining
 	client.Hub.Started = true
 	log.Println("Game starting with", len(client.Hub.Clients), "players")
-	game.AssignCharacters(client.Hub)
+	client.Hub.OnStart()
 
 	return nil
 }
