@@ -4,9 +4,9 @@ import { Component } from "react";
 import { EventEmitter } from "events";
 import Loader from "./Loader";
 
-const RPC_CALLS = {
-  setName: "A",
-};
+enum RPC_CALLS {
+  setName = 0,
+}
 
 enum ReadyState {
   CONNECTING = 0,
@@ -116,7 +116,7 @@ class GameClient extends Component {
       console.error(new Error(`Invalid RPC call ${call}`));
       return;
     }
-    this.ws.send(rpcID + JSON.stringify(arg));
+    this.ws.send(String.fromCharCode(65 + rpcID) + JSON.stringify(arg));
   }
 
   // Awaits a message to be received
