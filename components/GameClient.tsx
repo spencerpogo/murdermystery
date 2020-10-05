@@ -21,13 +21,16 @@ class GameClient extends Component {
   ws: WebSocket;
   msgs: EventEmitter;
   disconnected: true;
-  state: { error: string | undefined };
+  state: { error: string | undefined; isOpen: boolean };
 
   constructor(props: { server: string; id: string; name: string }) {
     super(props);
     this.msgs = new EventEmitter();
+    // isOpen is not used directly as the websocket readyState is the single source
+    //  of truth, but the component should re-render on open
     this.state = {
       error: undefined,
+      isOpen: false,
     };
   }
 
@@ -41,6 +44,12 @@ class GameClient extends Component {
 
   addListeners() {
     const self = this;
+    this.ws.addEventListener("open", () =>
+      self.setState({
+        ...this.state,
+        isOpen: true,
+      })
+    );
     this.ws.addEventListener("message", (ev: MessageEvent<any>) =>
       self.parseMessage(ev)
     );
