@@ -39,6 +39,7 @@ func setNameHandler(client *net.Client, data []byte) error {
 			"to":   client.Name,
 		}))
 	}
+	syncPlayers(client.Hub)
 
 	client.Evt.Emit("named")
 

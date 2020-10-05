@@ -68,3 +68,16 @@ func SerializeRPC(name string, data map[string]interface{}) []byte {
 func SendRPC(client *net.Client, name string, data map[string]interface{}) {
 	client.Send(SerializeRPC(name, data))
 }
+
+// BroadcastRPC works the same way as SerializeRPC but also broadcasts the RPC
+func BroadcastRPC(hub *net.Hub, name string, data map[string]interface{}) {
+	hub.Broadcast(SerializeRPC(name, data))
+}
+
+func syncPlayers(hub *net.Hub) {
+	players := []string{}
+	for p := range hub.Clients {
+		players = append(players, p.Name)
+	}
+	BroadcastRPC(hub, "players", map[string]interface{}{"names": players})
+}
