@@ -18,17 +18,17 @@ enum ReadyState {
 // GameClient wraps around a WebSocket and has convienience methods
 class GameClient extends Component {
   props: { server: string; id: string; name: string };
+  ws: WebSocket;
   msgs: EventEmitter;
   disconnected: true;
-  state: { error: string | undefined; ws: WebSocket };
+  state: { error: string | undefined };
 
   constructor(props: { server: string; id: string; name: string }) {
     super(props);
     this.msgs = new EventEmitter();
-    // The connect() method will be called before the ws is used, so don't complain
-    //  that it isn't set yet
-    // @ts-ignore
-    this.state = {};
+    this.state = {
+      error: undefined,
+    };
   }
 
   componentDidMount() {
@@ -41,10 +41,10 @@ class GameClient extends Component {
 
   addListeners() {
     const self = this;
-    this.state.ws.addEventListener("message", (ev: MessageEvent<any>) =>
+    this.ws.addEventListener("message", (ev: MessageEvent<any>) =>
       self.parseMessage(ev)
     );
-    this.state.ws.addEventListener("close", () => {
+    this.ws.addEventListener("close", () => {
       this.disconnect();
     });
   }
@@ -61,26 +61,20 @@ class GameClient extends Component {
     if (!msg.type) {
       console.error("Missing message type!");
     }
-    console.log(msg);
     self.msgs.emit(msg.type || "unknown", msg);
   }
 
   connect(): Promise<void> {
     return new Promise((res) => {
-      let ws;
       try {
-        ws = new WebSocket(`${this.props.server}/game/${this.props.id}`);
+        this.ws = new WebSocket(`${this.props.server}/game/${this.props.id}`);
       } catch (e) {
         console.error(e);
         this.disconnect();
         return;
       }
-      this.setState({
-        ...this.state,
-        ws,
-      });
       this.addListeners();
-      ws.addEventListener("open", () => {
+      this.ws.addEventListener("open", () => {
         this.handshake().then(() => res());
       });
     });
@@ -88,7 +82,7 @@ class GameClient extends Component {
 
   disconnect(): void {
     try {
-      this.state.ws.close();
+      this.ws.close();
     } catch (e) {}
     console.error(new Error("Disconnecting."));
     this.disconnected = true;
@@ -104,7 +98,7 @@ class GameClient extends Component {
       console.error(new Error(`Invalid RPC call ${call}`));
       return;
     }
-    this.state.ws.send(rpcID + JSON.stringify(arg));
+    this.ws.send(rpcID + JSON.stringify(arg));
   }
 
   // Awaits a message to be received
@@ -123,11 +117,10 @@ class GameClient extends Component {
       console.error("Error in handshake:", handshake);
       await this.disconnect();
     }
-    console.log("handshake done");
   }
 
   render() {
-    if (this.state.ws && this.state.ws.readyState == ReadyState.OPEN) {
+    if (this.ws && this.ws.readyState == ReadyState.OPEN) {
       return <p>Looks good to me</p>;
     } else if (this.disconnected || this.state.error) {
       return (
