@@ -1,6 +1,5 @@
 import GameClient from "../components/GameClient";
 import Head from "next/head";
-import Loader from "../components/Loader";
 import NameSelector from "components/NameSelector";
 import t from "../translate";
 import { useRouter } from "next/router";
@@ -13,14 +12,18 @@ function useGameContent() {
 
   const [name, setName] = useState("");
 
+  const nameComponent = <NameSelector onSubmit={(name) => setName(name)} />;
+
   if (typeof window === "undefined") {
-    return <Loader />;
+    // When pre-rednering, the id is never set so we don't want the error to be
+    //  pre-rendered so pre-render the name component which will be shown the most often
+    return nameComponent;
+  }
+  if (!name) {
+    return nameComponent;
   }
   if (!id || Array.isArray(id)) {
     return <p>{t("Invalid game link")}</p>;
-  }
-  if (!name) {
-    return <NameSelector onSubmit={(name) => setName(name)} />;
   }
   return (
     <GameClient
