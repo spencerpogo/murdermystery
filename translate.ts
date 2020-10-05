@@ -1,9 +1,12 @@
+import { createContext, useContext } from "react";
+
 import translations from "./public/static/locales/zh/common.json";
-import { useRouter } from "next/router";
+
+export const LangContext = createContext("en");
 
 export default function t(k: string): string {
-  return useRouter().query.hasOwnProperty("zh") &&
-    translations.hasOwnProperty(k)
-    ? translations[k].toString()
-    : k;
+  const lang = useContext(LangContext);
+  if (lang == "en") return k;
+  if (lang == "zh") return translations[k];
+  throw new Error(`Invalid lang value: ${lang}`);
 }
