@@ -86,6 +86,10 @@ class GameClient extends Component {
     } catch (e) {}
     console.error(new Error("Disconnecting."));
     this.disconnected = true;
+    this.setState({
+      ...this.state,
+      error: "Server disconnected.",
+    });
   }
 
   rpc(call: string, arg: any): void {
