@@ -26,6 +26,9 @@ class GameClient extends Component {
   constructor(props: { server: string; id: string; name: string }) {
     super(props);
     this.msgs = new EventEmitter();
+    this.state = {
+      error: undefined,
+    };
   }
 
   componentDidMount() {
