@@ -45,3 +45,8 @@ func AssignCharacters(h *net.Hub) {
 		protocol.SendRPC(c, "setCharacter", map[string]interface{}{"value": CharacterMap[c.Role]})
 	}
 }
+
+// HandleStart is called when a game is starting
+func HandleStart(h *net.Hub) {
+	AssignCharacters(h)
+}

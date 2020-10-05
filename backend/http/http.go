@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Scoder12/murdermystery/backend/game"
 	"github.com/Scoder12/murdermystery/backend/protocol"
 
 	"github.com/Scoder12/murdermystery/backend/net"
@@ -28,7 +29,10 @@ func MakeServer(iface string) *http.Server {
 
 		if _, exists := games[gid]; !exists {
 			log.Println("Creating new server: ", gid)
-			games[gid] = net.NewHub(protocol.HandleMsg, protocol.HandleJoin, protocol.HandleLeave)
+			games[gid] = net.NewHub(protocol.HandleMsg,
+				protocol.HandleJoin,
+				protocol.HandleLeave,
+				game.HandleStart)
 			go games[gid].Run()
 		}
 
