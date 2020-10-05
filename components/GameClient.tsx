@@ -21,7 +21,7 @@ class GameClient extends Component {
   ws: WebSocket;
   msgs: EventEmitter;
   disconnected: true;
-  state: { error: string | undefined; isOpen: boolean };
+  state: { error: string | undefined; isOpen: boolean; isHost: boolean };
 
   constructor(props: { server: string; id: string; name: string }) {
     super(props);
@@ -31,6 +31,7 @@ class GameClient extends Component {
     this.state = {
       error: undefined,
       isOpen: false,
+      isHost: false,
     };
   }
 
@@ -54,8 +55,9 @@ class GameClient extends Component {
       self.parseMessage(ev)
     );
     this.ws.addEventListener("close", () => {
-      this.disconnect();
+      self.disconnect();
     });
+    this.msgs.on("host", self.handleHost.bind(self));
   }
 
   parseMessage(ev: MessageEvent<any>) {
@@ -71,6 +73,13 @@ class GameClient extends Component {
       console.error("Missing message type!");
     }
     self.msgs.emit(msg.type || "unknown", msg);
+  }
+
+  handleHost({ isHost }: { isHost: boolean }) {
+    this.setState({
+      ...this.state,
+      isHost,
+    });
   }
 
   connect(): Promise<void> {
