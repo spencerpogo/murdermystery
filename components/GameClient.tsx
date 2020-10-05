@@ -66,7 +66,13 @@ class GameClient extends Component {
 
   connect(): Promise<void> {
     return new Promise((res) => {
-      this.ws = new WebSocket(`${this.props.server}/game/${this.props.id}`);
+      try {
+        this.ws = new WebSocket(`${this.props.server}/game/${this.props.id}`);
+      } catch (e) {
+        console.error(e);
+        this.disconnect();
+        return;
+      }
       this.addListeners();
       this.ws.addEventListener("open", () => {
         this.handshake().then(() => res());
