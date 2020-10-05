@@ -112,7 +112,7 @@ class GameClient extends Component {
 
   rpc(call: string, arg: any): void {
     const rpcID = RPC_CALLS[call];
-    if (!rpcID) {
+    if (typeof rpcID === "undefined") {
       console.error(new Error(`Invalid RPC call ${call}`));
       return;
     }
