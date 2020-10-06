@@ -1,8 +1,9 @@
 import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/core";
+import { Component, useEffect, useRef, useState } from "react";
 
-import { Component } from "react";
 import { EventEmitter } from "events";
 import Loader from "./Loader";
+import t from "../translate";
 
 enum RPC_CALLS {
   setName = 0,
@@ -15,80 +16,40 @@ enum ReadyState {
   CLOSED = 3,
 }
 
-const LISTENERS = {
-  host: function handleHost(self: GameClient, { isHost }: { isHost: boolean }) {
-    self.setState({
-      ...self.state,
-      isHost,
-    });
-  },
+export default function GameClient({
+  server,
+  id,
+  nameProp,
+}: {
+  server: string;
+  id: string;
+  nameProp: string;
+}) {
+  const wsRef = useRef<WebSocket | null>(null);
+  let ws = wsRef.current;
+  const msgsRef = useRef<EventEmitter | null>(null);
+  if (!msgsRef.current) {
+    msgsRef.current = new EventEmitter();
+  }
+  const msgs = msgsRef.current;
 
-  players: function updatePlayers(
-    self: GameClient,
-    { names }: { names: string[] }
-  ) {
-    self.setState({
-      ...self.state,
-      names,
-    });
-  },
-};
+  // isOpen is only used to re-render when connection is complete
+  const [, setIsOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isHost, setIsHost] = useState<boolean>(false);
+  const [names, setNames] = useState<string[]>([]);
 
-// GameClient wraps around a WebSocket and has convienience methods
-class GameClient extends Component {
-  props: { server: string; id: string; name: string };
-  ws: WebSocket;
-  msgs: EventEmitter;
-  disconnected: true;
-  state: {
-    error: string | undefined;
-    isOpen: boolean;
-    isHost: boolean;
-    names: string[];
+  const LISTENERS = {
+    host: function handleHost({ newIsHost }: { newIsHost: boolean }) {
+      setIsHost(newIsHost);
+    },
+
+    players: function updatePlayers({ newNames }: { newNames: string[] }) {
+      setNames(newNames);
+    },
   };
 
-  constructor(props: { server: string; id: string; name: string }) {
-    super(props);
-    this.msgs = new EventEmitter();
-    // isOpen is not used directly as the websocket readyState is the single source
-    //  of truth, but the component should re-render on open
-    this.state = {
-      error: undefined,
-      isOpen: false,
-      isHost: false,
-      names: [],
-    };
-  }
-
-  componentDidMount() {
-    this.connect();
-  }
-
-  componentWillUnmount() {
-    this.disconnect();
-  }
-
-  addListeners() {
-    const self = this;
-    this.ws.addEventListener("open", () =>
-      self.setState({
-        ...this.state,
-        isOpen: true,
-      })
-    );
-    this.ws.addEventListener("message", (ev: MessageEvent<any>) =>
-      self.parseMessage(ev)
-    );
-    this.ws.addEventListener("close", () => {
-      self.disconnect();
-    });
-    for (const evt of Object.keys(LISTENERS)) {
-      this.msgs.on(evt, (...args: any) => LISTENERS[evt](self, ...args));
-    }
-  }
-
-  parseMessage(ev: MessageEvent<any>) {
-    const self = this;
+  const parseMessage = (ev: MessageEvent<any>) => {
     let msg;
     try {
       msg = JSON.parse(ev.data);
@@ -99,88 +60,86 @@ class GameClient extends Component {
     if (!msg.type) {
       console.error("Missing message type!");
     }
-    self.msgs.emit(msg.type || "unknown", msg);
-  }
+    msgs.emit(msg.type || "unknown", msg);
+  };
 
-  connect(): Promise<void> {
-    return new Promise((res) => {
-      try {
-        this.ws = new WebSocket(`${this.props.server}/game/${this.props.id}`);
-      } catch (e) {
-        console.error(e);
-        this.disconnect();
-        return;
-      }
-      this.addListeners();
-      this.ws.addEventListener("open", () => {
-        this.handshake().then(() => res());
-      });
+  const addListeners = () => {
+    if (!ws) {
+      console.error("Try to addListeners() while ws is null");
+      return;
+    }
+    ws.addEventListener("message", (ev: MessageEvent<any>) => parseMessage(ev));
+    ws.addEventListener("close", () => {
+      setError(t("Disconnected from server"));
     });
-  }
+    for (const evt of Object.keys(LISTENERS)) {
+      msgs.on(evt, (...args: any) => LISTENERS[evt](self, ...args));
+    }
+  };
 
-  disconnect(): void {
-    try {
-      this.ws.close();
-    } catch (e) {}
-    console.error(new Error("Disconnecting."));
-    this.disconnected = true;
-    this.setState({
-      ...this.state,
-      error: "Server disconnected.",
-    });
-  }
-
-  rpc(call: string, arg: any): void {
+  const rpc = (call: string, arg: any) => {
+    if (!ws) {
+      console.error("Try to rpc() while ws is null");
+      return;
+    }
     const rpcID = RPC_CALLS[call];
     if (typeof rpcID === "undefined") {
       console.error(new Error(`Invalid RPC call ${call}`));
       return;
     }
-    this.ws.send(String.fromCharCode(65 + rpcID) + JSON.stringify(arg));
-  }
+    ws.send(String.fromCharCode(65 + rpcID) + JSON.stringify(arg));
+  };
 
-  // Awaits a message to be received
-  recv(type: string): Promise<any> {
-    const self = this;
+  const waitForMessage = (type: string): Promise<any> => {
     return new Promise((resolve) => {
-      self.msgs.once(type, (...args) => resolve(args));
+      msgs.once(type, (msg) => resolve(msg));
     });
-  }
+  };
 
-  async handshake(): Promise<void> {
-    this.rpc("setName", this.props.name);
-    // TODO: handle isHost
-    const handshake = await this.recv("handshake");
-    if (handshake.error) {
-      console.error("Error in handshake:", handshake);
-      await this.disconnect();
+  const handshake = async () => {
+    rpc("setName", nameProp);
+    const handshakeRes = await waitForMessage("handshake");
+    if (handshakeRes.error) {
+      setError(t(handshakeRes.error));
     }
-  }
+    setIsOpen(true);
+  };
 
-  render() {
-    if (this.ws && this.ws.readyState == ReadyState.OPEN) {
-      return (
-        <>
-          {this.state.isHost && <h3>You are the host</h3>}
-          <h3>Players:</h3>
-          <ul>
-            {this.state.names.map((name) => {
-              return <li key={name}>{name}</li>;
-            })}
-          </ul>
-        </>
-      );
-    } else if (this.disconnected || this.state.error) {
-      return (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Disconnected from server!</AlertTitle>
-        </Alert>
-      );
-    } else {
-      return <Loader />;
+  // setup websocket
+  useEffect(() => {
+    try {
+      wsRef.current = new WebSocket(`${server}/game/${id}`);
+    } catch (e) {
+      console.error(e);
+      setError(t("Error while opening connection"));
+      return;
     }
+    ws = wsRef.current;
+    addListeners();
+    ws.addEventListener("open", () => handshake());
+    return () => ws?.close();
+  }, []);
+
+  if (error) {
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        <AlertTitle>{error}</AlertTitle>
+      </Alert>
+    );
+  } else if (ws && ws.readyState == ReadyState.OPEN) {
+    return (
+      <>
+        {isHost && <h3>You are the host</h3>}
+        <h3>Players:</h3>
+        <ul>
+          {names.map((name) => {
+            return <li key={name}>{name}</li>;
+          })}
+        </ul>
+      </>
+    );
+  } else {
+    return <Loader />;
   }
 }
-
-export default GameClient;
