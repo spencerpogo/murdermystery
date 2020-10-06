@@ -9,7 +9,7 @@ function NameSelector({ onSubmit }: { onSubmit: (name: string) => void }) {
     <Box>
       <Stack>
         <Input
-          placeholder={t("Enter name")}
+          placeholder={t("Enter Name")}
           onChange={(evt: ChangeEvent<HTMLInputElement>) =>
             setName(evt.target.value)
           }
