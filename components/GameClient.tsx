@@ -73,7 +73,7 @@ export default function GameClient({
     }
     ws.addEventListener("message", (ev: MessageEvent<any>) => parseMessage(ev));
     ws.addEventListener("close", () => {
-      setError(t("Disconnected from server", true));
+      setError("Disconnected from server");
     });
     for (const evt of Object.keys(LISTENERS)) {
       msgs.on(evt, (msg) => LISTENERS[evt](msg));
@@ -103,7 +103,7 @@ export default function GameClient({
     rpc("setName", nameProp);
     const handshakeRes = await waitForMessage("handshake");
     if (handshakeRes.error) {
-      setError(t(handshakeRes.error, true));
+      setError(handshakeRes.error);
     }
     setIsOpen(true);
   };
@@ -114,7 +114,7 @@ export default function GameClient({
       wsRef.current = new WebSocket(`${server}/game/${id}`);
     } catch (e) {
       console.error(e);
-      setError(t("Error while opening connection", true));
+      setError("Error while opening connection");
       return;
     }
     ws = wsRef.current;
@@ -127,7 +127,7 @@ export default function GameClient({
     return (
       <Alert status="error">
         <AlertIcon />
-        <AlertTitle>{error}</AlertTitle>
+        <AlertTitle>{t(error)}</AlertTitle>
       </Alert>
     );
   } else if (ws && ws.readyState == ReadyState.OPEN) {
