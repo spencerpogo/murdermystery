@@ -13,8 +13,11 @@ function NameSelector({ onSubmit }: { onSubmit: (name: string) => void }) {
           onChange={(evt: ChangeEvent<HTMLInputElement>) =>
             setName(evt.target.value)
           }
+          type="text"
         />
-        <Button onClick={() => onSubmit(name)}>{t("Join Game")}</Button>
+        <Button onClick={() => onSubmit(name)} variantColor="blue">
+          {t("Join Game")}
+        </Button>
       </Stack>
     </Box>
   );
