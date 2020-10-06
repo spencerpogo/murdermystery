@@ -21,7 +21,12 @@ class GameClient extends Component {
   ws: WebSocket;
   msgs: EventEmitter;
   disconnected: true;
-  state: { error: string | undefined; isOpen: boolean; isHost: boolean };
+  state: {
+    error: string | undefined;
+    isOpen: boolean;
+    isHost: boolean;
+    names: string[];
+  };
 
   constructor(props: { server: string; id: string; name: string }) {
     super(props);
@@ -32,6 +37,7 @@ class GameClient extends Component {
       error: undefined,
       isOpen: false,
       isHost: false,
+      names: [],
     };
   }
 
@@ -57,7 +63,13 @@ class GameClient extends Component {
     this.ws.addEventListener("close", () => {
       self.disconnect();
     });
-    this.msgs.on("host", self.handleHost.bind(self));
+    const LISTENERS: { [name: string]: (msg: Object) => void } = {
+      host: self.handleHost,
+      players: self.updatePlayers,
+    };
+    for (const evt of Object.keys(LISTENERS)) {
+      this.msgs.on(evt, LISTENERS[evt].bind(self));
+    }
   }
 
   parseMessage(ev: MessageEvent<any>) {
@@ -79,6 +91,13 @@ class GameClient extends Component {
     this.setState({
       ...this.state,
       isHost,
+    });
+  }
+
+  updatePlayers({ names }: { names: string[] }) {
+    this.setState({
+      ...this.state,
+      names,
     });
   }
 
@@ -139,7 +158,17 @@ class GameClient extends Component {
 
   render() {
     if (this.ws && this.ws.readyState == ReadyState.OPEN) {
-      return <p>Looks good to me</p>;
+      return (
+        <>
+          {this.state.isHost && <h3>You are the host</h3>}
+          <h3>Players:</h3>
+          <ul>
+            {this.state.names.map((name) => {
+              return <li key={name}>{name}</li>;
+            })}
+          </ul>
+        </>
+      );
     } else if (this.disconnected || this.state.error) {
       return (
         <Alert status="error">
