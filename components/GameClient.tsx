@@ -40,12 +40,15 @@ export default function GameClient({
   const [names, setNames] = useState<string[]>([]);
 
   const LISTENERS = {
-    host: function handleHost({ newIsHost }: { newIsHost: boolean }) {
-      setIsHost(newIsHost);
+    host: function handleHost(msg: any) {
+      if (!msg || !msg.hasOwnProperty("isHost")) return;
+      setIsHost(!!msg.isHost);
     },
 
-    players: function updatePlayers({ newNames }: { newNames: string[] }) {
-      setNames(newNames);
+    players: function updatePlayers(msg: any) {
+      console.log(msg);
+      if (!msg || !Array.isArray(msg.names)) return;
+      setNames(msg.names);
     },
   };
 
@@ -73,7 +76,7 @@ export default function GameClient({
       setError(t("Disconnected from server", true));
     });
     for (const evt of Object.keys(LISTENERS)) {
-      msgs.on(evt, (...args: any) => LISTENERS[evt](self, ...args));
+      msgs.on(evt, (msg) => LISTENERS[evt](msg));
     }
   };
 
