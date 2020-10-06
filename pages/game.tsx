@@ -29,7 +29,7 @@ function useGameContent() {
     <GameClient
       id={(id || "").toString()}
       server={server.toString()}
-      nameProp={name}
+      name={name}
     />
   );
 }
