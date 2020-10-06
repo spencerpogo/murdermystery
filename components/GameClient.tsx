@@ -1,5 +1,5 @@
 import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/core";
-import { Component, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { EventEmitter } from "events";
 import Loader from "./Loader";
@@ -70,7 +70,7 @@ export default function GameClient({
     }
     ws.addEventListener("message", (ev: MessageEvent<any>) => parseMessage(ev));
     ws.addEventListener("close", () => {
-      setError(t("Disconnected from server"));
+      setError(t("Disconnected from server", true));
     });
     for (const evt of Object.keys(LISTENERS)) {
       msgs.on(evt, (...args: any) => LISTENERS[evt](self, ...args));
@@ -100,7 +100,7 @@ export default function GameClient({
     rpc("setName", nameProp);
     const handshakeRes = await waitForMessage("handshake");
     if (handshakeRes.error) {
-      setError(t(handshakeRes.error));
+      setError(t(handshakeRes.error, true));
     }
     setIsOpen(true);
   };
@@ -111,7 +111,7 @@ export default function GameClient({
       wsRef.current = new WebSocket(`${server}/game/${id}`);
     } catch (e) {
       console.error(e);
-      setError(t("Error while opening connection"));
+      setError(t("Error while opening connection", true));
       return;
     }
     ws = wsRef.current;
