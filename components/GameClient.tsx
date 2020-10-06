@@ -15,6 +15,25 @@ enum ReadyState {
   CLOSED = 3,
 }
 
+const LISTENERS = {
+  host: function handleHost(self: GameClient, { isHost }: { isHost: boolean }) {
+    self.setState({
+      ...self.state,
+      isHost,
+    });
+  },
+
+  players: function updatePlayers(
+    self: GameClient,
+    { names }: { names: string[] }
+  ) {
+    self.setState({
+      ...self.state,
+      names,
+    });
+  },
+};
+
 // GameClient wraps around a WebSocket and has convienience methods
 class GameClient extends Component {
   props: { server: string; id: string; name: string };
@@ -63,12 +82,8 @@ class GameClient extends Component {
     this.ws.addEventListener("close", () => {
       self.disconnect();
     });
-    const LISTENERS: { [name: string]: (msg: Object) => void } = {
-      host: self.handleHost,
-      players: self.updatePlayers,
-    };
     for (const evt of Object.keys(LISTENERS)) {
-      this.msgs.on(evt, LISTENERS[evt].bind(self));
+      this.msgs.on(evt, (...args: any) => LISTENERS[evt](self, ...args));
     }
   }
 
@@ -85,20 +100,6 @@ class GameClient extends Component {
       console.error("Missing message type!");
     }
     self.msgs.emit(msg.type || "unknown", msg);
-  }
-
-  handleHost({ isHost }: { isHost: boolean }) {
-    this.setState({
-      ...this.state,
-      isHost,
-    });
-  }
-
-  updatePlayers({ names }: { names: string[] }) {
-    this.setState({
-      ...this.state,
-      names,
-    });
   }
 
   connect(): Promise<void> {
