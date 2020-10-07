@@ -102,8 +102,10 @@ export default function GameClient({
   const handshake = async () => {
     rpc("setName", nameProp);
     const handshakeRes = await waitForMessage("handshake");
-    if (handshakeRes.error) {
-      setError(handshakeRes.error);
+    if (!handshakeRes) setError("Error");
+    const { error } = handshakeRes;
+    if (error) {
+      setError(error == "started" ? "The game has already started" : "Error");
     }
     setIsOpen(true);
   };

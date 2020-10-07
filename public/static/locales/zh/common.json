@@ -8,5 +8,7 @@
   "Invalid game link": "无效的游戏连结",
   "Disconnected from server": "与服务器断开连接",
   "Start Game": "开始游戏",
-  "Wait for the host to start the game": "等待主机开始游戏"
+  "Wait for the host to start the game": "等待主机开始游戏",
+  "The game has already started": "游戏已经开始，您不能加入",
+  "Error": "服务器错误"
 }
