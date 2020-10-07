@@ -1,22 +1,17 @@
 import { Box } from "@chakra-ui/core";
-import Head from "next/head";
+import Layout from "components/Layout";
 import MainMenu from "components/MainMenu";
 import t from "../translate";
 
 function Home() {
   return (
-    <>
-      <Head>
-        <title>{t("Murder Mystery")}</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
+    <Layout>
       <Box as="body" bg="black">
         <main>
           <MainMenu t={t} />
         </main>
       </Box>
-    </>
+    </Layout>
   );
 }
 

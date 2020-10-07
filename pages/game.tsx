@@ -1,5 +1,5 @@
 import GameClient from "../components/GameClient";
-import Head from "next/head";
+import Layout from "components/Layout";
 import NameSelector from "components/NameSelector";
 import t from "../translate";
 import { useRouter } from "next/router";
@@ -36,11 +36,8 @@ function useGameContent() {
 
 export default function Game() {
   return (
-    <>
-      <Head>
-        <title>{t("Murder Mystery")}</title>
-      </Head>
+    <Layout>
       <main>{useGameContent()}</main>
-    </>
+    </Layout>
   );
 }
