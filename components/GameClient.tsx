@@ -1,16 +1,9 @@
-import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  Button,
-  Flex,
-  Heading,
-  Text,
-} from "@chakra-ui/core";
+import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/core";
 import { useEffect, useRef, useState } from "react";
 
 import { EventEmitter } from "events";
 import Loader from "./Loader";
+import Lobby from "./Lobby";
 import t from "../translate";
 
 enum RPC_CALLS {
@@ -141,27 +134,7 @@ export default function GameClient({
       </Alert>
     );
   } else if (ws && ws.readyState == ReadyState.OPEN) {
-    return (
-      <>
-        <Heading as="h3" size="lg" mb={2}>
-          {t("Waiting for players", true)}
-        </Heading>
-        <Flex mb={3} align="center" justify="space-between">
-          <Text as="i">{t("Share your link to invite others", true)}</Text>
-          <Button>{t("Copy", true)}</Button>
-        </Flex>
-        <ul>
-          {names.map((name) => {
-            return <li key={name}>{name}</li>;
-          })}
-        </ul>
-        <Button variantColor="blue" float="right" mt={10} isDisabled={!isHost}>
-          {isHost
-            ? t("Start Game", true)
-            : t("Wait for the host to start the game", true)}
-        </Button>
-      </>
-    );
+    return <Lobby names={names} isHost={isHost} />;
   } else {
     return <Loader />;
   }
