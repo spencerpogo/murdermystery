@@ -1,7 +1,15 @@
 import translations from "./public/static/locales/zh/common.json";
 import { useClientOnly } from "components/ClientOnly";
 
-export default function t(k: string, force: boolean = false): string {
+/**
+ * Get translated version of a string from english.
+ * If zh paramater is in querystring, will lookup key in chinese translations.
+ * If chinese translation does not exist, warn and fallback to english.
+ * @param k The key to translate, in english
+ * @param force If true, will skip useClientOnly(). Without this, hook mismatch errors
+ *  can occur in some cases.
+ */
+export default function translate(k: string, force: boolean = false): string {
   if (!force && !useClientOnly()) {
     return "";
   }
@@ -19,4 +27,11 @@ export default function t(k: string, force: boolean = false): string {
   }
 
   return k;
+}
+
+/**
+ * @description Same as translate(k, true)
+ */
+export function forcedTranslate(k: string) {
+  return translate(k, true);
 }

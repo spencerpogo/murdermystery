@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { EventEmitter } from "events";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
-import t from "../translate";
+import { forcedTranslate as t } from "../translate";
 
 enum RPC_CALLS {
   setName = 0,
@@ -130,7 +130,7 @@ export default function GameClient({
     return (
       <Alert status="error">
         <AlertIcon />
-        <AlertTitle>{t(error, true)}</AlertTitle>
+        <AlertTitle>{t(error)}</AlertTitle>
       </Alert>
     );
   } else if (ws && ws.readyState == ReadyState.OPEN) {

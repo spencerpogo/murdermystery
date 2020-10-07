@@ -1,6 +1,6 @@
 import { Button, Flex, Heading, Text } from "@chakra-ui/core";
 
-import t from "../translate";
+import { forcedTranslate as t } from "../translate";
 
 export default function Lobby({
   names,
@@ -12,11 +12,11 @@ export default function Lobby({
   return (
     <>
       <Heading as="h3" size="lg" mb={2}>
-        {t("Waiting for players", true)}
+        {t("Waiting for players")}
       </Heading>
       <Flex mb={3} align="center" justify="space-between">
-        <Text as="i">{t("Share your link to invite others", true)}</Text>
-        <Button>{t("Copy", true)}</Button>
+        <Text as="i">{t("Share your link to invite others")}</Text>
+        <Button>{t("Copy")}</Button>
       </Flex>
       <ul>
         {names.map((name) => {
@@ -24,9 +24,7 @@ export default function Lobby({
         })}
       </ul>
       <Button variantColor="blue" float="right" mt={10} isDisabled={!isHost}>
-        {isHost
-          ? t("Start Game", true)
-          : t("Wait for the host to start the game", true)}
+        {isHost ? t("Start Game") : t("Wait for the host to start the game")}
       </Button>
     </>
   );
