@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/core";
+import { Alert, AlertIcon, AlertTitle, Button } from "@chakra-ui/core";
 import { useEffect, useRef, useState } from "react";
 
 import { EventEmitter } from "events";
@@ -140,6 +140,11 @@ export default function GameClient({
             return <li key={name}>{name}</li>;
           })}
         </ul>
+        <Button variantColor="blue" float="right" mt={10} isDisabled={!isHost}>
+          {isHost
+            ? t("Start Game", true)
+            : t("Wait for the host to start the game", true)}
+        </Button>
       </>
     );
   } else {

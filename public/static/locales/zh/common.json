@@ -6,5 +6,7 @@
   "Ask the host to send you their game link": "要求主持人向您发送指向他们游戏的链接",
   "Enter Name": "输入名字",
   "Invalid game link": "无效的游戏连结",
-  "Disconnected from server": "与服务器断开连接"
+  "Disconnected from server": "与服务器断开连接",
+  "Start Game": "开始游戏",
+  "Wait for the host to start the game": "等待主机开始游戏"
 }
