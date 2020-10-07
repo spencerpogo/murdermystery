@@ -77,10 +77,16 @@ func BroadcastRPC(hub *net.Hub, name string, data map[string]interface{}) {
 
 func syncPlayers(hub *net.Hub) {
 	players := []string{}
+	hostInd := -1
+	i := 0
 	for p := range hub.Clients {
 		if p.IsOpen {
 			players = append(players, p.Name)
+			if hub.Host == p {
+				hostInd = i
+			}
+			i++
 		}
 	}
-	BroadcastRPC(hub, "players", map[string]interface{}{"names": players})
+	BroadcastRPC(hub, "players", map[string]interface{}{"names": players, "hostInd": hostInd})
 }
