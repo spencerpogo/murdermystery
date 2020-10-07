@@ -55,6 +55,9 @@ type Client struct {
 	// Name is the name of the player
 	Name string
 
+	// IsOpen is whether the client is open
+	IsOpen bool
+
 	// Event Emitter for this client
 	Evt *emitter.Emitter
 
@@ -75,6 +78,7 @@ func (c *Client) Send(msg []byte) {
 
 // Close closes the client
 func (c *Client) Close() {
+	c.IsOpen = false
 	c.Hub.unregister <- c
 	c.conn.Close()
 }
@@ -158,11 +162,12 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	client := &Client{
-		Hub:  hub,
-		conn: conn,
-		send: make(chan []byte, 256),
-		Evt:  &emitter.Emitter{},
-		Role: 0,
+		Hub:    hub,
+		conn:   conn,
+		send:   make(chan []byte, 256),
+		Evt:    &emitter.Emitter{},
+		IsOpen: true,
+		Role:   0,
 	}
 	client.Hub.register <- client
 

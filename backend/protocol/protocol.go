@@ -55,6 +55,7 @@ func HandleLeave(client *net.Client) {
 			break
 		}
 	}
+	syncPlayers(client.Hub)
 }
 
 // SerializeRPC serializes an RPC given the type of the message and any arguments to send.
@@ -77,7 +78,9 @@ func BroadcastRPC(hub *net.Hub, name string, data map[string]interface{}) {
 func syncPlayers(hub *net.Hub) {
 	players := []string{}
 	for p := range hub.Clients {
-		players = append(players, p.Name)
+		if p.IsOpen {
+			players = append(players, p.Name)
+		}
 	}
 	BroadcastRPC(hub, "players", map[string]interface{}{"names": players})
 }
