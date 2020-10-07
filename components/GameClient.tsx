@@ -38,7 +38,7 @@ export default function GameClient({
   const [, setIsOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isHost, setIsHost] = useState<boolean>(false);
-  const [names, setNames] = useState<string[]>([]);
+  const [names, setNames] = useState<{ name: string; isHost: boolean }[]>([]);
 
   const LISTENERS = {
     host: function handleHost(msg: any) {
@@ -49,7 +49,11 @@ export default function GameClient({
     players: function updatePlayers(msg: any) {
       console.log(msg);
       if (!msg || !Array.isArray(msg.names)) return;
-      setNames(msg.names);
+      const newNames = msg.names.map((name: string, i: number) => ({
+        name,
+        isHost: msg.hostInd == i,
+      }));
+      setNames(newNames);
     },
   };
 

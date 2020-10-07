@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, Text } from "@chakra-ui/core";
+import { Badge, Button, Flex, Heading, Text } from "@chakra-ui/core";
 
 import { forcedTranslate as t } from "../translate";
 
@@ -6,9 +6,15 @@ export default function Lobby({
   names,
   isHost,
 }: {
-  names: string[];
+  names: { name: string; isHost: boolean }[];
   isHost: boolean;
 }) {
+  const hostBadge = (
+    <Badge variant="outline" ml={1}>
+      {t("Host")}
+    </Badge>
+  );
+
   return (
     <>
       <Heading as="h3" size="lg" mb={2}>
@@ -19,8 +25,13 @@ export default function Lobby({
         <Button>{t("Copy")}</Button>
       </Flex>
       <ul>
-        {names.map((name) => {
-          return <li key={name}>{name}</li>;
+        {names.map((player) => {
+          return (
+            <li key={player.name + player.isHost.toString()}>
+              {player.name}
+              {player.isHost && hostBadge}
+            </li>
+          );
         })}
       </ul>
       <Button variantColor="blue" float="right" mt={10} isDisabled={!isHost}>
