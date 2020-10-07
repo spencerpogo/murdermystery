@@ -13,7 +13,6 @@ function Home() {
 
       <Box as="body" bg="black">
         <main>
-          {/* Todo: Use state to toggle between components */}
           <MainMenu t={t} />
         </main>
       </Box>

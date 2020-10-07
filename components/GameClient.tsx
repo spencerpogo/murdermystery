@@ -1,4 +1,12 @@
-import { Alert, AlertIcon, AlertTitle, Button } from "@chakra-ui/core";
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  Button,
+  Flex,
+  Heading,
+  Text,
+} from "@chakra-ui/core";
 import { useEffect, useRef, useState } from "react";
 
 import { EventEmitter } from "events";
@@ -129,14 +137,19 @@ export default function GameClient({
     return (
       <Alert status="error">
         <AlertIcon />
-        <AlertTitle>{t(error)}</AlertTitle>
+        <AlertTitle>{t(error, true)}</AlertTitle>
       </Alert>
     );
   } else if (ws && ws.readyState == ReadyState.OPEN) {
     return (
       <>
-        {isHost && <h3>You are the host</h3>}
-        <h3>Players:</h3>
+        <Heading as="h3" size="lg" mb={2}>
+          {t("Waiting for players", true)}
+        </Heading>
+        <Flex mb={3} align="center" justify="space-between">
+          <Text as="i">{t("Share your link to invite others", true)}</Text>
+          <Button>{t("Copy", true)}</Button>
+        </Flex>
         <ul>
           {names.map((name) => {
             return <li key={name}>{name}</li>;
