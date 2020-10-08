@@ -37,7 +37,8 @@ export default function GameClient({
 
   // isOpen is only used to re-render when connection is complete
   const [, setIsOpen] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorNotice, setErrorNotice] = useState<string | null>(null);
+  const [didDisconnect, setDidDisconnect] = useState<boolean>(false);
   const [isHost, setIsHost] = useState<boolean>(false);
   const [names, setNames] = useState<{ name: string; isHost: boolean }[]>([]);
 
@@ -79,9 +80,7 @@ export default function GameClient({
     }
     ws.addEventListener("message", (ev: MessageEvent<any>) => parseMessage(ev));
     ws.addEventListener("close", () => {
-      if (!error) {
-        setError("Disconnected from server");
-      }
+      setDidDisconnect(true);
     });
     for (const evt of Object.keys(LISTENERS)) {
       msgs.on(evt, (msg) => LISTENERS[evt](msg));
@@ -110,10 +109,14 @@ export default function GameClient({
   const handshake = async () => {
     rpc("setName", nameProp);
     const handshakeRes = await waitForMessage("handshake");
-    if (!handshakeRes) setError("Error");
+    if (!handshakeRes) setErrorNotice("Error");
     const { error } = handshakeRes;
+    console.log(handshakeRes);
     if (error) {
-      setError(error == "started" ? "The game has already started" : "Error");
+      console.log(error);
+      setErrorNotice(
+        error == "started" ? "The game has already started" : "Error"
+      );
     }
     setIsOpen(true);
   };
@@ -124,7 +127,7 @@ export default function GameClient({
       wsRef.current = new WebSocket(`${server}/game/${id}`);
     } catch (e) {
       console.error(e);
-      setError("Error while opening connection");
+      setErrorNotice("Error while opening connection");
       return;
     }
     ws = wsRef.current;
@@ -133,11 +136,11 @@ export default function GameClient({
     return () => ws?.close();
   }, []);
 
-  if (error) {
+  if (errorNotice || didDisconnect) {
     return (
       <Alert status="error">
         <AlertIcon />
-        <AlertTitle>{t(error)}</AlertTitle>
+        <AlertTitle>{t(errorNotice || "Disconnected from server")}</AlertTitle>
       </Alert>
     );
   } else if (ws && ws.readyState == ReadyState.OPEN) {
