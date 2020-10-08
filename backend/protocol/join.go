@@ -13,6 +13,8 @@ func HandleJoin(client *net.Client) {
 
 	if h.Started {
 		SendRPC(client, "handshake", map[string]interface{}{"error": "started"})
+		// If we close too early, the message won't get sent
+		time.Sleep(300 * time.Millisecond)
 		client.Close()
 		return
 	}
