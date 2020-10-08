@@ -12,6 +12,10 @@ func startGameHandler(client *net.Client, d []byte) error {
 		// They are unauthorized, ignore
 		return nil
 	}
+	if client.Hub.Started {
+		// already started, ignore
+		return nil
+	}
 
 	// Lock out new players from joining
 	client.Hub.Started = true
