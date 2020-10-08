@@ -5,9 +5,11 @@ import { forcedTranslate as t } from "../translate";
 export default function Lobby({
   names,
   isHost,
+  start,
 }: {
   names: { name: string; isHost: boolean }[];
   isHost: boolean;
+  start: () => void;
 }) {
   const hostBadge = (
     <Badge variant="outline" ml={1}>
@@ -34,7 +36,13 @@ export default function Lobby({
           );
         })}
       </ul>
-      <Button variantColor="blue" float="right" mt={10} isDisabled={!isHost}>
+      <Button
+        variantColor="blue"
+        float="right"
+        mt={10}
+        isDisabled={!isHost}
+        onClick={() => start()}
+      >
         {isHost ? t("Start Game") : t("Wait for the host to start the game")}
       </Button>
     </>

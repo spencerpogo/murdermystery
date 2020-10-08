@@ -8,6 +8,7 @@ import { forcedTranslate as t } from "../translate";
 
 enum RPC_CALLS {
   setName = 0,
+  startGame = 1,
 }
 
 enum ReadyState {
@@ -138,7 +139,9 @@ export default function GameClient({
       </Alert>
     );
   } else if (ws && ws.readyState == ReadyState.OPEN) {
-    return <Lobby names={names} isHost={isHost} />;
+    return (
+      <Lobby names={names} isHost={isHost} start={() => rpc("startGame", {})} />
+    );
   } else {
     return <Loader />;
   }
