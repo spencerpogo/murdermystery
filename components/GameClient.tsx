@@ -79,7 +79,9 @@ export default function GameClient({
     }
     ws.addEventListener("message", (ev: MessageEvent<any>) => parseMessage(ev));
     ws.addEventListener("close", () => {
-      setError("Disconnected from server");
+      if (!error) {
+        setError("Disconnected from server");
+      }
     });
     for (const evt of Object.keys(LISTENERS)) {
       msgs.on(evt, (msg) => LISTENERS[evt](msg));
