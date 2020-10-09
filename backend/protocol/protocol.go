@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/Scoder12/murdermystery/backend/net"
 )
@@ -42,11 +43,27 @@ func HandleMsg(client *net.Client, msg []byte) {
 	}
 }
 
+// EndGame ends the game
+func EndGame(hub *net.Hub, reason string) {
+	BroadcastRPC(hub, "error", map[string]interface{}{"reason": reason})
+	time.Sleep(200 * time.Millisecond)
+	for p := range hub.Clients {
+		if p.IsOpen {
+			p.Close()
+		}
+	}
+}
+
 // HandleLeave handles when a client connection is closed
 func HandleLeave(client *net.Client) {
 	// TODO: check for game over here
 	log.Println("Close received")
 	h := client.Hub
+
+	if h.Started {
+		EndGame(h, "disconnect")
+	}
+
 	if h.Host == client && len(h.Clients) > 0 {
 		// client picked is not guaranteed to be random, but is not predictable either
 		for newHost := range h.Clients {
