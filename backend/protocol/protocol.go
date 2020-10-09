@@ -72,7 +72,9 @@ func HandleLeave(client *net.Client) {
 			break
 		}
 	}
-	syncPlayers(client.Hub)
+	if !h.Started {
+		syncPlayers(client.Hub)
+	}
 }
 
 // SerializeRPC serializes an RPC given the type of the message and any arguments to send.
