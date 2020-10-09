@@ -18,6 +18,12 @@ enum ReadyState {
   CLOSED = 3,
 }
 
+const serverMessages = {
+  disconnect:
+    "Someone disconnected, reconnection is not yet implemented so game over",
+  started: "The game has already started",
+};
+
 export default function GameClient({
   server,
   id,
@@ -62,10 +68,7 @@ export default function GameClient({
       console.log(msg);
       if (!msg) return;
       let reason = msg.reason || "Server closed connection";
-      if (reason == "disconnect") {
-        reason =
-          "Someone disconnected, reconnection is not yet implemented so game over";
-      }
+      if (serverMessages[reason]) reason = serverMessages[reason];
       setErrorNotice(reason);
     },
   };
@@ -126,7 +129,7 @@ export default function GameClient({
     if (error) {
       console.log(error);
       setErrorNotice(
-        error == "started" ? "The game has already started" : "Error"
+        serverMessages[error] ? serverMessages[error] : error || "Error"
       );
     }
     setIsOpen(true);
