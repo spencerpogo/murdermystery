@@ -16,6 +16,15 @@ func startGameHandler(client *net.Client, d []byte) error {
 		// already started, ignore
 		return nil
 	}
+	online := 0
+	for p := range client.Hub.Clients {
+		if p.IsOpen {
+			online++
+		}
+	}
+	if online < 6 {
+		SendRPC(client, "alert", map[string]interface{}{"msg": "notEnoughPlayers"})
+	}
 
 	// Lock out new players from joining
 	client.Hub.Started = true
