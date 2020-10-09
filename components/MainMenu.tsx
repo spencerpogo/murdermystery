@@ -34,7 +34,7 @@ export default function MainMenu({ t }: { t: (id: string) => string }) {
       </Box>
 
       {/* Join Game Modal */}
-      <Modal onClose={onClose} isOpen={isOpen} isCentered>
+      <Modal onClose={onClose} isOpen={isOpen} isCentered preserveScrollBarGap>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />

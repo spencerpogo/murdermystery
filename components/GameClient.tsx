@@ -1,4 +1,14 @@
-import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/core";
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+  Text,
+} from "@chakra-ui/core";
 import { useEffect, useRef, useState } from "react";
 
 import { EventEmitter } from "events";
@@ -22,7 +32,11 @@ const serverMessages = {
   disconnect:
     "Someone disconnected, reconnection is not yet implemented so game over",
   started: "The game has already started",
+  notEnoughPlayers: "You need at least 6 players to start the game",
 };
+
+const getServerMessage = (key: string, fallback: string) =>
+  serverMessages[key] || key || fallback;
 
 export default function GameClient({
   server,
@@ -48,6 +62,8 @@ export default function GameClient({
   const [isHost, setIsHost] = useState<boolean>(false);
   const [names, setNames] = useState<{ name: string; isHost: boolean }[]>([]);
 
+  const [alertContent, setAlertContent] = useState<string | null>(null);
+
   const LISTENERS = {
     host: function handleHost(msg: any) {
       if (!msg || !msg.hasOwnProperty("isHost")) return;
@@ -55,7 +71,6 @@ export default function GameClient({
     },
 
     players: function updatePlayers(msg: any) {
-      console.log(msg);
       if (!msg || !Array.isArray(msg.names)) return;
       const newNames = msg.names.map((name: string, i: number) => ({
         name,
@@ -65,11 +80,18 @@ export default function GameClient({
     },
 
     error: function handleError(msg: any) {
-      console.log(msg);
       if (!msg) return;
-      let reason = msg.reason || "Server closed connection";
-      if (serverMessages[reason]) reason = serverMessages[reason];
-      setErrorNotice(reason);
+      setErrorNotice(getServerMessage(msg.reason, "Server closed connection"));
+    },
+
+    alert: function handleAlert(data: any) {
+      if (!data || !data.msg) return;
+      setAlertContent(
+        getServerMessage(
+          data.msg,
+          "There was an error while performing that action"
+        )
+      );
     },
   };
 
@@ -84,6 +106,7 @@ export default function GameClient({
     if (!msg.type) {
       console.error("Missing message type!");
     }
+    console.log(msg);
     msgs.emit(msg.type || "unknown", msg);
   };
 
@@ -128,9 +151,7 @@ export default function GameClient({
     console.log(handshakeRes);
     if (error) {
       console.log(error);
-      setErrorNotice(
-        serverMessages[error] ? serverMessages[error] : error || "Error"
-      );
+      setErrorNotice(getServerMessage(error, "Error"));
     }
     setIsOpen(true);
   };
@@ -159,7 +180,26 @@ export default function GameClient({
     );
   } else if (ws && ws.readyState == ReadyState.OPEN) {
     return (
-      <Lobby names={names} isHost={isHost} start={() => rpc("startGame", {})} />
+      <>
+        <Lobby
+          names={names}
+          isHost={isHost}
+          start={() => rpc("startGame", {})}
+        />
+        <Modal
+          onClose={() => setAlertContent(null)}
+          isOpen={alertContent != null}
+          isCentered
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalCloseButton />
+            <ModalBody>
+              <Text>{t(alertContent || "")}</Text>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      </>
     );
   } else {
     return <Loader />;
