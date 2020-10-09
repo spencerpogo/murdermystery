@@ -24,6 +24,7 @@ func startGameHandler(client *net.Client, d []byte) error {
 	}
 	if online < 6 {
 		SendRPC(client, "alert", map[string]interface{}{"msg": "notEnoughPlayers"})
+		return nil
 	}
 
 	// Lock out new players from joining
