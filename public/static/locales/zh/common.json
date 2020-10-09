@@ -14,5 +14,7 @@
   "Waiting for players": "等待玩家加入",
   "Share your link to invite others": "分享您的链接邀请其他人",
   "Copy": "复制",
-  "Host": "主持人"
+  "Host": "主持人",
+  "Server closed connection": "服务器关闭了连接",
+  "Someone disconnected, reconnection is not yet implemented so game over": "有人断开连接，游戏结束了"
 }

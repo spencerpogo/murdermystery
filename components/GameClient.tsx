@@ -57,6 +57,17 @@ export default function GameClient({
       }));
       setNames(newNames);
     },
+
+    error: function handleError(msg: any) {
+      console.log(msg);
+      if (!msg) return;
+      let reason = msg.reason || "Server closed connection";
+      if (reason == "disconnect") {
+        reason =
+          "Someone disconnected, reconnection is not yet implemented so game over";
+      }
+      setErrorNotice(reason);
+    },
   };
 
   const parseMessage = (ev: MessageEvent<any>) => {
