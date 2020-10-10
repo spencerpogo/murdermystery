@@ -1,4 +1,3 @@
-import CharacterSpinner from "components/CharacterSpinner";
 import GameClient from "../components/GameClient";
 import Layout from "components/Layout";
 import NameSelector from "components/NameSelector";
@@ -7,7 +6,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 function useGameContent() {
-  /*const { query } = useRouter();
+  const { query } = useRouter();
   const { id } = query;
   const server = query.srv || "ws://localhost:8080";
 
@@ -25,14 +24,13 @@ function useGameContent() {
   }
   if (!id || Array.isArray(id)) {
     return <p>{t("Invalid game link")}</p>;
-  }*/
+  }
   return (
-    /*<GameClient
+    <GameClient
       id={(id || "").toString()}
       server={server.toString()}
       nameProp={name}
-    />*/
-    <CharacterSpinner character={"Werewolf"} />
+    />
   );
 }
 
