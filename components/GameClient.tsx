@@ -187,7 +187,7 @@ export default function GameClient({
   } else if (ws && ws.readyState == ReadyState.OPEN) {
     let view;
     if (character) {
-      view = <CharacterSpinner character={"Healer"} />;
+      view = <CharacterSpinner character={character || ""} />;
     } else {
       view = (
         <Lobby
