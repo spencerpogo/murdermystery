@@ -1,5 +1,11 @@
 import { Box, Image } from "@chakra-ui/core";
-import { ReactNode, useEffect, useState } from "react";
+import {
+  MutableRefObject,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 const filenames = [
   "citizen.png",
@@ -33,6 +39,31 @@ for (let i = 0; i < reps; i++) {
   offset += imgs.length;
 }
 
+/**
+ * @description This method finds the amount of pixels to go left from the left side of
+ *  the very first card image. It is designed to land very close to the edge of the
+ *  card so it is more exciting, but will always land on specified card.
+ * @param card_ind The index of the card in filenames which should be landed on
+ */
+const getTransformAmt = (card_ind: number) => {
+  // always go at least across all cards 6 times, and account for spinner position
+  const min_dist = WIDTH * filenames.length * 7;
+
+  // A random px amount between 5 and 9 percent of card_width
+  const rand = Math.random() * (WIDTH * 0.09) + WIDTH * 0.05;
+  // Either at the beginning or end of the card
+  const pos_in_card = Math.random() > 0.5 ? rand : WIDTH - rand;
+  // The final amount to move
+  return min_dist + card_ind * WIDTH + pos_in_card;
+};
+
+const getSpinnerPos = (
+  lineContainerRef: MutableRefObject<HTMLElement | null>
+) =>
+  lineContainerRef.current
+    ? lineContainerRef.current.getBoundingClientRect().width / 2
+    : 0;
+
 enum Stage {
   waiting = 1,
   spinning = 2,
@@ -40,7 +71,21 @@ enum Stage {
 }
 
 export default function CharacterSpinner({ character }: { character: string }) {
+  const card_ind = filenames.indexOf(character.toLowerCase() + ".png");
+  if (card_ind == -1) throw new Error("Invalid character: " + character);
+
   const [stage, setStage] = useState<Stage>(Stage.waiting);
+  const [shouldAnimate, setShouldAnimate] = useState<boolean>(true);
+
+  // We will only be setting this once, but it depends on Math.random(), and it can't
+  //  be different every render, so store it in state
+  const [transformAmt, setTransformAmt] = useState<number | null>(null);
+  if (transformAmt == null) {
+    setTransformAmt(getTransformAmt(card_ind));
+  }
+
+  // The Box with the images. We need it to get the size of it
+  const lineContainerRef = useRef<HTMLElement | null>(null);
 
   // After 2s, start spinning, then 11s after that, switch to done
   useEffect(() => {
@@ -50,13 +95,35 @@ export default function CharacterSpinner({ character }: { character: string }) {
         setStage(Stage.spinning);
       }, 2000);
     } else if (stage == Stage.spinning) {
-      timeoutId = setTimeout(() => {
+      /*timeoutId = setTimeout(() => {
         setStage(Stage.done);
-      }, 11000);
+      }, 11000);*/
     }
 
     return () => clearTimeout(timeoutId);
   }, [stage]);
+
+  const onResize = () => {
+    // if the window resizes, the line which represents which card they'll get will
+    //  jump. This will result in the wrong card being displayed in the UI. But we
+    //  can't continue the animation where we left off with a different target,
+    //  so just transform directly to the correct amount without any animation.
+    // The UI will be "frozen" until the animation would have finished, but this is
+    //  still a better experience than seeing the wrong card "selected".
+    // Once we setShouldAnimate(false), the component re-renders, the value of
+    //  getSpinnerPos() will change due to the new window size, and the transform
+    //  will be updated accordingly.
+    setShouldAnimate(false);
+  };
+
+  // Add the resize event listener once and properly clean it up afterwards
+  useEffect(() => {
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  // Guard for null tranformAmt to make typescript happy, in reality it is always set
+  const finalTransform = (transformAmt || 0) - getSpinnerPos(lineContainerRef);
 
   if (stage == Stage.waiting || stage == Stage.spinning) {
     return (
@@ -65,9 +132,11 @@ export default function CharacterSpinner({ character }: { character: string }) {
           {"body{overflow-x: hidden;}"}
         </style>
         <Box
-          transform={stage == Stage.spinning ? "translateX(-9500px)" : null}
+          transform={
+            stage == Stage.spinning ? `translateX(${-finalTransform}px)` : null
+          }
           transition={
-            stage == Stage.spinning
+            stage == Stage.spinning && shouldAnimate
               ? "transform 9.5s cubic-bezier(.31,.9985,.31,.9985)"
               : null
           }
@@ -76,11 +145,12 @@ export default function CharacterSpinner({ character }: { character: string }) {
             {allImgs}
           </Box>
         </Box>
+
         {/* Line */}
-        <Box pos="relative" height={HEIGHT + 21 + "px"}>
+        <Box ref={lineContainerRef} pos="relative" height={HEIGHT + 21 + "px"}>
           <Box
-            pos="absolute"
             bg="gold"
+            pos="absolute"
             left="calc(50% - 1px)"
             w="3px"
             height="100%"
