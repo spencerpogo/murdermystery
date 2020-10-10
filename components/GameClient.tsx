@@ -95,6 +95,10 @@ export default function GameClient({
         )
       );
     },
+    setCharacter: function handleSetCharacter(msg: any) {
+      if (!msg || !msg.value) return;
+      setCharacter(msg.value);
+    },
   };
 
   const parseMessage = (ev: MessageEvent<any>) => {
