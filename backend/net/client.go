@@ -69,6 +69,7 @@ type Client struct {
 
 // Send sends a message to the client
 func (c *Client) Send(msg []byte) {
+	log.Printf("'%s' => %s\n", c.Name, string(msg))
 	select {
 	case c.send <- msg:
 	default:

@@ -4,8 +4,6 @@
 
 package net
 
-import "log"
-
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
@@ -78,7 +76,6 @@ func (h *Hub) Run() {
 				delete(h.Clients, client)
 			}
 		case message := <-h.broadcast:
-			log.Println("[BROADCAST]", string(message), "[/BROADCAST]")
 			for client := range h.Clients {
 				client.Send(message)
 			}
