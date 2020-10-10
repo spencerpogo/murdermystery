@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/core";
 import { useEffect, useRef, useState } from "react";
 
+import CharacterSpinner from "./CharacterSpinner";
 import { EventEmitter } from "events";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
@@ -61,8 +62,9 @@ export default function GameClient({
   const [didDisconnect, setDidDisconnect] = useState<boolean>(false);
   const [isHost, setIsHost] = useState<boolean>(false);
   const [names, setNames] = useState<{ name: string; isHost: boolean }[]>([]);
-
   const [alertContent, setAlertContent] = useState<string | null>(null);
+
+  const [character, setCharacter] = useState<string | null>(null);
 
   const LISTENERS = {
     host: function handleHost(msg: any) {
@@ -179,13 +181,22 @@ export default function GameClient({
       </Alert>
     );
   } else if (ws && ws.readyState == ReadyState.OPEN) {
-    return (
-      <>
+    let view;
+    if (character) {
+      view = <CharacterSpinner character={"Healer"} />;
+    } else {
+      view = (
         <Lobby
           names={names}
           isHost={isHost}
           start={() => rpc("startGame", {})}
         />
+      );
+    }
+
+    return (
+      <>
+        {view}
         <Modal
           onClose={() => setAlertContent(null)}
           isOpen={alertContent != null}
