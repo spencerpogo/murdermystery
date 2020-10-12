@@ -12,7 +12,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import CharacterSpinner from "./CharacterSpinner";
-import { EventEmitter } from "events";
+import { EventEmitter2 } from "eventemitter2";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
 import { forcedTranslate as t } from "../translate";
@@ -50,9 +50,9 @@ export default function GameClient({
 }) {
   const wsRef = useRef<WebSocket | null>(null);
   let ws = wsRef.current;
-  const msgsRef = useRef<EventEmitter | null>(null);
+  const msgsRef = useRef<EventEmitter2 | null>(null);
   if (!msgsRef.current) {
-    msgsRef.current = new EventEmitter();
+    msgsRef.current = new EventEmitter2();
   }
   const msgs = msgsRef.current;
 
