@@ -71,6 +71,7 @@ func (h *Hub) Run() {
 		case client := <-h.unregister:
 			if _, ok := h.Clients[client]; ok {
 				client.conn.Close()
+				client.IsOpen = false
 				close(client.send)
 				go h.handleLeave(client)
 				delete(h.Clients, client)
