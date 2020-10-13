@@ -2,6 +2,7 @@ import GameClient from "../components/GameClient";
 import Layout from "components/Layout";
 import NameSelector from "components/NameSelector";
 import t from "../translate";
+import { useClientOnly } from "components/ClientOnly";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -14,7 +15,7 @@ function useGameContent() {
 
   const nameComponent = <NameSelector onSubmit={(name) => setName(name)} />;
 
-  if (typeof window === "undefined") {
+  if (!useClientOnly()) {
     // When pre-rednering, the id is never set so we don't want the error to be
     //  pre-rendered so pre-render the name component which will be shown the most often
     return nameComponent;
