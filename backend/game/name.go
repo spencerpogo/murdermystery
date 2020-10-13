@@ -18,6 +18,11 @@ var badStrings = []string{
 }
 
 func setNameHandler(client *net.Client, data []byte) error {
+	if len(client.Name) > 0 {
+		// No renames
+		return nil
+	}
+
 	var name string
 	if err := json.Unmarshal(data, &name); err != nil {
 		return err
@@ -31,15 +36,8 @@ func setNameHandler(client *net.Client, data []byte) error {
 	if len(name) == 0 || len(name) > 50 {
 		return fmt.Errorf("Invalid name")
 	}
-	oldName := client.Name
 	client.Name = name
 
-	if oldName != "" && oldName != client.Name {
-		protocol.BroadcastRPC(client.Hub, "rename", map[string]interface{}{
-			"from": oldName,
-			"to":   client.Name,
-		})
-	}
 	protocol.SyncPlayers(client.Hub)
 
 	client.Evt.Emit("named")
