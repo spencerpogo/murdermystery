@@ -8,6 +8,14 @@ import (
 	"github.com/Scoder12/murdermystery/backend/protocol"
 )
 
+func hostExists(h *net.Hub) bool {
+	if h.Host == nil {
+		return false
+	}
+	_, hostExists := h.Clients[h.Host.ID]
+	return hostExists && h.Host.IsOpen
+}
+
 // HandleJoin handles when a client joins a game
 func HandleJoin(client *net.Client) {
 	h := client.Hub
@@ -24,14 +32,10 @@ func HandleJoin(client *net.Client) {
 
 	isHost := false
 	// Is there no host set yet?
-	if h.Host != nil {
-		_, hostExists := h.Clients[h.Host.ID]
-		hostExists = hostExists && h.Host.IsOpen
-		if h.Host == nil || !hostExists {
-			// This player is now the host
-			h.Host = client
-			isHost = true
-		}
+	if !hostExists(h) {
+		// This player is now the host
+		h.Host = client
+		isHost = true
 	}
 
 	protocol.SendRPC(client, "host", map[string]interface{}{"isHost": isHost})

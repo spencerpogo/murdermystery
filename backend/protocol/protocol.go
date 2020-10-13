@@ -3,6 +3,7 @@ package protocol
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/Scoder12/murdermystery/backend/net"
 )
@@ -38,17 +39,19 @@ func BroadcastRPC(hub *net.Hub, name string, data map[string]interface{}) {
 func SyncPlayers(hub *net.Hub) {
 	players := map[int]string{}
 	hostID := -2
-	i := 0
 
 	var p *net.Client
 	for pid := range hub.Clients {
 		p = hub.Clients[pid]
 		if p.IsOpen {
 			players[pid] = p.Name
-			if hub.Host == p {
-				hostID = pid
+			log.Println("Looping:", pid, hub.Host)
+			if hub.Host != nil {
+				log.Println("Host: ", hub.Host.ID, hub.Host.Name)
+				if hub.Host == p {
+					hostID = pid
+				}
 			}
-			i++
 		}
 	}
 	BroadcastRPC(hub, "players", map[string]interface{}{"names": players, "hostID": hostID})
