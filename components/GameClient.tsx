@@ -73,11 +73,14 @@ export default function GameClient({
     },
 
     players: function updatePlayers(msg: any) {
-      if (!msg || !Array.isArray(msg.names)) return;
-      const newNames = msg.names.map((name: string, i: number) => ({
-        name,
-        isHost: msg.hostInd == i,
-      }));
+      if (!msg || !msg.names) return;
+      const newNames = Object.keys(msg.names).map((pid: any, i: number) => {
+        return {
+          pid,
+          name: msg.names[pid],
+          isHost: msg.hostID == pid,
+        };
+      });
       setNames(newNames);
     },
 
