@@ -40,7 +40,10 @@ var CharacterMap = map[int]string{
 func AssignCharacters(h *net.Hub) {
 	// TODO: Figure out real rules for this instead of assigning randomly
 	log.Println("Assigning characters")
-	for c := range h.Clients {
+
+	var c *net.Client
+	for pid := range h.Clients {
+		c = h.Clients[pid]
 		c.Role = rand.Intn(5) + 1 // A random character number, [1,5]
 		protocol.SendRPC(c, "setCharacter", map[string]interface{}{"value": CharacterMap[c.Role]})
 	}

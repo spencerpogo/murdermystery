@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/Scoder12/murdermystery/backend/net"
@@ -43,7 +44,10 @@ func HandleMsg(client *net.Client, msg []byte) {
 func EndGame(hub *net.Hub, reason string) {
 	protocol.BroadcastRPC(hub, "error", map[string]interface{}{"reason": reason})
 	time.Sleep(200 * time.Millisecond)
-	for p := range hub.Clients {
+
+	var p *net.Client
+	for pid := range hub.Clients {
+		p = hub.Clients[pid]
 		if p.IsOpen {
 			p.Close()
 		}
@@ -61,10 +65,19 @@ func HandleLeave(client *net.Client) {
 	}
 
 	if h.Host == client && len(h.Clients) > 0 {
-		// client picked is not guaranteed to be random, but is not predictable either
-		for newHost := range h.Clients {
-			h.Host = newHost
-			protocol.SendRPC(newHost, "host", map[string]interface{}{"isHost": true})
+		// Player IDs are assigned in order, so the lower the id, the earlier they joined
+		// So sort clients by PID and give host to the first one that is online
+		pids := make([]int, 0)
+		for pid := range h.Clients {
+			pids = append(pids, pid)
+		}
+		sort.Ints(pids)
+		for pid := range pids {
+			if !h.Clients[pid].IsOpen {
+				continue
+			}
+			h.Host = h.Clients[pid]
+			protocol.SendRPC(h.Host, "host", map[string]interface{}{"isHost": true})
 			break
 		}
 	}

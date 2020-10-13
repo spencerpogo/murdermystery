@@ -24,12 +24,14 @@ func HandleJoin(client *net.Client) {
 
 	isHost := false
 	// Is there no host set yet?
-	_, hostExists := h.Clients[h.Host]
-	hostExists = hostExists && h.Clients[h.Host]
-	if h.Host == nil || !hostExists {
-		// This player is now the host
-		h.Host = client
-		isHost = true
+	if h.Host != nil {
+		_, hostExists := h.Clients[h.Host.ID]
+		hostExists = hostExists && h.Host.IsOpen
+		if h.Host == nil || !hostExists {
+			// This player is now the host
+			h.Host = client
+			isHost = true
+		}
 	}
 
 	protocol.SendRPC(client, "host", map[string]interface{}{"isHost": isHost})

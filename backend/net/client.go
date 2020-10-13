@@ -46,6 +46,8 @@ var upgrader = websocket.Upgrader{
 type Client struct {
 	Hub *Hub
 
+	ID int
+
 	// The websocket connection.
 	conn *websocket.Conn
 
@@ -84,7 +86,7 @@ func (c *Client) Send(msg []byte) {
 // Close closes the client
 func (c *Client) Close() {
 	c.IsOpen = false
-	c.Hub.unregister <- c
+	c.Hub.unregister <- c.ID
 	c.conn.Close()
 }
 
@@ -168,6 +170,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	}
 	client := &Client{
 		Hub:    hub,
+		ID:     -1,
 		conn:   conn,
 		send:   make(chan []byte, 256),
 		Evt:    &emitter.Emitter{},

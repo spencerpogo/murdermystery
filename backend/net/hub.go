@@ -7,8 +7,11 @@ package net
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
+	// Next player ID to assign so that it is unique
+	nextPlayerID int
+
 	// Registered clients.
-	Clients map[*Client]bool
+	Clients map[int]*Client
 
 	// Inbound messages from the clients.
 	broadcast chan []byte
@@ -16,8 +19,8 @@ type Hub struct {
 	// Register requests from the clients.
 	register chan *Client
 
-	// Unregister requests from clients.
-	unregister chan *Client
+	// Unregister requests from clients, using playerID.
+	unregister chan int
 
 	// Handler for messages from clients
 	handleMsg func(client *Client, data []byte)
@@ -44,15 +47,16 @@ func NewHub(handleMsg func(client *Client, data []byte),
 	handleLeave func(client *Client),
 	handleStart func(hub *Hub)) *Hub {
 	return &Hub{
-		broadcast:   make(chan []byte),
-		register:    make(chan *Client),
-		unregister:  make(chan *Client),
-		Clients:     make(map[*Client]bool),
-		Started:     false,
-		handleMsg:   handleMsg,
-		handleJoin:  handleJoin,
-		handleLeave: handleLeave,
-		HandleStart: handleStart,
+		nextPlayerID: 0,
+		broadcast:    make(chan []byte),
+		register:     make(chan *Client),
+		unregister:   make(chan int),
+		Clients:      make(map[int]*Client),
+		Started:      false,
+		handleMsg:    handleMsg,
+		handleJoin:   handleJoin,
+		handleLeave:  handleLeave,
+		HandleStart:  handleStart,
 	}
 }
 
@@ -66,19 +70,22 @@ func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.register:
-			h.Clients[client] = true
+			pid := h.nextPlayerID
+			h.nextPlayerID++
+			client.ID = pid
+			h.Clients[h.nextPlayerID] = client
 			go h.handleJoin(client)
-		case client := <-h.unregister:
-			if _, ok := h.Clients[client]; ok {
+		case pid := <-h.unregister:
+			if client, ok := h.Clients[pid]; ok {
 				client.conn.Close()
 				client.IsOpen = false
 				close(client.send)
 				go h.handleLeave(client)
-				delete(h.Clients, client)
+				delete(h.Clients, pid)
 			}
 		case message := <-h.broadcast:
-			for client := range h.Clients {
-				client.Send(message)
+			for pid := range h.Clients {
+				h.Clients[pid].Send(message)
 			}
 		}
 	}
