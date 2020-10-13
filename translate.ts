@@ -20,7 +20,7 @@ export default function translate(k: string, force: boolean = false): string {
       if (translations[k]) {
         return translations[k];
       } else {
-        console.error("Untranslated phrase:", k);
+        console.error(new Error("Untranslated phrase: " + k));
         return k;
       }
     }
