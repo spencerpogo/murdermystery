@@ -1,10 +1,11 @@
-package protocol
+package game
 
 import (
 	"log"
 	"time"
 
 	"github.com/Scoder12/murdermystery/backend/net"
+	"github.com/Scoder12/murdermystery/backend/protocol"
 )
 
 // HandleJoin handles when a client joins a game
@@ -12,14 +13,14 @@ func HandleJoin(client *net.Client) {
 	h := client.Hub
 
 	if h.Started {
-		SendRPC(client, "handshake", map[string]interface{}{"error": "started"})
+		protocol.SendRPC(client, "handshake", map[string]interface{}{"error": "started"})
 		// If we close too early, the message won't get sent
 		time.Sleep(300 * time.Millisecond)
 		client.Close()
 		return
 	}
 
-	SendRPC(client, "handshake", map[string]interface{}{})
+	protocol.SendRPC(client, "handshake", map[string]interface{}{})
 
 	isHost := false
 	// Is there no host set yet?
@@ -31,7 +32,7 @@ func HandleJoin(client *net.Client) {
 		isHost = true
 	}
 
-	SendRPC(client, "host", map[string]interface{}{"isHost": isHost})
+	protocol.SendRPC(client, "host", map[string]interface{}{"isHost": isHost})
 
 	select {
 	case <-time.After(2 * time.Second):

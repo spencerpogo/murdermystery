@@ -1,9 +1,10 @@
-package protocol
+package game
 
 import (
 	"log"
 
 	"github.com/Scoder12/murdermystery/backend/net"
+	"github.com/Scoder12/murdermystery/backend/protocol"
 )
 
 func startGameHandler(client *net.Client, d []byte) error {
@@ -23,7 +24,7 @@ func startGameHandler(client *net.Client, d []byte) error {
 		}
 	}
 	if online < 6 {
-		SendRPC(client, "alert", map[string]interface{}{"msg": "notEnoughPlayers"})
+		protocol.SendRPC(client, "alert", map[string]interface{}{"msg": "notEnoughPlayers"})
 		return nil
 	}
 

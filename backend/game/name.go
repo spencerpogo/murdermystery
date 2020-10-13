@@ -1,4 +1,4 @@
-package protocol
+package game
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/Scoder12/murdermystery/backend/net"
+	"github.com/Scoder12/murdermystery/backend/protocol"
 )
 
 // Treat like const!
@@ -34,12 +35,12 @@ func setNameHandler(client *net.Client, data []byte) error {
 	client.Name = name
 
 	if oldName != "" && oldName != client.Name {
-		client.Hub.Broadcast(SerializeRPC("rename", map[string]interface{}{
+		protocol.BroadcastRPC(client.Hub, "rename", map[string]interface{}{
 			"from": oldName,
 			"to":   client.Name,
-		}))
+		})
 	}
-	syncPlayers(client.Hub)
+	protocol.SyncPlayers(client.Hub)
 
 	client.Evt.Emit("named")
 
