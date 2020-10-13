@@ -40,11 +40,10 @@ func HandleJoin(client *net.Client) {
 
 	protocol.SendRPC(client, "host", map[string]interface{}{"isHost": isHost})
 
-	select {
-	case <-time.After(2 * time.Second):
+	time.Sleep(2 * time.Second)
+
+	if len(client.Name) == 0 {
 		log.Println("Client did not name themself, closing")
 		client.Close()
-	case <-client.Evt.Once("named"):
-		break
 	}
 }

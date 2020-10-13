@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/olebedev/emitter"
 )
 
 const (
@@ -59,9 +58,6 @@ type Client struct {
 
 	// IsOpen is whether the client is open
 	IsOpen bool
-
-	// Event Emitter for this client
-	Evt *emitter.Emitter
 
 	// The Character this player has
 	Role int
@@ -173,7 +169,6 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		ID:     -1,
 		conn:   conn,
 		send:   make(chan []byte, 256),
-		Evt:    &emitter.Emitter{},
 		IsOpen: true,
 		Role:   0,
 	}
