@@ -52,7 +52,6 @@ func genCharacterArray(numPlayers int) []Role {
 	for i := 0; i < numWolves; i++ {
 		res = append(res, Werewolf)
 	}
-	log.Println(numPlayers, len(res), res)
 	return res
 }
 
@@ -73,10 +72,12 @@ func AssignCharacters(h *net.Hub) {
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(roles), func(i, j int) { roles[i], roles[j] = roles[j], roles[i] })
 
+	var i int = 0
 	var c *net.Client
 	for pid := range h.Clients {
 		c = h.Clients[pid]
-		c.Role = rand.Intn(5) + 1 // A random character number, [1,5]
+		c.Role = int(roles[i])
+		i++
 		protocol.SendRPC(c, "setCharacter", map[string]interface{}{"value": CharacterMap[c.Role]})
 	}
 }
