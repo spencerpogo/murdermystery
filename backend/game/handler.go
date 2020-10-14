@@ -42,6 +42,11 @@ func HandleMsg(client *net.Client, msg []byte) {
 
 // EndGame ends the game
 func EndGame(hub *net.Hub, reason string) {
+	if !hub.Started {
+		return
+	}
+	hub.Started = false
+
 	protocol.BroadcastRPC(hub, "error", map[string]interface{}{"reason": reason})
 	time.Sleep(200 * time.Millisecond)
 
