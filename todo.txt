@@ -1,2 +1,2 @@
-- Add spinner from https://repl.it/@Scoder12/NiftyHandmadeMultiprocessing
-- Add https://github.com/EventEmitter2/EventEmitter2
+- Refactor server RPC format to be type:<JSON blob>
+- Add SendAndClose functionality
