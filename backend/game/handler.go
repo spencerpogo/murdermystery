@@ -73,7 +73,8 @@ func HandleLeave(client *net.Client) {
 		}
 		sort.Ints(pids)
 		for pid := range pids {
-			if !h.Clients[pid].IsOpen {
+			c, ok := h.Clients[pid]
+			if !ok || !c.IsOpen {
 				continue
 			}
 			h.Host = h.Clients[pid]
