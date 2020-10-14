@@ -24,7 +24,7 @@ export default function MainMenu({ t }: { t: (id: string) => string }) {
   return (
     <>
       <Box>
-        <Heading mb="6">
+        <Heading mb="6" minHeight="1em">
           <Text color="red.700">{t("Murder Mystery")}</Text>
         </Heading>
         <Stack>
