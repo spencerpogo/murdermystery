@@ -1,4 +1,4 @@
-import { Box, Image } from "@chakra-ui/core";
+import { Box, Flex, Heading, Image, Text } from "@chakra-ui/core";
 import {
   MutableRefObject,
   ReactNode,
@@ -6,6 +6,8 @@ import {
   useRef,
   useState,
 } from "react";
+
+import { forcedTranslate as t } from "../translate";
 
 const filenames = [
   "citizen.png",
@@ -71,8 +73,10 @@ enum Stage {
 }
 
 export default function CharacterSpinner({ character }: { character: string }) {
-  const card_ind = filenames.indexOf(character.toLowerCase() + ".png");
+  character = character.toLowerCase();
+  const card_ind = filenames.indexOf(character + ".png");
   if (card_ind == -1) throw new Error("Invalid character: " + character);
+  const filename = filenames[card_ind];
 
   const [stage, setStage] = useState<Stage>(Stage.waiting);
   const [shouldAnimate, setShouldAnimate] = useState<boolean>(true);
@@ -95,9 +99,9 @@ export default function CharacterSpinner({ character }: { character: string }) {
         setStage(Stage.spinning);
       }, 2000);
     } else if (stage == Stage.spinning) {
-      /*timeoutId = setTimeout(() => {
+      timeoutId = setTimeout(() => {
         setStage(Stage.done);
-      }, 11000);*/
+      }, 11000);
     }
 
     return () => clearTimeout(timeoutId);
@@ -160,6 +164,20 @@ export default function CharacterSpinner({ character }: { character: string }) {
       </>
     );
   } else {
-    return <p>TODO</p>;
+    return (
+      <>
+        <Flex width="full" justify="center">
+          <Text color="gray">{t("You are")}</Text>
+        </Flex>
+        <Flex width="full" justify="center">
+          <Heading>
+            {t(character[0].toUpperCase() + character.slice(1))}
+          </Heading>
+        </Flex>
+        <Flex width="full" justify="center">
+          <Image src={"/" + filename} height="2xl" />
+        </Flex>
+      </>
+    );
   }
 }
