@@ -45,7 +45,7 @@ func SyncPlayers(hub *net.Hub) {
 		p = hub.Clients[pid]
 		if p.IsOpen && len(p.Name) > 0 {
 			players[pid] = p.Name
-			log.Println("Looping:", pid, hub.Host)
+			log.Println("Looping:", pid, p.Name)
 			if hub.Host != nil {
 				log.Println("Host: ", hub.Host.ID, hub.Host.Name)
 				if hub.Host == p {
