@@ -73,7 +73,7 @@ func (h *Hub) Run() {
 			pid := h.nextPlayerID
 			h.nextPlayerID++
 			client.ID = pid
-			h.Clients[h.nextPlayerID] = client
+			h.Clients[pid] = client
 			go h.handleJoin(client)
 		case pid := <-h.unregister:
 			if client, ok := h.Clients[pid]; ok {
