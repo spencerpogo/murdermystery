@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -45,7 +46,11 @@ var upgrader = websocket.Upgrader{
 type Client struct {
 	Hub *Hub
 
+	// The ID of the client
 	ID int
+
+	// The mutex for this client
+	mu sync.Mutex
 
 	// The websocket connection.
 	conn *websocket.Conn
@@ -54,36 +59,83 @@ type Client struct {
 	send chan []byte
 
 	// Name is the name of the player
-	Name string
+	name string
 
-	// IsOpen is whether the client is open
-	IsOpen bool
+	// isOpen is whether the client is open
+	isOpen bool
 
 	// The Character this player has
-	Role int
+	role int
 }
 
 // Exported Functions
 
+func (c *Client) _close() {
+	c.Hub.unregister <- c.ID
+	c.conn.Close()
+}
+
 // Send sends a message to the client
 func (c *Client) Send(msg []byte) {
-	if !c.IsOpen {
-		c.Close()
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if !c.isOpen {
+		c._close()
 		return
 	}
-	log.Printf("'%s' => %s\n", c.Name, string(msg))
-	select {
-	case c.send <- msg:
-	default:
-		c.Close()
-	}
+	log.Printf("%s < %s\n", c.name, string(msg))
+	c.send <- msg
 }
 
 // Close closes the client
 func (c *Client) Close() {
-	c.IsOpen = false
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.isOpen = false
 	c.Hub.unregister <- c.ID
 	c.conn.Close()
+}
+
+// IsOpen returns whether the client is open
+func (c *Client) IsOpen() bool {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.isOpen && len(c.name) > 0
+}
+
+// SetIsOpen sets isOpen
+func (c *Client) SetIsOpen(val bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.isOpen = val
+}
+
+// Name returns name
+func (c *Client) Name() string {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.name
+}
+
+// SetName sets name
+func (c *Client) SetName(val string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.name = val
+}
+
+// Role returns role
+func (c *Client) Role() int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.role
+}
+
+// SetRole sets role
+func (c *Client) SetRole(val int) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.role = val
 }
 
 // WebSocket Internal Message Handling
@@ -167,10 +219,12 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	client := &Client{
 		Hub:    hub,
 		ID:     -1,
+		mu:     sync.Mutex{},
 		conn:   conn,
 		send:   make(chan []byte, 256),
-		IsOpen: true,
-		Role:   0,
+		isOpen: true,
+		name:   "",
+		role:   0,
 	}
 	client.Hub.register <- client
 

@@ -13,7 +13,7 @@ func hostExists(h *net.Hub) bool {
 		return false
 	}
 	_, hostExists := h.Clients[h.Host.ID]
-	return hostExists && h.Host.IsOpen
+	return hostExists && h.Host.IsOpen()
 }
 
 // HandleJoin handles when a client joins a game
@@ -41,7 +41,7 @@ func HandleJoin(client *net.Client) {
 	protocol.SendRPC(client, "host", map[string]interface{}{"isHost": isHost})
 
 	time.AfterFunc(2*time.Second, func() {
-		if len(client.Name) == 0 {
+		if !client.IsOpen() {
 			log.Println("Client did not name themself, closing")
 			client.Close()
 		}

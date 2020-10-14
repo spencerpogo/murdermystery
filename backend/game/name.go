@@ -18,7 +18,7 @@ var badStrings = []string{
 }
 
 func setNameHandler(client *net.Client, data []byte) error {
-	if len(client.Name) > 0 {
+	if len(client.Name()) > 0 {
 		// No renames
 		return nil
 	}
@@ -36,7 +36,7 @@ func setNameHandler(client *net.Client, data []byte) error {
 	if len(name) == 0 || len(name) > 50 {
 		return fmt.Errorf("Invalid name")
 	}
-	client.Name = name
+	client.SetName(name)
 
 	protocol.SyncPlayers(client.Hub)
 

@@ -63,7 +63,7 @@ func AssignCharacters(h *net.Hub) {
 	numPlayers := 0
 	for pid := range h.Clients {
 		c, ok := h.Clients[pid]
-		if ok && c.IsOpen && len(c.Name) > 0 {
+		if ok && c.IsOpen() {
 			numPlayers++
 		}
 	}
@@ -76,9 +76,10 @@ func AssignCharacters(h *net.Hub) {
 	var c *net.Client
 	for pid := range h.Clients {
 		c = h.Clients[pid]
-		c.Role = int(roles[i])
+		role := int(roles[i])
+		c.SetRole(role)
+		protocol.SendRPC(c, "setCharacter", map[string]interface{}{"value": CharacterMap[role]})
 		i++
-		protocol.SendRPC(c, "setCharacter", map[string]interface{}{"value": CharacterMap[c.Role]})
 	}
 }
 

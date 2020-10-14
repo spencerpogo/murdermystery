@@ -77,8 +77,8 @@ func (h *Hub) Run() {
 			go h.handleJoin(client)
 		case pid := <-h.unregister:
 			if client, ok := h.Clients[pid]; ok {
-				client.conn.Close()
-				client.IsOpen = false
+				client.mu.Lock()
+				client._close()
 				close(client.send)
 				go h.handleLeave(client)
 				delete(h.Clients, pid)

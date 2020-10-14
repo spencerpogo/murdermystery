@@ -19,7 +19,8 @@ func startGameHandler(client *net.Client, d []byte) error {
 	}
 	online := 0
 	for pid := range client.Hub.Clients {
-		if client.Hub.Clients[pid].IsOpen {
+		c, ok := client.Hub.Clients[pid]
+		if ok && c.IsOpen() {
 			online++
 		}
 	}

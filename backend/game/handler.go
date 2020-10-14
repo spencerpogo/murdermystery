@@ -53,7 +53,7 @@ func EndGame(hub *net.Hub, reason string) {
 	var p *net.Client
 	for pid := range hub.Clients {
 		p = hub.Clients[pid]
-		if p.IsOpen {
+		if p.IsOpen() {
 			p.Close()
 		}
 	}
@@ -79,7 +79,7 @@ func HandleLeave(client *net.Client) {
 		sort.Ints(pids)
 		for pid := range pids {
 			c, ok := h.Clients[pid]
-			if !ok || !c.IsOpen {
+			if !ok || !c.IsOpen() {
 				continue
 			}
 			h.Host = h.Clients[pid]
