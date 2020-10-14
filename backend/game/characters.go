@@ -2,7 +2,9 @@ package game
 
 import (
 	"log"
+	"math"
 	"math/rand"
+	"time"
 
 	"github.com/Scoder12/murdermystery/backend/net"
 	"github.com/Scoder12/murdermystery/backend/protocol"
@@ -36,10 +38,40 @@ var CharacterMap = map[int]string{
 	5: "Hunter",
 }
 
+func genCharacterArray(numPlayers int) []Role {
+	// There is one healer and one prophet always
+	res := []Role{Healer, Prophet}
+	var numCits int = int(math.Floor(float64(numPlayers-2) / 2.0))
+	var numWolves int = (numPlayers - 2) - numCits
+
+	log.Println("2 special", numCits, "citizen", numWolves, "wolves")
+
+	for i := 0; i < numCits; i++ {
+		res = append(res, Citizen)
+	}
+	for i := 0; i < numWolves; i++ {
+		res = append(res, Werewolf)
+	}
+	log.Println(numPlayers, len(res), res)
+	return res
+}
+
 // AssignCharacters assigns a character to each player
 func AssignCharacters(h *net.Hub) {
 	// TODO: Figure out real rules for this instead of assigning randomly
 	log.Println("Assigning characters")
+
+	numPlayers := 0
+	for pid := range h.Clients {
+		c, ok := h.Clients[pid]
+		if ok && c.IsOpen && len(c.Name) > 0 {
+			numPlayers++
+		}
+	}
+	roles := genCharacterArray(numPlayers)
+	// shuffle
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(roles), func(i, j int) { roles[i], roles[j] = roles[j], roles[i] })
 
 	var c *net.Client
 	for pid := range h.Clients {
