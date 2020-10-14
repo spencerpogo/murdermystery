@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/Scoder12/murdermystery/backend/game"
@@ -14,7 +15,7 @@ import (
 
 // MakeServer definies HTTP handlers and returns an HTTP server
 func MakeServer(iface string) *http.Server {
-	games := make(map[string]*net.Hub)
+	var games sync.Map
 
 	r := mux.NewRouter()
 	// routes
@@ -26,17 +27,24 @@ func MakeServer(iface string) *http.Server {
 
 		log.Printf("New connection to id %s\n", gid)
 
-		if _, exists := games[gid]; !exists {
+		var hub *net.Hub
+		var exists bool
+		var loaded interface{}
+
+		if loaded, exists = games.Load(gid); exists {
+			hub = loaded.(*net.Hub)
+		} else {
 			log.Println("Creating new server: ", gid)
-			games[gid] = net.NewHub(
+			hub = net.NewHub(
 				game.HandleMsg,
 				game.HandleJoin,
 				game.HandleLeave,
 				game.HandleStart)
-			go games[gid].Run()
+			games.Store(gid, hub)
+			go hub.Run()
 		}
 
-		net.ServeWs(games[gid], w, r)
+		net.ServeWs(hub, w, r)
 	})
 	// use mux
 	http.Handle("/", r)
