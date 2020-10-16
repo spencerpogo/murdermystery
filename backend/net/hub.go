@@ -4,14 +4,21 @@
 
 package net
 
+import (
+	"fmt"
+	"sync"
+)
+
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
 	// Next player ID to assign so that it is unique
 	nextPlayerID int
 
+	mu sync.Mutex
+
 	// Registered clients.
-	Clients map[int]*Client
+	clients map[int]*Client
 
 	// Inbound messages from the clients.
 	broadcast chan []byte
@@ -29,30 +36,32 @@ type Hub struct {
 	handleJoin func(client *Client)
 
 	// Handler for leaves
-	handleLeave func(client *Client)
+	handleLeave func(hub *Hub, wasHost bool)
 
 	// Handler for when the game starts
 	HandleStart func(hub *Hub)
 
 	// Whether the game has started and can no longer accept players
-	Started bool
+	started bool
 
 	// The host of the game
-	Host *Client
+	host *Client
 }
 
 // NewHub creates a new *Hub object
-func NewHub(handleMsg func(client *Client, data []byte),
+func NewHub(
+	handleMsg func(client *Client, data []byte),
 	handleJoin func(client *Client),
-	handleLeave func(client *Client),
+	handleLeave func(hub *Hub, wasHost bool),
 	handleStart func(hub *Hub)) *Hub {
 	return &Hub{
 		nextPlayerID: 0,
+		mu:           sync.Mutex{},
 		broadcast:    make(chan []byte),
 		register:     make(chan *Client),
 		unregister:   make(chan int),
-		Clients:      make(map[int]*Client),
-		Started:      false,
+		clients:      make(map[int]*Client),
+		started:      false,
 		handleMsg:    handleMsg,
 		handleJoin:   handleJoin,
 		handleLeave:  handleLeave,
@@ -65,28 +74,117 @@ func (h *Hub) Broadcast(msg []byte) {
 	h.broadcast <- msg
 }
 
+// Started gets started
+func (h *Hub) Started() bool {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	return h.started && len(h.clients) > 0
+}
+
+// SetStarted sets started
+func (h *Hub) SetStarted(val bool) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.started = val
+}
+
+// Host gets host
+func (h *Hub) Host() *Client {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	return h.host
+}
+
+// SetHost sets host
+func (h *Hub) SetHost(val *Client) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.host = val
+}
+
+// HasClient returns whether or not the pid given exists and is online
+func (h *Hub) HasClient(pid int) bool {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	c, ok := h.clients[pid]
+	if !ok {
+		return false
+	}
+	return c.IsOpen()
+}
+
+// GetClient gets a client by pid
+func (h *Hub) GetClient(pid int) (*Client, error) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	c, ok := h.clients[pid]
+	if !ok {
+		return nil, fmt.Errorf("No such pid")
+	}
+	return c, nil
+}
+
+// EachOnline calls a function for each online client
+func (h *Hub) EachOnline(callback func(c *Client)) {
+	h.mu.Lock()
+
+	// Although caching the clients is not ideal,
+	//  we must release the lock before calling the callback because otherwise the
+	//  callback can't use anything that requires the lock
+	clients := []*Client{}
+
+	for pid := range h.clients {
+		c, ok := h.clients[pid]
+		if ok && c.IsOpen() {
+			clients = append(clients, c)
+		}
+	}
+
+	h.mu.Unlock()
+
+	for i := range clients {
+		callback(clients[i])
+	}
+}
+
+func (h *Hub) setClient(pid int, c *Client) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	h.clients[pid] = c
+}
+
 // Run is a goroutine that starts the Hub's event loop
 func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.register:
+			h.mu.Lock()
+			client.mu.Lock()
 			pid := h.nextPlayerID
 			h.nextPlayerID++
 			client.ID = pid
-			h.Clients[pid] = client
+			h.clients[pid] = client
 			go h.handleJoin(client)
+			client.mu.Unlock()
+			h.mu.Unlock()
 		case pid := <-h.unregister:
-			if client, ok := h.Clients[pid]; ok {
+			h.mu.Lock()
+			if client, ok := h.clients[pid]; ok {
+				// Prevent any further actions on this client
 				client.mu.Lock()
-				client._close()
+
+				client.isOpen = false
+				client.conn.Close()
 				close(client.send)
-				go h.handleLeave(client)
-				delete(h.Clients, pid)
+				delete(h.clients, pid)
+				go h.handleLeave(h, h.host == client)
 			}
+			h.mu.Unlock()
 		case message := <-h.broadcast:
-			for pid := range h.Clients {
-				h.Clients[pid].Send(message)
-			}
+			h.EachOnline(func(c *Client) {
+				c.Send(message)
+			})
 		}
 	}
 }

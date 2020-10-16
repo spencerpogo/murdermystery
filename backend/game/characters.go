@@ -61,26 +61,25 @@ func AssignCharacters(h *net.Hub) {
 	log.Println("Assigning characters")
 
 	numPlayers := 0
-	for pid := range h.Clients {
-		c, ok := h.Clients[pid]
-		if ok && c.IsOpen() {
-			numPlayers++
-		}
-	}
+	h.EachOnline(func(c *net.Client) {
+		numPlayers++
+	})
 	roles := genCharacterArray(numPlayers)
 	// shuffle
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(roles), func(i, j int) { roles[i], roles[j] = roles[j], roles[i] })
 
 	var i int = 0
-	var c *net.Client
-	for pid := range h.Clients {
-		c = h.Clients[pid]
+	h.EachOnline(func(c *net.Client) {
+		// Would like to generate roles lazily in this loop,
+		//  but would be hard to make it both random and assign the correct amount.
+		// No one is allows to join/leave so the role array method works fine
+
 		role := int(roles[i])
 		c.SetRole(role)
 		protocol.SendRPC(c, "setCharacter", map[string]interface{}{"value": CharacterMap[role]})
 		i++
-	}
+	})
 }
 
 // HandleStart is called when a game is starting

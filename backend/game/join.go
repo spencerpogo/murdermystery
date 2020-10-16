@@ -9,18 +9,18 @@ import (
 )
 
 func hostExists(h *net.Hub) bool {
-	if h.Host == nil {
+	host := h.Host()
+	if host == nil {
 		return false
 	}
-	_, hostExists := h.Clients[h.Host.ID]
-	return hostExists && h.Host.IsOpen()
+	return h.HasClient(host.ID)
 }
 
 // HandleJoin handles when a client joins a game
 func HandleJoin(client *net.Client) {
 	h := client.Hub
 
-	if h.Started {
+	if h.Started() {
 		protocol.SendRPC(client, "handshake", map[string]interface{}{"error": "started"})
 		// If we close too early, the message won't get sent
 		time.Sleep(300 * time.Millisecond)
@@ -34,7 +34,7 @@ func HandleJoin(client *net.Client) {
 	// Is there no host set yet?
 	if !hostExists(h) {
 		// This player is now the host
-		h.Host = client
+		h.SetHost(client)
 		isHost = true
 	}
 

@@ -70,17 +70,12 @@ type Client struct {
 
 // Exported Functions
 
-func (c *Client) _close() {
-	c.Hub.unregister <- c.ID
-	c.conn.Close()
-}
-
 // Send sends a message to the client
 func (c *Client) Send(msg []byte) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if !c.isOpen {
-		c._close()
+		c.Hub.unregister <- c.ID
 		return
 	}
 	log.Printf("%s < %s\n", c.name, string(msg))
@@ -89,11 +84,8 @@ func (c *Client) Send(msg []byte) {
 
 // Close closes the client
 func (c *Client) Close() {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.isOpen = false
+	log.Println("Close called")
 	c.Hub.unregister <- c.ID
-	c.conn.Close()
 }
 
 // IsOpen returns whether the client is open
@@ -153,14 +145,15 @@ func (c *Client) readPump() {
 	for {
 		_, message, err := c.conn.ReadMessage()
 		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("error: %v", err)
-			}
+			//if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+			log.Printf("error: %v", err)
+			//}
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		go c.Hub.handleMsg(c, message)
 	}
+	log.Println("readPump exiting")
 }
 
 // writePump pumps messages from the hub to the websocket connection.
@@ -217,16 +210,16 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	client := &Client{
-		Hub:    hub,
-		ID:     -1,
-		mu:     sync.Mutex{},
+		Hub: hub,
+		ID:  -1,
+		//mu:     sync.Mutex{},
 		conn:   conn,
 		send:   make(chan []byte, 256),
 		isOpen: true,
 		name:   "",
 		role:   0,
 	}
-	client.Hub.register <- client
+	hub.register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.

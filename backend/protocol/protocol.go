@@ -37,23 +37,22 @@ func BroadcastRPC(hub *net.Hub, name string, data map[string]interface{}) {
 
 // SyncPlayers syncs the server's playerset with the clients
 func SyncPlayers(hub *net.Hub) {
+	log.Println("Starting to sync players")
 	players := map[int]string{}
 	hostID := -2
 
-	var p *net.Client
-	for pid := range hub.Clients {
-		p = hub.Clients[pid]
-		if p.IsOpen() {
-			name := p.Name()
-			players[pid] = name
-			log.Println("Looping:", pid, name)
-			if hub.Host != nil {
-				log.Println("Host: ", hub.Host.ID, hub.Host.Name())
-				if hub.Host == p {
-					hostID = pid
-				}
+	hub.EachOnline(func(c *net.Client) {
+		name := c.Name()
+		players[c.ID] = name
+		log.Println("Looping:", c.ID, name)
+		host := hub.Host()
+		if host != nil {
+			log.Println("Host: ", host.ID, host.Name())
+			if host == c {
+				hostID = c.ID
 			}
 		}
-	}
+	})
+	log.Println("Sending broadcast")
 	BroadcastRPC(hub, "players", map[string]interface{}{"names": players, "hostID": hostID})
 }

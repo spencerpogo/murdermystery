@@ -3,6 +3,7 @@ package game
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/Scoder12/murdermystery/backend/net"
@@ -23,6 +24,7 @@ func setNameHandler(client *net.Client, data []byte) error {
 		return nil
 	}
 
+	log.Println("Handling setName request")
 	var name string
 	if err := json.Unmarshal(data, &name); err != nil {
 		return err

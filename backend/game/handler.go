@@ -28,7 +28,7 @@ func callHandler(c *net.Client, op int, d []byte) error {
 
 // HandleMsg handles a message from a client
 func HandleMsg(client *net.Client, msg []byte) {
-	log.Printf("Got message: %s\n", string(msg))
+	log.Printf("%s > %s\n", client.Name(), string(msg))
 	opcode, msgRest, err := protocol.DecodeMsg(msg)
 	if err != nil {
 		return
@@ -42,52 +42,45 @@ func HandleMsg(client *net.Client, msg []byte) {
 
 // EndGame ends the game
 func EndGame(hub *net.Hub, reason string) {
-	if !hub.Started {
+	if !hub.Started() {
 		return
 	}
-	hub.Started = false
+	hub.SetStarted(false)
 
 	protocol.BroadcastRPC(hub, "error", map[string]interface{}{"reason": reason})
 	time.Sleep(200 * time.Millisecond)
 
-	var p *net.Client
-	for pid := range hub.Clients {
-		p = hub.Clients[pid]
-		if p.IsOpen() {
-			p.Close()
-		}
-	}
+	hub.EachOnline(func(c *net.Client) {
+		c.Close()
+	})
 }
 
 // HandleLeave handles when a client connection is closed
-func HandleLeave(client *net.Client) {
+func HandleLeave(h *net.Hub, wasHost bool) {
 	// TODO: check for game over here
 	log.Println("Close received")
-	h := client.Hub
 
-	if h.Started {
+	if h.Started() {
 		EndGame(h, "disconnect")
 	}
 
-	if h.Host == client && len(h.Clients) > 0 {
+	if wasHost {
 		// Player IDs are assigned in order, so the lower the id, the earlier they joined
 		// So sort clients by PID and give host to the first one that is online
 		pids := make([]int, 0)
-		for pid := range h.Clients {
-			pids = append(pids, pid)
-		}
+		h.EachOnline(func(c *net.Client) {
+			pids = append(pids, c.ID)
+		})
 		sort.Ints(pids)
 		for pid := range pids {
-			c, ok := h.Clients[pid]
-			if !ok || !c.IsOpen() {
+			c, err := h.GetClient(pid)
+			if err != nil {
 				continue
 			}
-			h.Host = h.Clients[pid]
-			protocol.SendRPC(h.Host, "host", map[string]interface{}{"isHost": true})
+			h.SetHost(c)
+			protocol.SendRPC(c, "host", map[string]interface{}{"isHost": true})
 			break
 		}
 	}
-	if !h.Started {
-		protocol.SyncPlayers(client.Hub)
-	}
+	protocol.SyncPlayers(h)
 }
