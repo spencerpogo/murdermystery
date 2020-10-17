@@ -3,84 +3,92 @@ package game
 import (
 	"fmt"
 	"log"
-	"sort"
 	"time"
 
-	"github.com/Scoder12/murdermystery/backend/net"
 	"github.com/Scoder12/murdermystery/backend/protocol"
+	"gopkg.in/olahol/melody.v1"
 )
 
-const (
-	setName   = 0
-	startGame = 1
-)
+func (g *Game) handleJoin(s *melody.Session) {
+	g.lock.Lock()
+	defer g.lock.Unlock()
 
-func callHandler(c *net.Client, op int, d []byte) error {
+	if g.started {
+		s.Write(protocol.SerializeRPC("handshake", map[string]interface{}{"error": "started"}))
+		time.Sleep(200 * time.Millisecond) // Allow plenty of time for the message to send
+		s.Close()
+		return
+	}
+
+	c := &Client{ID: g.nextID}
+	g.nextID++
+	g.clients[s] = c
+
+	s.Write(protocol.SerializeRPC("handshake", map[string]interface{}{}))
+
+	// For efficiency, the timer will be stopped if the client discconects fast enough
+	c.closeTimer = time.AfterFunc(2*time.Second, func() {
+		g.lock.Lock()
+		defer g.lock.Unlock()
+
+		if len(c.name) == 0 {
+			log.Printf("[%v] Did not name, closing\n", c.ID)
+			s.Close()
+		}
+	})
+
+	g.updateHost()
+}
+
+func (g *Game) handleDisconnect(s *melody.Session) {
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
+	c, ok := g.clients[s]
+	if ok {
+		log.Printf("[%v] Disconnected\n", c.ID)
+	}
+
+	if g.started {
+		log.Println("Stopping game")
+		g.End("disconnect")
+	}
+
+	if c != nil && c.closeTimer != nil {
+		log.Println("Stopping timer")
+		c.closeTimer.Stop()
+	}
+}
+
+func (g *Game) callHandler(s *melody.Session, c *Client, op int, d []byte) error {
 	switch op {
-	case setName:
-		return setNameHandler(c, d)
-	case startGame:
-		return startGameHandler(c, d)
+	case 0:
+		g.setNameHandler(s, c, d)
+		return nil
+	case 1:
+		g.startGameHandler(s, c, d)
+		return nil
 	default:
 		return fmt.Errorf("Unrecognized op")
 	}
 }
 
 // HandleMsg handles a message from a client
-func HandleMsg(client *net.Client, msg []byte) {
-	log.Printf("%s > %s\n", client.Name(), string(msg))
-	opcode, msgRest, err := protocol.DecodeMsg(msg)
-	if err != nil {
-		return
-	}
-	err = callHandler(client, opcode, msgRest)
-	if err != nil {
-		log.Println(err)
-		client.Close()
-	}
-}
+func (g *Game) handleMsg(s *melody.Session, msg []byte) {
+	g.lock.Lock()
+	c, ok := g.clients[s]
+	g.lock.Unlock()
 
-// EndGame ends the game
-func EndGame(hub *net.Hub, reason string) {
-	if !hub.Started() {
-		return
-	}
-	hub.SetStarted(false)
-
-	protocol.BroadcastRPC(hub, "error", map[string]interface{}{"reason": reason})
-	time.Sleep(200 * time.Millisecond)
-
-	hub.EachOnline(func(c *net.Client) {
-		c.Close()
-	})
-}
-
-// HandleLeave handles when a client connection is closed
-func HandleLeave(h *net.Hub, wasHost bool) {
-	// TODO: check for game over here
-	log.Println("Close received")
-
-	if h.Started() {
-		EndGame(h, "disconnect")
-	}
-
-	if wasHost {
-		// Player IDs are assigned in order, so the lower the id, the earlier they joined
-		// So sort clients by PID and give host to the first one that is online
-		pids := make([]int, 0)
-		h.EachOnline(func(c *net.Client) {
-			pids = append(pids, c.ID)
-		})
-		sort.Ints(pids)
-		for pid := range pids {
-			c, err := h.GetClient(pid)
-			if err != nil {
-				continue
-			}
-			h.SetHost(c)
-			protocol.SendRPC(c, "host", map[string]interface{}{"isHost": true})
-			break
+	if ok {
+		log.Printf("[%v] ↑ %s\n", c.ID, string(msg))
+		opcode, msgRest, err := protocol.DecodeMsg(msg)
+		if err != nil {
+			return
+		}
+		err = g.callHandler(s, c, opcode, msgRest)
+		if err != nil {
+			log.Println(err)
+			s.Close()
 		}
 	}
-	protocol.SyncPlayers(h)
 }

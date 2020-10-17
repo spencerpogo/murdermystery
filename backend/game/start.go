@@ -3,33 +3,42 @@ package game
 import (
 	"log"
 
-	"github.com/Scoder12/murdermystery/backend/net"
 	"github.com/Scoder12/murdermystery/backend/protocol"
+
+	"gopkg.in/olahol/melody.v1"
 )
 
-func startGameHandler(client *net.Client, d []byte) error {
-	// d is ignored.
-	if client.Hub.Host() != client {
+func (g *Game) startGameHandler(s *melody.Session, c *Client, d []byte) {
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
+	if g.host == nil || g.host != s {
 		// They are unauthorized, ignore
-		return nil
+		return
 	}
-	if client.Hub.Started() {
+	if g.started {
 		// already started, ignore
-		return nil
+		return
 	}
 	online := 0
-	client.Hub.EachOnline(func(c *net.Client) {
-		online++
-	})
+	for s := range g.clients {
+		if s != nil && !s.IsClosed() {
+			online++
+		}
+	}
 	if online < 6 {
-		protocol.SendRPC(client, "alert", map[string]interface{}{"msg": "notEnoughPlayers"})
-		return nil
+		s.Write(protocol.SerializeRPC("alert", map[string]interface{}{"msg": "notEnoughPlayers"}))
+		return
 	}
 
-	// Lock out new players from joining
-	client.Hub.SetStarted(true)
-	log.Println("Game starting with", online, "players")
-	client.Hub.HandleStart(client.Hub)
+	// This locks out new players from joining
+	g.started = true
 
-	return nil
+	id := 0
+	if c != nil {
+		id = c.ID
+	}
+
+	log.Printf("[%v] Starting game %v online", id, online)
+	//client.Hub.HandleStart(client.Hub)
 }

@@ -1,15 +1,5 @@
 package game
 
-import (
-	"log"
-	"math"
-	"math/rand"
-	"time"
-
-	"github.com/Scoder12/murdermystery/backend/net"
-	"github.com/Scoder12/murdermystery/backend/protocol"
-)
-
 // Role represents a role in the game
 type Role int
 
@@ -38,6 +28,7 @@ var CharacterMap = map[int]string{
 	5: "Hunter",
 }
 
+/*
 func genCharacterArray(numPlayers int) []Role {
 	// There is one healer and one prophet always
 	res := []Role{Healer, Prophet}
@@ -56,7 +47,7 @@ func genCharacterArray(numPlayers int) []Role {
 }
 
 // AssignCharacters assigns a character to each player
-func AssignCharacters(h *net.Hub) {
+func AssignCharacters(h *Hub) {
 	// TODO: Figure out real rules for this instead of assigning randomly
 	log.Println("Assigning characters")
 
@@ -86,3 +77,4 @@ func AssignCharacters(h *net.Hub) {
 func HandleStart(h *net.Hub) {
 	AssignCharacters(h)
 }
+*/

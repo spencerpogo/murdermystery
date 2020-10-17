@@ -1,2 +1,3 @@
 - Refactor server RPC format to be type:<JSON blob>
 - Add SendAndClose functionality
+- Handle "name" error on client

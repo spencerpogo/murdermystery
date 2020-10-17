@@ -2,12 +2,13 @@ package game
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"strings"
+	"time"
 
-	"github.com/Scoder12/murdermystery/backend/net"
 	"github.com/Scoder12/murdermystery/backend/protocol"
+
+	"gopkg.in/olahol/melody.v1"
 )
 
 // Treat like const!
@@ -18,16 +19,24 @@ var badStrings = []string{
 	"\t",
 }
 
-func setNameHandler(client *net.Client, data []byte) error {
-	if len(client.Name()) > 0 {
-		// No renames
-		return nil
+func (g *Game) setNameHandler(s *melody.Session, c *Client, data []byte) {
+	if c == nil {
+		return
 	}
 
-	log.Println("Handling setName request")
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
+	if len(c.name) > 0 {
+		// No renames
+		return
+	}
+
 	var name string
 	if err := json.Unmarshal(data, &name); err != nil {
-		return err
+		log.Printf("[%v] Sent invalid JSON: %s", c.ID, err)
+		s.Close()
+		return
 	}
 
 	for _, bad := range badStrings {
@@ -36,11 +45,13 @@ func setNameHandler(client *net.Client, data []byte) error {
 	name = strings.TrimSpace(name)
 
 	if len(name) == 0 || len(name) > 50 {
-		return fmt.Errorf("Invalid name")
+		s.Write(protocol.SerializeRPC("error", map[string]interface{}{"error": "name"}))
+		time.Sleep(200 * time.Millisecond)
+		s.Close()
 	}
-	client.SetName(name)
+	c.name = name
 
-	protocol.SyncPlayers(client.Hub)
-
-	return nil
+	log.Printf("[%v] Set name to %s", c.ID, name)
+	g.syncPlayers()
+	return
 }

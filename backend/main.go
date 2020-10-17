@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"log"
 
 	"github.com/Scoder12/murdermystery/backend/http"
 )
@@ -18,6 +17,5 @@ var addr = flag.String("addr", "127.0.0.1:8080", "http service address")
 
 func main() {
 	flag.Parse()
-	srv := http.MakeServer(*addr)
-	log.Fatal(srv.ListenAndServe())
+	http.StartServer(*addr)
 }
