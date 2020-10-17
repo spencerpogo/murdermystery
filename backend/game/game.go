@@ -129,8 +129,8 @@ func (g *Game) syncPlayers() {
 		}
 	}
 	g.m.Broadcast(protocol.SerializeRPC("players", map[string]interface{}{
-		"players": players,
-		"hostID":  hostID,
+		"names":  players,
+		"hostID": hostID,
 	}))
 }
 
