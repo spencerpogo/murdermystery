@@ -84,7 +84,8 @@ func (g *Game) End(reason string) {
 	g.m.Broadcast(protocol.SerializeRPC("error", map[string]interface{}{"reason": reason}))
 	time.Sleep(200 * time.Millisecond)
 
-	g.m.Close()
+	// TODO: Actually delete from http's games map
+	//g.m.Close()
 }
 
 // Returns whether the host is valid. Assumes game is locked!
