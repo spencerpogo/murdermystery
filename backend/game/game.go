@@ -110,7 +110,7 @@ func (g *Game) updateHost() {
 		}
 	}
 	if bestM != nil {
-		bestM.Write(protocol.SerializeRPC("isHost", map[string]interface{}{"isHost": true}))
+		bestM.Write(protocol.SerializeRPC("host", map[string]interface{}{"isHost": true}))
 		g.host = bestM
 	}
 }
