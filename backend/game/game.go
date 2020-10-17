@@ -87,14 +87,51 @@ func (g *Game) End(reason string) {
 	g.m.Close()
 }
 
-// UpdateHost ensures the host of the game is valid
+// Returns whether the host is valid. Assumes game is locked!
+func (g *Game) hostValid() bool {
+	if g.host == nil || g.host.IsClosed() {
+		return false
+	}
+	_, ok := g.clients[g.host]
+	return ok
+}
+
+// UpdateHost ensures the host of the game is valid. Assumes game is locked!
 func (g *Game) updateHost() {
-	// TODO
+	if g.hostValid() {
+		return
+	}
+	// Find the earliest person to join (lowest PID) that is still online
+	var bestM *melody.Session = nil
+	var bestID = -1
+	for m, c := range g.clients {
+		if bestID == -1 || c.ID < bestID {
+			bestM = m
+		}
+	}
+	if bestM != nil {
+		bestM.Write(protocol.SerializeRPC("isHost", map[string]interface{}{"isHost": true}))
+		g.host = bestM
+	}
 }
 
 // syncPlayers syncs player names between the server and all clients
 func (g *Game) syncPlayers() {
-	// TODO
+	players := make(map[int]string)
+	for _, c := range g.clients {
+		players[c.ID] = c.name
+	}
+	hostID := -1
+	if g.host != nil {
+		c, ok := g.clients[g.host]
+		if ok {
+			hostID = c.ID
+		}
+	}
+	g.m.Broadcast(protocol.SerializeRPC("players", map[string]interface{}{
+		"players": players,
+		"hostID":  hostID,
+	}))
 }
 
 // A helper function to get the ID of a client

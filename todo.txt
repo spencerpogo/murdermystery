@@ -1,3 +1,5 @@
-- Refactor server RPC format to be type:<JSON blob>
-- Add SendAndClose functionality
 - Handle "name" error on client
+- Switch to protocol buffers now that I found https://www.npmjs.com/package/protobufjs
+- Figure out how to change things in server based on build environment (dev/prod),
+  maybe using go build tags
+- Make a build script, using `next export` and `statik`
