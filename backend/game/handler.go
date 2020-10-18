@@ -93,3 +93,7 @@ func (g *Game) handleMsg(s *melody.Session, msg []byte) {
 		}
 	}
 }
+
+func (g *Game) handleStart() {
+	g.AssignCharacters()
+}

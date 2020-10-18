@@ -22,6 +22,9 @@ type Client struct {
 
 	// name of the client
 	name string
+
+	// role of the client
+	role int
 }
 
 // Game represents a running game

@@ -39,6 +39,7 @@ func (g *Game) startGameHandler(s *melody.Session, c *Client, d []byte) {
 		id = c.ID
 	}
 
-	log.Printf("[%v] Starting game %v online", id, online)
-	//client.Hub.HandleStart(client.Hub)
+	log.Printf("[%v] Starting %v player game", id, online)
+	// Run in goroutine so defer fires and unlocks
+	go g.handleStart()
 }
