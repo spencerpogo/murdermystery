@@ -214,7 +214,7 @@ export default function GameClient({
           <ModalContent>
             <ModalCloseButton />
             <ModalBody>
-              <Text>{t(alertContent || "")}</Text>
+              <Text>{alertContent ? t(alertContent) : ""}</Text>
             </ModalBody>
           </ModalContent>
         </Modal>
