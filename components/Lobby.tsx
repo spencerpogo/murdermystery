@@ -28,6 +28,7 @@ export default function Lobby({
       </Flex>
       <ul>
         {names.map((player) => {
+          if (!player || !player.name) return null;
           return (
             <li key={player.name + player.isHost.toString()}>
               {player.name}
