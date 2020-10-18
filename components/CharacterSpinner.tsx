@@ -175,7 +175,7 @@ export default function CharacterSpinner({ character }: { character: string }) {
           </Heading>
         </Flex>
         <Flex width="full" justify="center">
-          <Image src={"/" + filename} height="2xl" />
+          <Image src={"/" + filename} height="xl" />
         </Flex>
       </>
     );
