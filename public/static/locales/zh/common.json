@@ -16,6 +16,7 @@
   "Copy": "复制",
   "Host": "主持人",
   "Server closed connection": "服务器关闭了连接",
+  "Your name is invalid": "您的名字无效",
   "Someone disconnected, reconnection is not yet implemented so game over": "有人断开连接，游戏结束了",
   "There was an error while performing that action": "处理您的请求时发生错误",
   "You need at least 6 players to start the game": "您至少需要6个人才能开始",
