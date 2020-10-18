@@ -34,6 +34,7 @@ const serverMessages = {
     "Someone disconnected, reconnection is not yet implemented so game over",
   started: "The game has already started",
   notEnoughPlayers: "You need at least 6 players to start the game",
+  name: "Your name is invalid",
 };
 
 const getServerMessage = (key: string, fallback: string) =>

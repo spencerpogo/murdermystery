@@ -45,7 +45,7 @@ func (g *Game) setNameHandler(s *melody.Session, c *Client, data []byte) {
 	name = strings.TrimSpace(name)
 
 	if len(name) == 0 || len(name) > 50 {
-		s.Write(protocol.SerializeRPC("error", map[string]interface{}{"error": "name"}))
+		s.Write(protocol.SerializeRPC("error", map[string]interface{}{"reason": "name"}))
 		time.Sleep(200 * time.Millisecond)
 		s.Close()
 	}
