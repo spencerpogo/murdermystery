@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Scoder12/murdermystery/backend/protocol"
+	"gopkg.in/olahol/melody.v1"
 )
 
 // Role represents a role in the game
@@ -92,5 +93,29 @@ func (g *Game) AssignCharacters() {
 			"value": CharacterMap[role],
 		}))
 		i++
+	}
+
+	g.revealWolves()
+}
+
+// Assumes game is locked
+func (g *Game) revealWolves() {
+	wolfSessions := []*melody.Session{}
+	wolfIDs := []int{}
+
+	for m, c := range g.clients {
+		if c.role == int(Werewolf) {
+			wolfSessions = append(wolfSessions, m)
+			wolfIDs = append(wolfIDs, c.ID)
+		}
+	}
+
+	for i := range wolfSessions {
+		m := wolfSessions[i]
+		if !m.IsClosed() {
+			m.Write(protocol.SerializeRPC("wolves", map[string]interface{}{
+				"ids": wolfIDs,
+			}))
+		}
 	}
 }
