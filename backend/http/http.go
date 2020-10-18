@@ -9,6 +9,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Put this closure in a separate function so more memory can be garbage collected
+func getDestroyFunc(games map[string]*game.Game, gamesMu *sync.Mutex, gid string) func() {
+	return func() {
+		gamesMu.Lock()
+		delete(games, gid)
+		gamesMu.Unlock()
+	}
+}
+
 // StartServer starts the HTTP server
 func StartServer(iface string) {
 	r := gin.Default()
@@ -26,7 +35,8 @@ func StartServer(iface string) {
 		gamesMu.Lock()
 		g, exists := games[gid]
 		if !exists {
-			g = game.New()
+			log.Println("Creating new game")
+			g = game.New(getDestroyFunc(games, &gamesMu, gid))
 			games[gid] = g
 		}
 		gamesMu.Unlock()

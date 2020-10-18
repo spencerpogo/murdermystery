@@ -32,6 +32,9 @@ type Game struct {
 	// The melody server for this game
 	m *melody.Melody
 
+	// The function that will de-allocate the game when it finishes
+	destroyFn func()
+
 	// Next id
 	nextID int
 
@@ -49,10 +52,11 @@ type Game struct {
 }
 
 // New constructs a new game
-func New() *Game {
+func New(destroyFn func()) *Game {
 	g := &Game{
-		m:       melody.New(),
-		clients: make(map[*melody.Session]*Client),
+		m:         melody.New(),
+		destroyFn: destroyFn,
+		clients:   make(map[*melody.Session]*Client),
 	}
 	// For debug
 	g.m.Upgrader.CheckOrigin = func(r *http.Request) bool { return true }
@@ -87,8 +91,8 @@ func (g *Game) End(reason string) {
 	g.m.Broadcast(protocol.SerializeRPC("error", map[string]interface{}{"reason": reason}))
 	time.Sleep(200 * time.Millisecond)
 
-	// TODO: Actually delete from http's games map
-	//g.m.Close()
+	g.m.Close()
+	g.destroyFn()
 }
 
 // Returns whether the host is valid. Assumes game is locked!
