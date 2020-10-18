@@ -42,7 +42,7 @@ async def run_bot(sess: aiohttp.ClientSession, gid: str, offset: int):
             t = data.get("type")
             if t == "host":
                 is_host = data.get("isHost", False)
-            elif t == "players" and is_host:
+            elif t == "players" and is_host and len(data.get("names", [])) >= 6:
                 # Everytime someone joins/leaves, try to start the game
                 #  Doesn't matter if it causes and error
                 await send_rpc(ws, "startGame", {})

@@ -10,8 +10,10 @@ import (
 )
 
 func (g *Game) handleJoin(s *melody.Session) {
+	log.Println("Handling join")
 	g.lock.Lock()
 	defer g.lock.Unlock()
+	log.Println("Lock aquired")
 
 	if g.started {
 		s.Write(protocol.SerializeRPC("handshake", map[string]interface{}{"error": "started"}))
