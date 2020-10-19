@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Generates protocol buffers code - YMMV
 # Should work on windows with some modifications
 if [ ! $(command -v protoc) ]; then
@@ -17,4 +19,11 @@ fi
 # TODO: Require pbjs
 ROOT=${1:-$(pwd)}
 
-protoc -I=$ROOT --go_out=$ROOT/backend/protocol/pb $ROOT/main.proto
+echo "Generating go code..."
+protoc -I=$ROOT --go_out=$ROOT/backend/protocol/pb $ROOT/*.proto
+
+echo "Generating JS code..."
+npm run pbjs -- -t static-module -w commonjs -o $ROOT/lib/protobuf.bundle.js $ROOT/*.proto
+
+echo "Generating Typescript definitions..."
+npm run pbts -- -o $ROOT/lib/protobuf.d.ts $ROOT/lib/protobuf.bundle.js
