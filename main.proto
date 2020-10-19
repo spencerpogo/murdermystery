@@ -1,0 +1,6 @@
+syntax = "proto3";
+package murdermystery;
+
+option go_package = ".;pb";
+
+message Handshake { string error = 1; }
