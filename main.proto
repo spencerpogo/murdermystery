@@ -4,3 +4,35 @@ package murdermystery;
 option go_package = ".;pb";
 
 message Handshake { string error = 1; }
+
+message Host { bool isHost = 1; }
+
+message SetName { string name = 1; }
+
+message StartGame {}
+
+message Players {
+  message Player {
+    string name = 1;
+    bool isHost = 2;
+  }
+
+  repeated Player players = 1;
+}
+
+message Error { string msg = 1; }
+
+message Alert { string msg = 1; }
+
+message SetCharacter {
+  enum Character {
+    NONE = 0;
+    CITIZEN = 1;
+    WEREWOLF = 2;
+    HEALER = 3;
+    PROPHET = 4;
+    HUNTER = 5;
+  }
+
+  Character character = 1;
+}
