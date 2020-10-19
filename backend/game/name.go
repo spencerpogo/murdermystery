@@ -1,10 +1,11 @@
 package game
 
 import (
-	"encoding/json"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/Scoder12/murdermystery/backend/protocol/pb"
 
 	"github.com/Scoder12/murdermystery/backend/protocol"
 
@@ -19,7 +20,7 @@ var badStrings = []string{
 	"\t",
 }
 
-func (g *Game) setNameHandler(s *melody.Session, c *Client, data []byte) {
+func (g *Game) setNameHandler(s *melody.Session, c *Client, msg *pb.SetName) {
 	if c == nil {
 		return
 	}
@@ -32,12 +33,7 @@ func (g *Game) setNameHandler(s *melody.Session, c *Client, data []byte) {
 		return
 	}
 
-	var name string
-	if err := json.Unmarshal(data, &name); err != nil {
-		log.Printf("[%v] Sent invalid JSON: %s", c.ID, err)
-		s.Close()
-		return
-	}
+	name := msg.GetName()
 
 	for _, bad := range badStrings {
 		name = strings.ReplaceAll(name, bad, "")
@@ -45,7 +41,11 @@ func (g *Game) setNameHandler(s *melody.Session, c *Client, data []byte) {
 	name = strings.TrimSpace(name)
 
 	if len(name) == 0 || len(name) > 50 {
-		s.Write(protocol.SerializeRPC("error", map[string]interface{}{"reason": "name"}))
+		msg, err := protocol.Marshal(&pb.Error{Msg: pb.Error_BADNAME})
+		if err != nil {
+			return
+		}
+		s.WriteBinary(msg)
 		time.Sleep(200 * time.Millisecond)
 		s.Close()
 	}

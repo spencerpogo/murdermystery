@@ -6,26 +6,10 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/Scoder12/murdermystery/backend/protocol/pb"
+
 	"github.com/Scoder12/murdermystery/backend/protocol"
 	"gopkg.in/olahol/melody.v1"
-)
-
-// Role represents a role in the game
-type Role int
-
-const (
-	// NoCharacter represents no character
-	NoCharacter Role = 0
-	// Citizen represents a Citizen
-	Citizen Role = 1
-	// Werewolf represents a Werewolf
-	Werewolf Role = 2
-	// Healer represents a Healer
-	Healer Role = 3
-	// Prophet represents a Prophet
-	Prophet Role = 4
-	// Hunter represents a Hunter
-	Hunter Role = 5
 )
 
 // CharacterMap is a map of character IDs to their string attribute name
@@ -38,19 +22,19 @@ var CharacterMap = map[int]string{
 	5: "Hunter",
 }
 
-func genCharacterArray(numPlayers int) []Role {
+func genCharacterArray(numPlayers int) []pb.SetCharacter_Character {
 	// There is one healer and one prophet always
-	res := []Role{Healer, Prophet}
+	res := []pb.SetCharacter_Character{pb.SetCharacter_HEALER, pb.SetCharacter_PROPHET}
 	var numCits int = int(math.Floor(float64(numPlayers-2) / 2.0))
 	var numWolves int = (numPlayers - 2) - numCits
 
 	log.Println("2 special", numCits, "citizen", numWolves, "wolves")
 
 	for i := 0; i < numCits; i++ {
-		res = append(res, Citizen)
+		res = append(res, pb.SetCharacter_CITIZEN)
 	}
 	for i := 0; i < numWolves; i++ {
-		res = append(res, Werewolf)
+		res = append(res, pb.SetCharacter_WEREWOLF)
 	}
 	return res
 }
@@ -87,11 +71,13 @@ func (g *Game) AssignCharacters() {
 			continue
 		}
 
-		role := int(roles[i])
-		c.role = role
-		m.Write(protocol.SerializeRPC("setCharacter", map[string]interface{}{
-			"value": CharacterMap[role],
-		}))
+		role := roles[i]
+		c.role = int32(role)
+		msg, err := protocol.Marshal(&pb.SetCharacter{Character: role})
+		if err != nil {
+			return
+		}
+		m.WriteBinary(msg)
 		i++
 	}
 
@@ -101,21 +87,24 @@ func (g *Game) AssignCharacters() {
 // Assumes game is locked
 func (g *Game) revealWolves() {
 	wolfSessions := []*melody.Session{}
-	wolfIDs := []int{}
+	wolfIDs := []int32{}
 
 	for m, c := range g.clients {
-		if c.role == int(Werewolf) {
+		if c.role == int32(pb.SetCharacter_WEREWOLF) {
 			wolfSessions = append(wolfSessions, m)
 			wolfIDs = append(wolfIDs, c.ID)
 		}
 	}
 
+	msg, err := protocol.Marshal(&pb.FellowWolves{Ids: wolfIDs})
+	if err != nil {
+		return
+	}
+
 	for i := range wolfSessions {
 		m := wolfSessions[i]
 		if !m.IsClosed() {
-			m.Write(protocol.SerializeRPC("wolves", map[string]interface{}{
-				"ids": wolfIDs,
-			}))
+			m.WriteBinary(msg)
 		}
 	}
 }

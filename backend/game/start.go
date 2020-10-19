@@ -3,12 +3,14 @@ package game
 import (
 	"log"
 
+	"github.com/Scoder12/murdermystery/backend/protocol/pb"
+
 	"github.com/Scoder12/murdermystery/backend/protocol"
 
 	"gopkg.in/olahol/melody.v1"
 )
 
-func (g *Game) startGameHandler(s *melody.Session, c *Client, d []byte) {
+func (g *Game) startGameHandler(s *melody.Session, c *Client, msg *pb.StartGame) {
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -27,14 +29,18 @@ func (g *Game) startGameHandler(s *melody.Session, c *Client, d []byte) {
 		}
 	}
 	if online < 6 {
-		s.Write(protocol.SerializeRPC("alert", map[string]interface{}{"msg": "notEnoughPlayers"}))
+		msg, err := protocol.Marshal(&pb.Alert{Msg: pb.Alert_NEEDMOREPLAYERS})
+		if err != nil {
+			return
+		}
+		s.WriteBinary(msg)
 		return
 	}
 
 	// This locks out new players from joining
 	g.started = true
 
-	id := 0
+	var id int32 = 0
 	if c != nil {
 		id = c.ID
 	}

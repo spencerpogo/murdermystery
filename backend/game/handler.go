@@ -5,6 +5,11 @@ import (
 	"log"
 	"time"
 
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/dynamicpb"
+
+	"github.com/Scoder12/murdermystery/backend/protocol/pb"
+
 	"github.com/Scoder12/murdermystery/backend/protocol"
 	"gopkg.in/olahol/melody.v1"
 )
@@ -16,7 +21,11 @@ func (g *Game) handleJoin(s *melody.Session) {
 	log.Println("Lock aquired")
 
 	if g.started {
-		s.Write(protocol.SerializeRPC("handshake", map[string]interface{}{"error": "started"}))
+		msg, err := protocol.Marshal(&pb.Handshake{Err: pb.Handshake_STARTED})
+		if err != nil {
+			return
+		}
+		s.WriteBinary(msg)
 		time.Sleep(200 * time.Millisecond) // Allow plenty of time for the message to send
 		s.Close()
 		return
@@ -26,7 +35,11 @@ func (g *Game) handleJoin(s *melody.Session) {
 	g.nextID++
 	g.clients[s] = c
 
-	s.Write(protocol.SerializeRPC("handshake", map[string]interface{}{}))
+	msg, err := protocol.Marshal(&pb.Handshake{Err: pb.Handshake_OK})
+	if err != nil {
+		return
+	}
+	s.WriteBinary(msg)
 
 	// For efficiency, the timer will be stopped if the client discconects fast enough
 	c.closeTimer = time.AfterFunc(2*time.Second, func() {
@@ -55,7 +68,7 @@ func (g *Game) handleDisconnect(s *melody.Session) {
 	if g.started {
 		log.Println("Stopping game")
 		// Call in a goroutine so deferred game unlock can run
-		go g.End("disconnect")
+		go g.End(pb.Error_DISCONNECT)
 		return
 	}
 
@@ -65,13 +78,13 @@ func (g *Game) handleDisconnect(s *melody.Session) {
 	}
 }
 
-func (g *Game) callHandler(s *melody.Session, c *Client, op int, d []byte) error {
-	switch op {
-	case 0:
-		g.setNameHandler(s, c, d)
+func (g *Game) callHandler(s *melody.Session, c *Client, msg proto.Message) error {
+	switch msg.(type) {
+	case *pb.SetName:
+		g.setNameHandler(s, c, msg.(*pb.SetName))
 		return nil
-	case 1:
-		g.startGameHandler(s, c, d)
+	case *pb.StartGame:
+		g.startGameHandler(s, c, msg.(*pb.StartGame))
 		return nil
 	default:
 		return fmt.Errorf("Unrecognized op")
@@ -79,22 +92,26 @@ func (g *Game) callHandler(s *melody.Session, c *Client, op int, d []byte) error
 }
 
 // HandleMsg handles a message from a client
-func (g *Game) handleMsg(s *melody.Session, msg []byte) {
+func (g *Game) handleMsg(s *melody.Session, data []byte) {
 	g.lock.Lock()
 	c, ok := g.clients[s]
 	g.lock.Unlock()
 
-	if ok {
-		log.Printf("[%v] ↑ %s\n", c.ID, string(msg))
-		opcode, msgRest, err := protocol.DecodeMsg(msg)
-		if err != nil {
-			return
-		}
-		err = g.callHandler(s, c, opcode, msgRest)
-		if err != nil {
-			log.Println(err)
-			s.Close()
-		}
+	if !ok {
+		return
+	}
+	//log.Printf("[%v] ↑ %s\n", c.ID, string(msg))
+	var msg *dynamicpb.Message = protocol.Unmarshal(data)
+	if msg == nil {
+		log.Printf("[%v] Invalid data", c.ID)
+		s.Close()
+		return
+	}
+
+	err := g.callHandler(s, c, msg)
+	if err != nil {
+		log.Println(err)
+		s.Close()
 	}
 }
 

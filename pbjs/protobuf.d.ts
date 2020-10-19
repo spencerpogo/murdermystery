@@ -5,8 +5,8 @@ export namespace murdermystery {
     /** Properties of a Handshake. */
     interface IHandshake {
 
-        /** Handshake error */
-        error?: (string|null);
+        /** Handshake err */
+        err?: (murdermystery.Handshake.Error|null);
     }
 
     /** Represents a Handshake. */
@@ -18,8 +18,8 @@ export namespace murdermystery {
          */
         constructor(properties?: murdermystery.IHandshake);
 
-        /** Handshake error. */
-        public error: string;
+        /** Handshake err. */
+        public err: murdermystery.Handshake.Error;
 
         /**
          * Creates a new Handshake instance using the specified properties.
@@ -90,6 +90,16 @@ export namespace murdermystery {
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
+    }
+
+    namespace Handshake {
+
+        /** Error enum. */
+        enum Error {
+            UNKNOWN = 0,
+            OK = 1,
+            STARTED = 2
+        }
     }
 
     /** Properties of a Host. */
@@ -361,6 +371,9 @@ export namespace murdermystery {
 
         /** Players players */
         players?: (murdermystery.Players.IPlayer[]|null);
+
+        /** Players hostId */
+        hostId?: (number|null);
     }
 
     /** Represents a Players. */
@@ -374,6 +387,9 @@ export namespace murdermystery {
 
         /** Players players. */
         public players: murdermystery.Players.IPlayer[];
+
+        /** Players hostId. */
+        public hostId: number;
 
         /**
          * Creates a new Players instance using the specified properties.
@@ -454,8 +470,8 @@ export namespace murdermystery {
             /** Player name */
             name?: (string|null);
 
-            /** Player isHost */
-            isHost?: (boolean|null);
+            /** Player id */
+            id?: (number|null);
         }
 
         /** Represents a Player. */
@@ -470,8 +486,8 @@ export namespace murdermystery {
             /** Player name. */
             public name: string;
 
-            /** Player isHost. */
-            public isHost: boolean;
+            /** Player id. */
+            public id: number;
 
             /**
              * Creates a new Player instance using the specified properties.
@@ -549,7 +565,7 @@ export namespace murdermystery {
     interface IError {
 
         /** Error msg */
-        msg?: (string|null);
+        msg?: (murdermystery.Error.E_type|null);
     }
 
     /** Represents an Error. */
@@ -562,7 +578,7 @@ export namespace murdermystery {
         constructor(properties?: murdermystery.IError);
 
         /** Error msg. */
-        public msg: string;
+        public msg: murdermystery.Error.E_type;
 
         /**
          * Creates a new Error instance using the specified properties.
@@ -635,11 +651,21 @@ export namespace murdermystery {
         public toJSON(): { [k: string]: any };
     }
 
+    namespace Error {
+
+        /** E_type enum. */
+        enum E_type {
+            UNKNOWN = 0,
+            DISCONNECT = 1,
+            BADNAME = 2
+        }
+    }
+
     /** Properties of an Alert. */
     interface IAlert {
 
         /** Alert msg */
-        msg?: (string|null);
+        msg?: (murdermystery.Alert.Msg|null);
     }
 
     /** Represents an Alert. */
@@ -652,7 +678,7 @@ export namespace murdermystery {
         constructor(properties?: murdermystery.IAlert);
 
         /** Alert msg. */
-        public msg: string;
+        public msg: murdermystery.Alert.Msg;
 
         /**
          * Creates a new Alert instance using the specified properties.
@@ -723,6 +749,15 @@ export namespace murdermystery {
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
+    }
+
+    namespace Alert {
+
+        /** Msg enum. */
+        enum Msg {
+            UNKNOWN = 0,
+            NEEDMOREPLAYERS = 1
+        }
     }
 
     /** Properties of a SetCharacter. */
@@ -826,5 +861,95 @@ export namespace murdermystery {
             PROPHET = 4,
             HUNTER = 5
         }
+    }
+
+    /** Properties of a FellowWolves. */
+    interface IFellowWolves {
+
+        /** FellowWolves ids */
+        ids?: (number[]|null);
+    }
+
+    /** Represents a FellowWolves. */
+    class FellowWolves implements IFellowWolves {
+
+        /**
+         * Constructs a new FellowWolves.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: murdermystery.IFellowWolves);
+
+        /** FellowWolves ids. */
+        public ids: number[];
+
+        /**
+         * Creates a new FellowWolves instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns FellowWolves instance
+         */
+        public static create(properties?: murdermystery.IFellowWolves): murdermystery.FellowWolves;
+
+        /**
+         * Encodes the specified FellowWolves message. Does not implicitly {@link murdermystery.FellowWolves.verify|verify} messages.
+         * @param message FellowWolves message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: murdermystery.IFellowWolves, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified FellowWolves message, length delimited. Does not implicitly {@link murdermystery.FellowWolves.verify|verify} messages.
+         * @param message FellowWolves message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: murdermystery.IFellowWolves, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a FellowWolves message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns FellowWolves
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): murdermystery.FellowWolves;
+
+        /**
+         * Decodes a FellowWolves message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns FellowWolves
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): murdermystery.FellowWolves;
+
+        /**
+         * Verifies a FellowWolves message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a FellowWolves message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns FellowWolves
+         */
+        public static fromObject(object: { [k: string]: any }): murdermystery.FellowWolves;
+
+        /**
+         * Creates a plain object from a FellowWolves message. Also converts values to other types if specified.
+         * @param message FellowWolves
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: murdermystery.FellowWolves, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this FellowWolves to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
     }
 }

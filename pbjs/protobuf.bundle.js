@@ -24,7 +24,7 @@ $root.murdermystery = (function() {
          * Properties of a Handshake.
          * @memberof murdermystery
          * @interface IHandshake
-         * @property {string|null} [error] Handshake error
+         * @property {murdermystery.Handshake.Error|null} [err] Handshake err
          */
 
         /**
@@ -43,12 +43,12 @@ $root.murdermystery = (function() {
         }
 
         /**
-         * Handshake error.
-         * @member {string} error
+         * Handshake err.
+         * @member {murdermystery.Handshake.Error} err
          * @memberof murdermystery.Handshake
          * @instance
          */
-        Handshake.prototype.error = "";
+        Handshake.prototype.err = 0;
 
         /**
          * Creates a new Handshake instance using the specified properties.
@@ -74,8 +74,8 @@ $root.murdermystery = (function() {
         Handshake.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.error != null && Object.hasOwnProperty.call(message, "error"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.error);
+            if (message.err != null && Object.hasOwnProperty.call(message, "err"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.err);
             return writer;
         };
 
@@ -111,7 +111,7 @@ $root.murdermystery = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.error = reader.string();
+                    message.err = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -148,9 +148,15 @@ $root.murdermystery = (function() {
         Handshake.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.error != null && message.hasOwnProperty("error"))
-                if (!$util.isString(message.error))
-                    return "error: string expected";
+            if (message.err != null && message.hasOwnProperty("err"))
+                switch (message.err) {
+                default:
+                    return "err: enum value expected";
+                case 0:
+                case 1:
+                case 2:
+                    break;
+                }
             return null;
         };
 
@@ -166,8 +172,20 @@ $root.murdermystery = (function() {
             if (object instanceof $root.murdermystery.Handshake)
                 return object;
             var message = new $root.murdermystery.Handshake();
-            if (object.error != null)
-                message.error = String(object.error);
+            switch (object.err) {
+            case "UNKNOWN":
+            case 0:
+                message.err = 0;
+                break;
+            case "OK":
+            case 1:
+                message.err = 1;
+                break;
+            case "STARTED":
+            case 2:
+                message.err = 2;
+                break;
+            }
             return message;
         };
 
@@ -185,9 +203,9 @@ $root.murdermystery = (function() {
                 options = {};
             var object = {};
             if (options.defaults)
-                object.error = "";
-            if (message.error != null && message.hasOwnProperty("error"))
-                object.error = message.error;
+                object.err = options.enums === String ? "UNKNOWN" : 0;
+            if (message.err != null && message.hasOwnProperty("err"))
+                object.err = options.enums === String ? $root.murdermystery.Handshake.Error[message.err] : message.err;
             return object;
         };
 
@@ -201,6 +219,22 @@ $root.murdermystery = (function() {
         Handshake.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
+
+        /**
+         * Error enum.
+         * @name murdermystery.Handshake.Error
+         * @enum {number}
+         * @property {number} UNKNOWN=0 UNKNOWN value
+         * @property {number} OK=1 OK value
+         * @property {number} STARTED=2 STARTED value
+         */
+        Handshake.Error = (function() {
+            var valuesById = {}, values = Object.create(valuesById);
+            values[valuesById[0] = "UNKNOWN"] = 0;
+            values[valuesById[1] = "OK"] = 1;
+            values[valuesById[2] = "STARTED"] = 2;
+            return values;
+        })();
 
         return Handshake;
     })();
@@ -746,6 +780,7 @@ $root.murdermystery = (function() {
          * @memberof murdermystery
          * @interface IPlayers
          * @property {Array.<murdermystery.Players.IPlayer>|null} [players] Players players
+         * @property {number|null} [hostId] Players hostId
          */
 
         /**
@@ -771,6 +806,14 @@ $root.murdermystery = (function() {
          * @instance
          */
         Players.prototype.players = $util.emptyArray;
+
+        /**
+         * Players hostId.
+         * @member {number} hostId
+         * @memberof murdermystery.Players
+         * @instance
+         */
+        Players.prototype.hostId = 0;
 
         /**
          * Creates a new Players instance using the specified properties.
@@ -799,6 +842,8 @@ $root.murdermystery = (function() {
             if (message.players != null && message.players.length)
                 for (var i = 0; i < message.players.length; ++i)
                     $root.murdermystery.Players.Player.encode(message.players[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.hostId != null && Object.hasOwnProperty.call(message, "hostId"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.hostId);
             return writer;
         };
 
@@ -837,6 +882,9 @@ $root.murdermystery = (function() {
                     if (!(message.players && message.players.length))
                         message.players = [];
                     message.players.push($root.murdermystery.Players.Player.decode(reader, reader.uint32()));
+                    break;
+                case 2:
+                    message.hostId = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -882,6 +930,9 @@ $root.murdermystery = (function() {
                         return "players." + error;
                 }
             }
+            if (message.hostId != null && message.hasOwnProperty("hostId"))
+                if (!$util.isInteger(message.hostId))
+                    return "hostId: integer expected";
             return null;
         };
 
@@ -907,6 +958,8 @@ $root.murdermystery = (function() {
                     message.players[i] = $root.murdermystery.Players.Player.fromObject(object.players[i]);
                 }
             }
+            if (object.hostId != null)
+                message.hostId = object.hostId | 0;
             return message;
         };
 
@@ -925,11 +978,15 @@ $root.murdermystery = (function() {
             var object = {};
             if (options.arrays || options.defaults)
                 object.players = [];
+            if (options.defaults)
+                object.hostId = 0;
             if (message.players && message.players.length) {
                 object.players = [];
                 for (var j = 0; j < message.players.length; ++j)
                     object.players[j] = $root.murdermystery.Players.Player.toObject(message.players[j], options);
             }
+            if (message.hostId != null && message.hasOwnProperty("hostId"))
+                object.hostId = message.hostId;
             return object;
         };
 
@@ -951,7 +1008,7 @@ $root.murdermystery = (function() {
              * @memberof murdermystery.Players
              * @interface IPlayer
              * @property {string|null} [name] Player name
-             * @property {boolean|null} [isHost] Player isHost
+             * @property {number|null} [id] Player id
              */
 
             /**
@@ -978,12 +1035,12 @@ $root.murdermystery = (function() {
             Player.prototype.name = "";
 
             /**
-             * Player isHost.
-             * @member {boolean} isHost
+             * Player id.
+             * @member {number} id
              * @memberof murdermystery.Players.Player
              * @instance
              */
-            Player.prototype.isHost = false;
+            Player.prototype.id = 0;
 
             /**
              * Creates a new Player instance using the specified properties.
@@ -1011,8 +1068,8 @@ $root.murdermystery = (function() {
                     writer = $Writer.create();
                 if (message.name != null && Object.hasOwnProperty.call(message, "name"))
                     writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
-                if (message.isHost != null && Object.hasOwnProperty.call(message, "isHost"))
-                    writer.uint32(/* id 2, wireType 0 =*/16).bool(message.isHost);
+                if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.id);
                 return writer;
             };
 
@@ -1051,7 +1108,7 @@ $root.murdermystery = (function() {
                         message.name = reader.string();
                         break;
                     case 2:
-                        message.isHost = reader.bool();
+                        message.id = reader.int32();
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -1091,9 +1148,9 @@ $root.murdermystery = (function() {
                 if (message.name != null && message.hasOwnProperty("name"))
                     if (!$util.isString(message.name))
                         return "name: string expected";
-                if (message.isHost != null && message.hasOwnProperty("isHost"))
-                    if (typeof message.isHost !== "boolean")
-                        return "isHost: boolean expected";
+                if (message.id != null && message.hasOwnProperty("id"))
+                    if (!$util.isInteger(message.id))
+                        return "id: integer expected";
                 return null;
             };
 
@@ -1111,8 +1168,8 @@ $root.murdermystery = (function() {
                 var message = new $root.murdermystery.Players.Player();
                 if (object.name != null)
                     message.name = String(object.name);
-                if (object.isHost != null)
-                    message.isHost = Boolean(object.isHost);
+                if (object.id != null)
+                    message.id = object.id | 0;
                 return message;
             };
 
@@ -1131,12 +1188,12 @@ $root.murdermystery = (function() {
                 var object = {};
                 if (options.defaults) {
                     object.name = "";
-                    object.isHost = false;
+                    object.id = 0;
                 }
                 if (message.name != null && message.hasOwnProperty("name"))
                     object.name = message.name;
-                if (message.isHost != null && message.hasOwnProperty("isHost"))
-                    object.isHost = message.isHost;
+                if (message.id != null && message.hasOwnProperty("id"))
+                    object.id = message.id;
                 return object;
             };
 
@@ -1163,7 +1220,7 @@ $root.murdermystery = (function() {
          * Properties of an Error.
          * @memberof murdermystery
          * @interface IError
-         * @property {string|null} [msg] Error msg
+         * @property {murdermystery.Error.E_type|null} [msg] Error msg
          */
 
         /**
@@ -1183,11 +1240,11 @@ $root.murdermystery = (function() {
 
         /**
          * Error msg.
-         * @member {string} msg
+         * @member {murdermystery.Error.E_type} msg
          * @memberof murdermystery.Error
          * @instance
          */
-        Error.prototype.msg = "";
+        Error.prototype.msg = 0;
 
         /**
          * Creates a new Error instance using the specified properties.
@@ -1214,7 +1271,7 @@ $root.murdermystery = (function() {
             if (!writer)
                 writer = $Writer.create();
             if (message.msg != null && Object.hasOwnProperty.call(message, "msg"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.msg);
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.msg);
             return writer;
         };
 
@@ -1250,7 +1307,7 @@ $root.murdermystery = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.msg = reader.string();
+                    message.msg = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1288,8 +1345,14 @@ $root.murdermystery = (function() {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.msg != null && message.hasOwnProperty("msg"))
-                if (!$util.isString(message.msg))
-                    return "msg: string expected";
+                switch (message.msg) {
+                default:
+                    return "msg: enum value expected";
+                case 0:
+                case 1:
+                case 2:
+                    break;
+                }
             return null;
         };
 
@@ -1305,8 +1368,20 @@ $root.murdermystery = (function() {
             if (object instanceof $root.murdermystery.Error)
                 return object;
             var message = new $root.murdermystery.Error();
-            if (object.msg != null)
-                message.msg = String(object.msg);
+            switch (object.msg) {
+            case "UNKNOWN":
+            case 0:
+                message.msg = 0;
+                break;
+            case "DISCONNECT":
+            case 1:
+                message.msg = 1;
+                break;
+            case "BADNAME":
+            case 2:
+                message.msg = 2;
+                break;
+            }
             return message;
         };
 
@@ -1324,9 +1399,9 @@ $root.murdermystery = (function() {
                 options = {};
             var object = {};
             if (options.defaults)
-                object.msg = "";
+                object.msg = options.enums === String ? "UNKNOWN" : 0;
             if (message.msg != null && message.hasOwnProperty("msg"))
-                object.msg = message.msg;
+                object.msg = options.enums === String ? $root.murdermystery.Error.E_type[message.msg] : message.msg;
             return object;
         };
 
@@ -1341,6 +1416,22 @@ $root.murdermystery = (function() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
+        /**
+         * E_type enum.
+         * @name murdermystery.Error.E_type
+         * @enum {number}
+         * @property {number} UNKNOWN=0 UNKNOWN value
+         * @property {number} DISCONNECT=1 DISCONNECT value
+         * @property {number} BADNAME=2 BADNAME value
+         */
+        Error.E_type = (function() {
+            var valuesById = {}, values = Object.create(valuesById);
+            values[valuesById[0] = "UNKNOWN"] = 0;
+            values[valuesById[1] = "DISCONNECT"] = 1;
+            values[valuesById[2] = "BADNAME"] = 2;
+            return values;
+        })();
+
         return Error;
     })();
 
@@ -1350,7 +1441,7 @@ $root.murdermystery = (function() {
          * Properties of an Alert.
          * @memberof murdermystery
          * @interface IAlert
-         * @property {string|null} [msg] Alert msg
+         * @property {murdermystery.Alert.Msg|null} [msg] Alert msg
          */
 
         /**
@@ -1370,11 +1461,11 @@ $root.murdermystery = (function() {
 
         /**
          * Alert msg.
-         * @member {string} msg
+         * @member {murdermystery.Alert.Msg} msg
          * @memberof murdermystery.Alert
          * @instance
          */
-        Alert.prototype.msg = "";
+        Alert.prototype.msg = 0;
 
         /**
          * Creates a new Alert instance using the specified properties.
@@ -1401,7 +1492,7 @@ $root.murdermystery = (function() {
             if (!writer)
                 writer = $Writer.create();
             if (message.msg != null && Object.hasOwnProperty.call(message, "msg"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.msg);
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.msg);
             return writer;
         };
 
@@ -1437,7 +1528,7 @@ $root.murdermystery = (function() {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.msg = reader.string();
+                    message.msg = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1475,8 +1566,13 @@ $root.murdermystery = (function() {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.msg != null && message.hasOwnProperty("msg"))
-                if (!$util.isString(message.msg))
-                    return "msg: string expected";
+                switch (message.msg) {
+                default:
+                    return "msg: enum value expected";
+                case 0:
+                case 1:
+                    break;
+                }
             return null;
         };
 
@@ -1492,8 +1588,16 @@ $root.murdermystery = (function() {
             if (object instanceof $root.murdermystery.Alert)
                 return object;
             var message = new $root.murdermystery.Alert();
-            if (object.msg != null)
-                message.msg = String(object.msg);
+            switch (object.msg) {
+            case "UNKNOWN":
+            case 0:
+                message.msg = 0;
+                break;
+            case "NEEDMOREPLAYERS":
+            case 1:
+                message.msg = 1;
+                break;
+            }
             return message;
         };
 
@@ -1511,9 +1615,9 @@ $root.murdermystery = (function() {
                 options = {};
             var object = {};
             if (options.defaults)
-                object.msg = "";
+                object.msg = options.enums === String ? "UNKNOWN" : 0;
             if (message.msg != null && message.hasOwnProperty("msg"))
-                object.msg = message.msg;
+                object.msg = options.enums === String ? $root.murdermystery.Alert.Msg[message.msg] : message.msg;
             return object;
         };
 
@@ -1527,6 +1631,20 @@ $root.murdermystery = (function() {
         Alert.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
+
+        /**
+         * Msg enum.
+         * @name murdermystery.Alert.Msg
+         * @enum {number}
+         * @property {number} UNKNOWN=0 UNKNOWN value
+         * @property {number} NEEDMOREPLAYERS=1 NEEDMOREPLAYERS value
+         */
+        Alert.Msg = (function() {
+            var valuesById = {}, values = Object.create(valuesById);
+            values[valuesById[0] = "UNKNOWN"] = 0;
+            values[valuesById[1] = "NEEDMOREPLAYERS"] = 1;
+            return values;
+        })();
 
         return Alert;
     })();
@@ -1771,6 +1889,217 @@ $root.murdermystery = (function() {
         })();
 
         return SetCharacter;
+    })();
+
+    murdermystery.FellowWolves = (function() {
+
+        /**
+         * Properties of a FellowWolves.
+         * @memberof murdermystery
+         * @interface IFellowWolves
+         * @property {Array.<number>|null} [ids] FellowWolves ids
+         */
+
+        /**
+         * Constructs a new FellowWolves.
+         * @memberof murdermystery
+         * @classdesc Represents a FellowWolves.
+         * @implements IFellowWolves
+         * @constructor
+         * @param {murdermystery.IFellowWolves=} [properties] Properties to set
+         */
+        function FellowWolves(properties) {
+            this.ids = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * FellowWolves ids.
+         * @member {Array.<number>} ids
+         * @memberof murdermystery.FellowWolves
+         * @instance
+         */
+        FellowWolves.prototype.ids = $util.emptyArray;
+
+        /**
+         * Creates a new FellowWolves instance using the specified properties.
+         * @function create
+         * @memberof murdermystery.FellowWolves
+         * @static
+         * @param {murdermystery.IFellowWolves=} [properties] Properties to set
+         * @returns {murdermystery.FellowWolves} FellowWolves instance
+         */
+        FellowWolves.create = function create(properties) {
+            return new FellowWolves(properties);
+        };
+
+        /**
+         * Encodes the specified FellowWolves message. Does not implicitly {@link murdermystery.FellowWolves.verify|verify} messages.
+         * @function encode
+         * @memberof murdermystery.FellowWolves
+         * @static
+         * @param {murdermystery.IFellowWolves} message FellowWolves message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        FellowWolves.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.ids != null && message.ids.length) {
+                writer.uint32(/* id 1, wireType 2 =*/10).fork();
+                for (var i = 0; i < message.ids.length; ++i)
+                    writer.int32(message.ids[i]);
+                writer.ldelim();
+            }
+            return writer;
+        };
+
+        /**
+         * Encodes the specified FellowWolves message, length delimited. Does not implicitly {@link murdermystery.FellowWolves.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof murdermystery.FellowWolves
+         * @static
+         * @param {murdermystery.IFellowWolves} message FellowWolves message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        FellowWolves.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a FellowWolves message from the specified reader or buffer.
+         * @function decode
+         * @memberof murdermystery.FellowWolves
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {murdermystery.FellowWolves} FellowWolves
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        FellowWolves.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.murdermystery.FellowWolves();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (!(message.ids && message.ids.length))
+                        message.ids = [];
+                    if ((tag & 7) === 2) {
+                        var end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2)
+                            message.ids.push(reader.int32());
+                    } else
+                        message.ids.push(reader.int32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a FellowWolves message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof murdermystery.FellowWolves
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {murdermystery.FellowWolves} FellowWolves
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        FellowWolves.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a FellowWolves message.
+         * @function verify
+         * @memberof murdermystery.FellowWolves
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        FellowWolves.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.ids != null && message.hasOwnProperty("ids")) {
+                if (!Array.isArray(message.ids))
+                    return "ids: array expected";
+                for (var i = 0; i < message.ids.length; ++i)
+                    if (!$util.isInteger(message.ids[i]))
+                        return "ids: integer[] expected";
+            }
+            return null;
+        };
+
+        /**
+         * Creates a FellowWolves message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof murdermystery.FellowWolves
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {murdermystery.FellowWolves} FellowWolves
+         */
+        FellowWolves.fromObject = function fromObject(object) {
+            if (object instanceof $root.murdermystery.FellowWolves)
+                return object;
+            var message = new $root.murdermystery.FellowWolves();
+            if (object.ids) {
+                if (!Array.isArray(object.ids))
+                    throw TypeError(".murdermystery.FellowWolves.ids: array expected");
+                message.ids = [];
+                for (var i = 0; i < object.ids.length; ++i)
+                    message.ids[i] = object.ids[i] | 0;
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a FellowWolves message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof murdermystery.FellowWolves
+         * @static
+         * @param {murdermystery.FellowWolves} message FellowWolves
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        FellowWolves.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.ids = [];
+            if (message.ids && message.ids.length) {
+                object.ids = [];
+                for (var j = 0; j < message.ids.length; ++j)
+                    object.ids[j] = message.ids[j];
+            }
+            return object;
+        };
+
+        /**
+         * Converts this FellowWolves to JSON.
+         * @function toJSON
+         * @memberof murdermystery.FellowWolves
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        FellowWolves.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return FellowWolves;
     })();
 
     return murdermystery;

@@ -1,23 +1,32 @@
 package protocol
 
 import (
-	"encoding/json"
-	"fmt"
+	"log"
+
+	"google.golang.org/protobuf/types/dynamicpb"
+
+	"google.golang.org/protobuf/proto"
 )
 
-// DecodeMsg decodes a message
-func DecodeMsg(msg []byte) (int, []byte, error) {
-	if len(msg) < 1 {
-		return 0, []byte{}, fmt.Errorf("Message too short")
+// Marshal marshals a message and handles any errors
+func Marshal(message proto.Message) ([]byte, error) {
+	msg, err := proto.Marshal(message)
+	if err != nil {
+		log.Printf("Protocol error: %s\n", err)
+		return []byte{}, err
 	}
-	// First byte is opcode
-	opcode := int(msg[0]) - 65
-	return opcode, msg[1:], nil
+	return msg, nil
 }
 
-// SerializeRPC serializes an RPC given the type of the message and any arguments to send.
-func SerializeRPC(name string, data map[string]interface{}) []byte {
-	data["type"] = name
-	out, _ := json.Marshal(data)
-	return out
+// Unmarshal decodes a message. If invalid result will be nil
+func Unmarshal(data []byte) (result *dynamicpb.Message) {
+	defer func() {
+		if r := recover(); r != nil {
+			result = nil
+		}
+	}()
+
+	m := &dynamicpb.Message{}
+	proto.Unmarshal(data, m)
+	return m
 }

@@ -3,7 +3,14 @@ package murdermystery;
 
 option go_package = ".;pb";
 
-message Handshake { string error = 1; }
+message Handshake {
+  enum Error {
+    UNKNOWN = 0;
+    OK = 1;
+    STARTED = 2;
+  }
+  Error err = 1;
+}
 
 message Host { bool isHost = 1; }
 
@@ -14,15 +21,29 @@ message StartGame {}
 message Players {
   message Player {
     string name = 1;
-    bool isHost = 2;
+    int32 id = 2;
   }
 
   repeated Player players = 1;
+  int32 host_id = 2;
 }
 
-message Error { string msg = 1; }
+message Error {
+  enum E_type {
+    UNKNOWN = 0;
+    DISCONNECT = 1;
+    BADNAME = 2;
+  }
+  E_type msg = 1;
+}
 
-message Alert { string msg = 1; }
+message Alert {
+  enum Msg {
+    UNKNOWN = 0;
+    NEEDMOREPLAYERS = 1;
+  }
+  Msg msg = 1;
+}
 
 message SetCharacter {
   enum Character {
@@ -36,3 +57,5 @@ message SetCharacter {
 
   Character character = 1;
 }
+
+message FellowWolves { repeated int32 ids = 1; }

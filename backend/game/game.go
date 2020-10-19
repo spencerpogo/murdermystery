@@ -6,15 +6,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Scoder12/murdermystery/backend/protocol"
+	"github.com/Scoder12/murdermystery/backend/protocol/pb"
+	"google.golang.org/protobuf/proto"
 
+	"github.com/Scoder12/murdermystery/backend/protocol"
 	"gopkg.in/olahol/melody.v1"
 )
 
 // Client represents a client in the game
 type Client struct {
 	// Identifier of the client. Should be treated as constant!
-	ID int
+	ID int32
 
 	// A timer used for waiting on the client
 	// This timer should be cleared if the client discconects
@@ -24,7 +26,7 @@ type Client struct {
 	name string
 
 	// role of the client
-	role int
+	role int32
 }
 
 // Game represents a running game
@@ -36,7 +38,7 @@ type Game struct {
 	destroyFn func()
 
 	// Next id
-	nextID int
+	nextID int32
 
 	// A lock to prevent data races, must be used when reading/writing game attributes
 	lock sync.Mutex
@@ -79,7 +81,7 @@ func (g *Game) HandleRequest(w http.ResponseWriter, r *http.Request) error {
 }
 
 // End ends the game
-func (g *Game) End(reason string) {
+func (g *Game) End(reason pb.Error_EType) {
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -88,7 +90,11 @@ func (g *Game) End(reason string) {
 	}
 	g.started = false
 
-	g.m.Broadcast(protocol.SerializeRPC("error", map[string]interface{}{"reason": reason}))
+	msg, err := protocol.Marshal(&pb.Error{Msg: reason})
+	if err != nil {
+		return
+	}
+	g.m.BroadcastBinary(msg)
 	time.Sleep(200 * time.Millisecond)
 
 	g.m.Close()
@@ -111,40 +117,49 @@ func (g *Game) updateHost() {
 	}
 	// Find the earliest person to join (lowest PID) that is still online
 	var bestM *melody.Session = nil
-	var bestID = -1
+	var bestID int32 = -1
 	for m, c := range g.clients {
 		if bestID == -1 || c.ID < bestID {
 			bestM = m
 		}
 	}
 	if bestM != nil {
-		bestM.Write(protocol.SerializeRPC("host", map[string]interface{}{"isHost": true}))
+		msg, err := proto.Marshal(&pb.Host{IsHost: true})
+		if err != nil {
+			return
+		}
+		bestM.WriteBinary(msg)
 		g.host = bestM
 	}
 }
 
 // syncPlayers syncs player names between the server and all clients
 func (g *Game) syncPlayers() {
-	players := make(map[int]string)
+	players := []*pb.Players_Player{}
+	// Save hostID
+	var hostID int32 = -1
+	h, ok := g.clients[g.host]
+	if ok {
+		hostID = h.ID
+	}
+
 	for _, c := range g.clients {
-		players[c.ID] = c.name
-	}
-	hostID := -1
-	if g.host != nil {
-		c, ok := g.clients[g.host]
-		if ok {
-			hostID = c.ID
+		if c == nil {
+			return
 		}
+		players = append(players, &pb.Players_Player{Name: c.name, Id: c.ID})
 	}
-	g.m.Broadcast(protocol.SerializeRPC("players", map[string]interface{}{
-		"names":  players,
-		"hostID": hostID,
-	}))
+
+	msg, err := protocol.Marshal(&pb.Players{Players: players, HostId: hostID})
+	if err != nil {
+		return
+	}
+	g.m.BroadcastBinary(msg)
 }
 
 // A helper function to get the ID of a client
 // lock hub before calling!
-func (g *Game) getID(s *melody.Session) int {
+func (g *Game) getID(s *melody.Session) int32 {
 	c, ok := g.clients[s]
 	if !ok {
 		return -1
