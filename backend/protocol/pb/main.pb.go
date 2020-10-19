@@ -20,6 +20,64 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type SetCharacter_Character int32
+
+const (
+	SetCharacter_NONE     SetCharacter_Character = 0
+	SetCharacter_CITIZEN  SetCharacter_Character = 1
+	SetCharacter_WEREWOLF SetCharacter_Character = 2
+	SetCharacter_HEALER   SetCharacter_Character = 3
+	SetCharacter_PROPHET  SetCharacter_Character = 4
+	SetCharacter_HUNTER   SetCharacter_Character = 5
+)
+
+// Enum value maps for SetCharacter_Character.
+var (
+	SetCharacter_Character_name = map[int32]string{
+		0: "NONE",
+		1: "CITIZEN",
+		2: "WEREWOLF",
+		3: "HEALER",
+		4: "PROPHET",
+		5: "HUNTER",
+	}
+	SetCharacter_Character_value = map[string]int32{
+		"NONE":     0,
+		"CITIZEN":  1,
+		"WEREWOLF": 2,
+		"HEALER":   3,
+		"PROPHET":  4,
+		"HUNTER":   5,
+	}
+)
+
+func (x SetCharacter_Character) Enum() *SetCharacter_Character {
+	p := new(SetCharacter_Character)
+	*p = x
+	return p
+}
+
+func (x SetCharacter_Character) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SetCharacter_Character) Descriptor() protoreflect.EnumDescriptor {
+	return file_main_proto_enumTypes[0].Descriptor()
+}
+
+func (SetCharacter_Character) Type() protoreflect.EnumType {
+	return &file_main_proto_enumTypes[0]
+}
+
+func (x SetCharacter_Character) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SetCharacter_Character.Descriptor instead.
+func (SetCharacter_Character) EnumDescriptor() ([]byte, []int) {
+	return file_main_proto_rawDescGZIP(), []int{7, 0}
+}
+
 type Handshake struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -67,14 +125,416 @@ func (x *Handshake) GetError() string {
 	return ""
 }
 
+type Host struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	IsHost bool `protobuf:"varint,1,opt,name=isHost,proto3" json:"isHost,omitempty"`
+}
+
+func (x *Host) Reset() {
+	*x = Host{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_main_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Host) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Host) ProtoMessage() {}
+
+func (x *Host) ProtoReflect() protoreflect.Message {
+	mi := &file_main_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Host.ProtoReflect.Descriptor instead.
+func (*Host) Descriptor() ([]byte, []int) {
+	return file_main_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Host) GetIsHost() bool {
+	if x != nil {
+		return x.IsHost
+	}
+	return false
+}
+
+type SetName struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (x *SetName) Reset() {
+	*x = SetName{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_main_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SetName) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetName) ProtoMessage() {}
+
+func (x *SetName) ProtoReflect() protoreflect.Message {
+	mi := &file_main_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetName.ProtoReflect.Descriptor instead.
+func (*SetName) Descriptor() ([]byte, []int) {
+	return file_main_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *SetName) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type StartGame struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *StartGame) Reset() {
+	*x = StartGame{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_main_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StartGame) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartGame) ProtoMessage() {}
+
+func (x *StartGame) ProtoReflect() protoreflect.Message {
+	mi := &file_main_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartGame.ProtoReflect.Descriptor instead.
+func (*StartGame) Descriptor() ([]byte, []int) {
+	return file_main_proto_rawDescGZIP(), []int{3}
+}
+
+type Players struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Players []*Players_Player `protobuf:"bytes,1,rep,name=players,proto3" json:"players,omitempty"`
+}
+
+func (x *Players) Reset() {
+	*x = Players{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_main_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Players) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Players) ProtoMessage() {}
+
+func (x *Players) ProtoReflect() protoreflect.Message {
+	mi := &file_main_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Players.ProtoReflect.Descriptor instead.
+func (*Players) Descriptor() ([]byte, []int) {
+	return file_main_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *Players) GetPlayers() []*Players_Player {
+	if x != nil {
+		return x.Players
+	}
+	return nil
+}
+
+type Error struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Msg string `protobuf:"bytes,1,opt,name=msg,proto3" json:"msg,omitempty"`
+}
+
+func (x *Error) Reset() {
+	*x = Error{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_main_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Error) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Error) ProtoMessage() {}
+
+func (x *Error) ProtoReflect() protoreflect.Message {
+	mi := &file_main_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Error.ProtoReflect.Descriptor instead.
+func (*Error) Descriptor() ([]byte, []int) {
+	return file_main_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *Error) GetMsg() string {
+	if x != nil {
+		return x.Msg
+	}
+	return ""
+}
+
+type Alert struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Msg string `protobuf:"bytes,1,opt,name=msg,proto3" json:"msg,omitempty"`
+}
+
+func (x *Alert) Reset() {
+	*x = Alert{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_main_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Alert) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Alert) ProtoMessage() {}
+
+func (x *Alert) ProtoReflect() protoreflect.Message {
+	mi := &file_main_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Alert.ProtoReflect.Descriptor instead.
+func (*Alert) Descriptor() ([]byte, []int) {
+	return file_main_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *Alert) GetMsg() string {
+	if x != nil {
+		return x.Msg
+	}
+	return ""
+}
+
+type SetCharacter struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Character SetCharacter_Character `protobuf:"varint,1,opt,name=character,proto3,enum=murdermystery.SetCharacter_Character" json:"character,omitempty"`
+}
+
+func (x *SetCharacter) Reset() {
+	*x = SetCharacter{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_main_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SetCharacter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetCharacter) ProtoMessage() {}
+
+func (x *SetCharacter) ProtoReflect() protoreflect.Message {
+	mi := &file_main_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetCharacter.ProtoReflect.Descriptor instead.
+func (*SetCharacter) Descriptor() ([]byte, []int) {
+	return file_main_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *SetCharacter) GetCharacter() SetCharacter_Character {
+	if x != nil {
+		return x.Character
+	}
+	return SetCharacter_NONE
+}
+
+type Players_Player struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Name   string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	IsHost bool   `protobuf:"varint,2,opt,name=isHost,proto3" json:"isHost,omitempty"`
+}
+
+func (x *Players_Player) Reset() {
+	*x = Players_Player{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_main_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Players_Player) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Players_Player) ProtoMessage() {}
+
+func (x *Players_Player) ProtoReflect() protoreflect.Message {
+	mi := &file_main_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Players_Player.ProtoReflect.Descriptor instead.
+func (*Players_Player) Descriptor() ([]byte, []int) {
+	return file_main_proto_rawDescGZIP(), []int{4, 0}
+}
+
+func (x *Players_Player) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Players_Player) GetIsHost() bool {
+	if x != nil {
+		return x.IsHost
+	}
+	return false
+}
+
 var File_main_proto protoreflect.FileDescriptor
 
 var file_main_proto_rawDesc = []byte{
 	0x0a, 0x0a, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0d, 0x6d, 0x75,
 	0x72, 0x64, 0x65, 0x72, 0x6d, 0x79, 0x73, 0x74, 0x65, 0x72, 0x79, 0x22, 0x21, 0x0a, 0x09, 0x48,
 	0x61, 0x6e, 0x64, 0x73, 0x68, 0x61, 0x6b, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f,
-	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x42, 0x06,
-	0x5a, 0x04, 0x2e, 0x3b, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x22, 0x1e,
+	0x0a, 0x04, 0x48, 0x6f, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x69, 0x73, 0x48, 0x6f, 0x73, 0x74,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x69, 0x73, 0x48, 0x6f, 0x73, 0x74, 0x22, 0x1d,
+	0x0a, 0x07, 0x53, 0x65, 0x74, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d,
+	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x0b, 0x0a,
+	0x09, 0x53, 0x74, 0x61, 0x72, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x22, 0x78, 0x0a, 0x07, 0x50, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x73, 0x12, 0x37, 0x0a, 0x07, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x73,
+	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x6d, 0x75, 0x72, 0x64, 0x65, 0x72, 0x6d,
+	0x79, 0x73, 0x74, 0x65, 0x72, 0x79, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x73, 0x2e, 0x50,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x07, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x73, 0x1a, 0x34,
+	0x0a, 0x06, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x16, 0x0a, 0x06,
+	0x69, 0x73, 0x48, 0x6f, 0x73, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x69, 0x73,
+	0x48, 0x6f, 0x73, 0x74, 0x22, 0x19, 0x0a, 0x05, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x10, 0x0a,
+	0x03, 0x6d, 0x73, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6d, 0x73, 0x67, 0x22,
+	0x19, 0x0a, 0x05, 0x41, 0x6c, 0x65, 0x72, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x6d, 0x73, 0x67, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6d, 0x73, 0x67, 0x22, 0xaa, 0x01, 0x0a, 0x0c, 0x53,
+	0x65, 0x74, 0x43, 0x68, 0x61, 0x72, 0x61, 0x63, 0x74, 0x65, 0x72, 0x12, 0x43, 0x0a, 0x09, 0x63,
+	0x68, 0x61, 0x72, 0x61, 0x63, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x25,
+	0x2e, 0x6d, 0x75, 0x72, 0x64, 0x65, 0x72, 0x6d, 0x79, 0x73, 0x74, 0x65, 0x72, 0x79, 0x2e, 0x53,
+	0x65, 0x74, 0x43, 0x68, 0x61, 0x72, 0x61, 0x63, 0x74, 0x65, 0x72, 0x2e, 0x43, 0x68, 0x61, 0x72,
+	0x61, 0x63, 0x74, 0x65, 0x72, 0x52, 0x09, 0x63, 0x68, 0x61, 0x72, 0x61, 0x63, 0x74, 0x65, 0x72,
+	0x22, 0x55, 0x0a, 0x09, 0x43, 0x68, 0x61, 0x72, 0x61, 0x63, 0x74, 0x65, 0x72, 0x12, 0x08, 0x0a,
+	0x04, 0x4e, 0x4f, 0x4e, 0x45, 0x10, 0x00, 0x12, 0x0b, 0x0a, 0x07, 0x43, 0x49, 0x54, 0x49, 0x5a,
+	0x45, 0x4e, 0x10, 0x01, 0x12, 0x0c, 0x0a, 0x08, 0x57, 0x45, 0x52, 0x45, 0x57, 0x4f, 0x4c, 0x46,
+	0x10, 0x02, 0x12, 0x0a, 0x0a, 0x06, 0x48, 0x45, 0x41, 0x4c, 0x45, 0x52, 0x10, 0x03, 0x12, 0x0b,
+	0x0a, 0x07, 0x50, 0x52, 0x4f, 0x50, 0x48, 0x45, 0x54, 0x10, 0x04, 0x12, 0x0a, 0x0a, 0x06, 0x48,
+	0x55, 0x4e, 0x54, 0x45, 0x52, 0x10, 0x05, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x3b, 0x70, 0x62, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -89,16 +549,28 @@ func file_main_proto_rawDescGZIP() []byte {
 	return file_main_proto_rawDescData
 }
 
-var file_main_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_main_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_main_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_main_proto_goTypes = []interface{}{
-	(*Handshake)(nil), // 0: murdermystery.Handshake
+	(SetCharacter_Character)(0), // 0: murdermystery.SetCharacter.Character
+	(*Handshake)(nil),           // 1: murdermystery.Handshake
+	(*Host)(nil),                // 2: murdermystery.Host
+	(*SetName)(nil),             // 3: murdermystery.SetName
+	(*StartGame)(nil),           // 4: murdermystery.StartGame
+	(*Players)(nil),             // 5: murdermystery.Players
+	(*Error)(nil),               // 6: murdermystery.Error
+	(*Alert)(nil),               // 7: murdermystery.Alert
+	(*SetCharacter)(nil),        // 8: murdermystery.SetCharacter
+	(*Players_Player)(nil),      // 9: murdermystery.Players.Player
 }
 var file_main_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	9, // 0: murdermystery.Players.players:type_name -> murdermystery.Players.Player
+	0, // 1: murdermystery.SetCharacter.character:type_name -> murdermystery.SetCharacter.Character
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_main_proto_init() }
@@ -119,19 +591,116 @@ func file_main_proto_init() {
 				return nil
 			}
 		}
+		file_main_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Host); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_main_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SetName); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_main_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StartGame); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_main_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Players); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_main_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Error); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_main_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Alert); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_main_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SetCharacter); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_main_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Players_Player); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_main_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   1,
+			NumEnums:      1,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_main_proto_goTypes,
 		DependencyIndexes: file_main_proto_depIdxs,
+		EnumInfos:         file_main_proto_enumTypes,
 		MessageInfos:      file_main_proto_msgTypes,
 	}.Build()
 	File_main_proto = out.File
