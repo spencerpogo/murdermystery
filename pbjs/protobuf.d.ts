@@ -192,180 +192,6 @@ export namespace murdermystery {
         public toJSON(): { [k: string]: any };
     }
 
-    /** Properties of a SetName. */
-    interface ISetName {
-
-        /** SetName name */
-        name?: (string|null);
-    }
-
-    /** Represents a SetName. */
-    class SetName implements ISetName {
-
-        /**
-         * Constructs a new SetName.
-         * @param [properties] Properties to set
-         */
-        constructor(properties?: murdermystery.ISetName);
-
-        /** SetName name. */
-        public name: string;
-
-        /**
-         * Creates a new SetName instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns SetName instance
-         */
-        public static create(properties?: murdermystery.ISetName): murdermystery.SetName;
-
-        /**
-         * Encodes the specified SetName message. Does not implicitly {@link murdermystery.SetName.verify|verify} messages.
-         * @param message SetName message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(message: murdermystery.ISetName, writer?: $protobuf.Writer): $protobuf.Writer;
-
-        /**
-         * Encodes the specified SetName message, length delimited. Does not implicitly {@link murdermystery.SetName.verify|verify} messages.
-         * @param message SetName message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encodeDelimited(message: murdermystery.ISetName, writer?: $protobuf.Writer): $protobuf.Writer;
-
-        /**
-         * Decodes a SetName message from the specified reader or buffer.
-         * @param reader Reader or buffer to decode from
-         * @param [length] Message length if known beforehand
-         * @returns SetName
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): murdermystery.SetName;
-
-        /**
-         * Decodes a SetName message from the specified reader or buffer, length delimited.
-         * @param reader Reader or buffer to decode from
-         * @returns SetName
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): murdermystery.SetName;
-
-        /**
-         * Verifies a SetName message.
-         * @param message Plain object to verify
-         * @returns `null` if valid, otherwise the reason why it is not
-         */
-        public static verify(message: { [k: string]: any }): (string|null);
-
-        /**
-         * Creates a SetName message from a plain object. Also converts values to their respective internal types.
-         * @param object Plain object
-         * @returns SetName
-         */
-        public static fromObject(object: { [k: string]: any }): murdermystery.SetName;
-
-        /**
-         * Creates a plain object from a SetName message. Also converts values to other types if specified.
-         * @param message SetName
-         * @param [options] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(message: murdermystery.SetName, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-        /**
-         * Converts this SetName to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a StartGame. */
-    interface IStartGame {
-    }
-
-    /** Represents a StartGame. */
-    class StartGame implements IStartGame {
-
-        /**
-         * Constructs a new StartGame.
-         * @param [properties] Properties to set
-         */
-        constructor(properties?: murdermystery.IStartGame);
-
-        /**
-         * Creates a new StartGame instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns StartGame instance
-         */
-        public static create(properties?: murdermystery.IStartGame): murdermystery.StartGame;
-
-        /**
-         * Encodes the specified StartGame message. Does not implicitly {@link murdermystery.StartGame.verify|verify} messages.
-         * @param message StartGame message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(message: murdermystery.IStartGame, writer?: $protobuf.Writer): $protobuf.Writer;
-
-        /**
-         * Encodes the specified StartGame message, length delimited. Does not implicitly {@link murdermystery.StartGame.verify|verify} messages.
-         * @param message StartGame message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encodeDelimited(message: murdermystery.IStartGame, writer?: $protobuf.Writer): $protobuf.Writer;
-
-        /**
-         * Decodes a StartGame message from the specified reader or buffer.
-         * @param reader Reader or buffer to decode from
-         * @param [length] Message length if known beforehand
-         * @returns StartGame
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): murdermystery.StartGame;
-
-        /**
-         * Decodes a StartGame message from the specified reader or buffer, length delimited.
-         * @param reader Reader or buffer to decode from
-         * @returns StartGame
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): murdermystery.StartGame;
-
-        /**
-         * Verifies a StartGame message.
-         * @param message Plain object to verify
-         * @returns `null` if valid, otherwise the reason why it is not
-         */
-        public static verify(message: { [k: string]: any }): (string|null);
-
-        /**
-         * Creates a StartGame message from a plain object. Also converts values to their respective internal types.
-         * @param object Plain object
-         * @returns StartGame
-         */
-        public static fromObject(object: { [k: string]: any }): murdermystery.StartGame;
-
-        /**
-         * Creates a plain object from a StartGame message. Also converts values to other types if specified.
-         * @param message StartGame
-         * @param [options] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(message: murdermystery.StartGame, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-        /**
-         * Converts this StartGame to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-    }
-
     /** Properties of a Players. */
     interface IPlayers {
 
@@ -948,6 +774,408 @@ export namespace murdermystery {
 
         /**
          * Converts this FellowWolves to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a ServerMessage. */
+    interface IServerMessage {
+
+        /** ServerMessage handshake */
+        handshake?: (murdermystery.IHandshake|null);
+
+        /** ServerMessage host */
+        host?: (murdermystery.IHost|null);
+
+        /** ServerMessage players */
+        players?: (murdermystery.IPlayers|null);
+
+        /** ServerMessage error */
+        error?: (murdermystery.IError|null);
+
+        /** ServerMessage alert */
+        alert?: (murdermystery.IAlert|null);
+
+        /** ServerMessage setCharacter */
+        setCharacter?: (murdermystery.ISetCharacter|null);
+
+        /** ServerMessage fellowWolves */
+        fellowWolves?: (murdermystery.IFellowWolves|null);
+    }
+
+    /** Represents a ServerMessage. */
+    class ServerMessage implements IServerMessage {
+
+        /**
+         * Constructs a new ServerMessage.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: murdermystery.IServerMessage);
+
+        /** ServerMessage handshake. */
+        public handshake?: (murdermystery.IHandshake|null);
+
+        /** ServerMessage host. */
+        public host?: (murdermystery.IHost|null);
+
+        /** ServerMessage players. */
+        public players?: (murdermystery.IPlayers|null);
+
+        /** ServerMessage error. */
+        public error?: (murdermystery.IError|null);
+
+        /** ServerMessage alert. */
+        public alert?: (murdermystery.IAlert|null);
+
+        /** ServerMessage setCharacter. */
+        public setCharacter?: (murdermystery.ISetCharacter|null);
+
+        /** ServerMessage fellowWolves. */
+        public fellowWolves?: (murdermystery.IFellowWolves|null);
+
+        /** ServerMessage data. */
+        public data?: ("handshake"|"host"|"players"|"error"|"alert"|"setCharacter"|"fellowWolves");
+
+        /**
+         * Creates a new ServerMessage instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns ServerMessage instance
+         */
+        public static create(properties?: murdermystery.IServerMessage): murdermystery.ServerMessage;
+
+        /**
+         * Encodes the specified ServerMessage message. Does not implicitly {@link murdermystery.ServerMessage.verify|verify} messages.
+         * @param message ServerMessage message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: murdermystery.IServerMessage, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified ServerMessage message, length delimited. Does not implicitly {@link murdermystery.ServerMessage.verify|verify} messages.
+         * @param message ServerMessage message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: murdermystery.IServerMessage, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ServerMessage message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ServerMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): murdermystery.ServerMessage;
+
+        /**
+         * Decodes a ServerMessage message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns ServerMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): murdermystery.ServerMessage;
+
+        /**
+         * Verifies a ServerMessage message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a ServerMessage message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns ServerMessage
+         */
+        public static fromObject(object: { [k: string]: any }): murdermystery.ServerMessage;
+
+        /**
+         * Creates a plain object from a ServerMessage message. Also converts values to other types if specified.
+         * @param message ServerMessage
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: murdermystery.ServerMessage, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this ServerMessage to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a SetName. */
+    interface ISetName {
+
+        /** SetName name */
+        name?: (string|null);
+    }
+
+    /** Represents a SetName. */
+    class SetName implements ISetName {
+
+        /**
+         * Constructs a new SetName.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: murdermystery.ISetName);
+
+        /** SetName name. */
+        public name: string;
+
+        /**
+         * Creates a new SetName instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns SetName instance
+         */
+        public static create(properties?: murdermystery.ISetName): murdermystery.SetName;
+
+        /**
+         * Encodes the specified SetName message. Does not implicitly {@link murdermystery.SetName.verify|verify} messages.
+         * @param message SetName message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: murdermystery.ISetName, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified SetName message, length delimited. Does not implicitly {@link murdermystery.SetName.verify|verify} messages.
+         * @param message SetName message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: murdermystery.ISetName, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a SetName message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns SetName
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): murdermystery.SetName;
+
+        /**
+         * Decodes a SetName message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns SetName
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): murdermystery.SetName;
+
+        /**
+         * Verifies a SetName message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a SetName message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns SetName
+         */
+        public static fromObject(object: { [k: string]: any }): murdermystery.SetName;
+
+        /**
+         * Creates a plain object from a SetName message. Also converts values to other types if specified.
+         * @param message SetName
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: murdermystery.SetName, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this SetName to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a StartGame. */
+    interface IStartGame {
+    }
+
+    /** Represents a StartGame. */
+    class StartGame implements IStartGame {
+
+        /**
+         * Constructs a new StartGame.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: murdermystery.IStartGame);
+
+        /**
+         * Creates a new StartGame instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns StartGame instance
+         */
+        public static create(properties?: murdermystery.IStartGame): murdermystery.StartGame;
+
+        /**
+         * Encodes the specified StartGame message. Does not implicitly {@link murdermystery.StartGame.verify|verify} messages.
+         * @param message StartGame message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: murdermystery.IStartGame, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified StartGame message, length delimited. Does not implicitly {@link murdermystery.StartGame.verify|verify} messages.
+         * @param message StartGame message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: murdermystery.IStartGame, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a StartGame message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns StartGame
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): murdermystery.StartGame;
+
+        /**
+         * Decodes a StartGame message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns StartGame
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): murdermystery.StartGame;
+
+        /**
+         * Verifies a StartGame message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a StartGame message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns StartGame
+         */
+        public static fromObject(object: { [k: string]: any }): murdermystery.StartGame;
+
+        /**
+         * Creates a plain object from a StartGame message. Also converts values to other types if specified.
+         * @param message StartGame
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: murdermystery.StartGame, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this StartGame to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a ClientMessage. */
+    interface IClientMessage {
+
+        /** ClientMessage setName */
+        setName?: (murdermystery.ISetName|null);
+
+        /** ClientMessage startGame */
+        startGame?: (murdermystery.IStartGame|null);
+    }
+
+    /** Represents a ClientMessage. */
+    class ClientMessage implements IClientMessage {
+
+        /**
+         * Constructs a new ClientMessage.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: murdermystery.IClientMessage);
+
+        /** ClientMessage setName. */
+        public setName?: (murdermystery.ISetName|null);
+
+        /** ClientMessage startGame. */
+        public startGame?: (murdermystery.IStartGame|null);
+
+        /** ClientMessage data. */
+        public data?: ("setName"|"startGame");
+
+        /**
+         * Creates a new ClientMessage instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns ClientMessage instance
+         */
+        public static create(properties?: murdermystery.IClientMessage): murdermystery.ClientMessage;
+
+        /**
+         * Encodes the specified ClientMessage message. Does not implicitly {@link murdermystery.ClientMessage.verify|verify} messages.
+         * @param message ClientMessage message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: murdermystery.IClientMessage, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified ClientMessage message, length delimited. Does not implicitly {@link murdermystery.ClientMessage.verify|verify} messages.
+         * @param message ClientMessage message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: murdermystery.IClientMessage, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ClientMessage message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ClientMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): murdermystery.ClientMessage;
+
+        /**
+         * Decodes a ClientMessage message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns ClientMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): murdermystery.ClientMessage;
+
+        /**
+         * Verifies a ClientMessage message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a ClientMessage message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns ClientMessage
+         */
+        public static fromObject(object: { [k: string]: any }): murdermystery.ClientMessage;
+
+        /**
+         * Creates a plain object from a ClientMessage message. Also converts values to other types if specified.
+         * @param message ClientMessage
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: murdermystery.ClientMessage, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this ClientMessage to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };

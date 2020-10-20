@@ -3,7 +3,7 @@ package protocol
 import (
 	"log"
 
-	"google.golang.org/protobuf/types/dynamicpb"
+	"github.com/Scoder12/murdermystery/backend/protocol/pb"
 
 	"google.golang.org/protobuf/proto"
 )
@@ -19,14 +19,14 @@ func Marshal(message proto.Message) ([]byte, error) {
 }
 
 // Unmarshal decodes a message. If invalid result will be nil
-func Unmarshal(data []byte) (result *dynamicpb.Message) {
+func Unmarshal(data []byte) (result *pb.ClientMessage) {
 	defer func() {
 		if r := recover(); r != nil {
 			result = nil
 		}
 	}()
 
-	m := &dynamicpb.Message{}
+	m := &pb.ClientMessage{}
 	proto.Unmarshal(data, m)
 	return m
 }

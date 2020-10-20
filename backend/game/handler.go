@@ -5,9 +5,6 @@ import (
 	"log"
 	"time"
 
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/dynamicpb"
-
 	"github.com/Scoder12/murdermystery/backend/protocol/pb"
 
 	"github.com/Scoder12/murdermystery/backend/protocol"
@@ -78,13 +75,13 @@ func (g *Game) handleDisconnect(s *melody.Session) {
 	}
 }
 
-func (g *Game) callHandler(s *melody.Session, c *Client, msg proto.Message) error {
-	switch msg.(type) {
-	case *pb.SetName:
-		g.setNameHandler(s, c, msg.(*pb.SetName))
+func (g *Game) callHandler(s *melody.Session, c *Client, data *pb.ClientMessage) error {
+	switch msg := data.Data.(type) {
+	case *pb.ClientMessage_SetName:
+		g.setNameHandler(s, c, msg.SetName)
 		return nil
-	case *pb.StartGame:
-		g.startGameHandler(s, c, msg.(*pb.StartGame))
+	case *pb.ClientMessage_StartGame:
+		g.startGameHandler(s, c, msg.StartGame)
 		return nil
 	default:
 		return fmt.Errorf("Unrecognized op")
@@ -93,6 +90,7 @@ func (g *Game) callHandler(s *melody.Session, c *Client, msg proto.Message) erro
 
 // HandleMsg handles a message from a client
 func (g *Game) handleMsg(s *melody.Session, data []byte) {
+	// https://developers.google.com/protocol-buffers/docs/reference/go-generated#oneof
 	g.lock.Lock()
 	c, ok := g.clients[s]
 	g.lock.Unlock()
@@ -101,7 +99,7 @@ func (g *Game) handleMsg(s *melody.Session, data []byte) {
 		return
 	}
 	//log.Printf("[%v] ↑ %s\n", c.ID, string(msg))
-	var msg *dynamicpb.Message = protocol.Unmarshal(data)
+	var msg *pb.ServerMessage = protocol.Unmarshal(data)
 	if msg == nil {
 		log.Printf("[%v] Invalid data", c.ID)
 		s.Close()

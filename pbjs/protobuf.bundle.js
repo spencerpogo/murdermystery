@@ -426,353 +426,6 @@ $root.murdermystery = (function() {
         return Host;
     })();
 
-    murdermystery.SetName = (function() {
-
-        /**
-         * Properties of a SetName.
-         * @memberof murdermystery
-         * @interface ISetName
-         * @property {string|null} [name] SetName name
-         */
-
-        /**
-         * Constructs a new SetName.
-         * @memberof murdermystery
-         * @classdesc Represents a SetName.
-         * @implements ISetName
-         * @constructor
-         * @param {murdermystery.ISetName=} [properties] Properties to set
-         */
-        function SetName(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * SetName name.
-         * @member {string} name
-         * @memberof murdermystery.SetName
-         * @instance
-         */
-        SetName.prototype.name = "";
-
-        /**
-         * Creates a new SetName instance using the specified properties.
-         * @function create
-         * @memberof murdermystery.SetName
-         * @static
-         * @param {murdermystery.ISetName=} [properties] Properties to set
-         * @returns {murdermystery.SetName} SetName instance
-         */
-        SetName.create = function create(properties) {
-            return new SetName(properties);
-        };
-
-        /**
-         * Encodes the specified SetName message. Does not implicitly {@link murdermystery.SetName.verify|verify} messages.
-         * @function encode
-         * @memberof murdermystery.SetName
-         * @static
-         * @param {murdermystery.ISetName} message SetName message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        SetName.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified SetName message, length delimited. Does not implicitly {@link murdermystery.SetName.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof murdermystery.SetName
-         * @static
-         * @param {murdermystery.ISetName} message SetName message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        SetName.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a SetName message from the specified reader or buffer.
-         * @function decode
-         * @memberof murdermystery.SetName
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {murdermystery.SetName} SetName
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        SetName.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.murdermystery.SetName();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.name = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a SetName message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof murdermystery.SetName
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {murdermystery.SetName} SetName
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        SetName.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a SetName message.
-         * @function verify
-         * @memberof murdermystery.SetName
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        SetName.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.name != null && message.hasOwnProperty("name"))
-                if (!$util.isString(message.name))
-                    return "name: string expected";
-            return null;
-        };
-
-        /**
-         * Creates a SetName message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof murdermystery.SetName
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {murdermystery.SetName} SetName
-         */
-        SetName.fromObject = function fromObject(object) {
-            if (object instanceof $root.murdermystery.SetName)
-                return object;
-            var message = new $root.murdermystery.SetName();
-            if (object.name != null)
-                message.name = String(object.name);
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a SetName message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof murdermystery.SetName
-         * @static
-         * @param {murdermystery.SetName} message SetName
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        SetName.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults)
-                object.name = "";
-            if (message.name != null && message.hasOwnProperty("name"))
-                object.name = message.name;
-            return object;
-        };
-
-        /**
-         * Converts this SetName to JSON.
-         * @function toJSON
-         * @memberof murdermystery.SetName
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        SetName.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return SetName;
-    })();
-
-    murdermystery.StartGame = (function() {
-
-        /**
-         * Properties of a StartGame.
-         * @memberof murdermystery
-         * @interface IStartGame
-         */
-
-        /**
-         * Constructs a new StartGame.
-         * @memberof murdermystery
-         * @classdesc Represents a StartGame.
-         * @implements IStartGame
-         * @constructor
-         * @param {murdermystery.IStartGame=} [properties] Properties to set
-         */
-        function StartGame(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * Creates a new StartGame instance using the specified properties.
-         * @function create
-         * @memberof murdermystery.StartGame
-         * @static
-         * @param {murdermystery.IStartGame=} [properties] Properties to set
-         * @returns {murdermystery.StartGame} StartGame instance
-         */
-        StartGame.create = function create(properties) {
-            return new StartGame(properties);
-        };
-
-        /**
-         * Encodes the specified StartGame message. Does not implicitly {@link murdermystery.StartGame.verify|verify} messages.
-         * @function encode
-         * @memberof murdermystery.StartGame
-         * @static
-         * @param {murdermystery.IStartGame} message StartGame message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        StartGame.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            return writer;
-        };
-
-        /**
-         * Encodes the specified StartGame message, length delimited. Does not implicitly {@link murdermystery.StartGame.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof murdermystery.StartGame
-         * @static
-         * @param {murdermystery.IStartGame} message StartGame message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        StartGame.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a StartGame message from the specified reader or buffer.
-         * @function decode
-         * @memberof murdermystery.StartGame
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {murdermystery.StartGame} StartGame
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        StartGame.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.murdermystery.StartGame();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a StartGame message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof murdermystery.StartGame
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {murdermystery.StartGame} StartGame
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        StartGame.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a StartGame message.
-         * @function verify
-         * @memberof murdermystery.StartGame
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        StartGame.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            return null;
-        };
-
-        /**
-         * Creates a StartGame message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof murdermystery.StartGame
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {murdermystery.StartGame} StartGame
-         */
-        StartGame.fromObject = function fromObject(object) {
-            if (object instanceof $root.murdermystery.StartGame)
-                return object;
-            return new $root.murdermystery.StartGame();
-        };
-
-        /**
-         * Creates a plain object from a StartGame message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof murdermystery.StartGame
-         * @static
-         * @param {murdermystery.StartGame} message StartGame
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        StartGame.toObject = function toObject() {
-            return {};
-        };
-
-        /**
-         * Converts this StartGame to JSON.
-         * @function toJSON
-         * @memberof murdermystery.StartGame
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        StartGame.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return StartGame;
-    })();
-
     murdermystery.Players = (function() {
 
         /**
@@ -2100,6 +1753,1013 @@ $root.murdermystery = (function() {
         };
 
         return FellowWolves;
+    })();
+
+    murdermystery.ServerMessage = (function() {
+
+        /**
+         * Properties of a ServerMessage.
+         * @memberof murdermystery
+         * @interface IServerMessage
+         * @property {murdermystery.IHandshake|null} [handshake] ServerMessage handshake
+         * @property {murdermystery.IHost|null} [host] ServerMessage host
+         * @property {murdermystery.IPlayers|null} [players] ServerMessage players
+         * @property {murdermystery.IError|null} [error] ServerMessage error
+         * @property {murdermystery.IAlert|null} [alert] ServerMessage alert
+         * @property {murdermystery.ISetCharacter|null} [setCharacter] ServerMessage setCharacter
+         * @property {murdermystery.IFellowWolves|null} [fellowWolves] ServerMessage fellowWolves
+         */
+
+        /**
+         * Constructs a new ServerMessage.
+         * @memberof murdermystery
+         * @classdesc Represents a ServerMessage.
+         * @implements IServerMessage
+         * @constructor
+         * @param {murdermystery.IServerMessage=} [properties] Properties to set
+         */
+        function ServerMessage(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ServerMessage handshake.
+         * @member {murdermystery.IHandshake|null|undefined} handshake
+         * @memberof murdermystery.ServerMessage
+         * @instance
+         */
+        ServerMessage.prototype.handshake = null;
+
+        /**
+         * ServerMessage host.
+         * @member {murdermystery.IHost|null|undefined} host
+         * @memberof murdermystery.ServerMessage
+         * @instance
+         */
+        ServerMessage.prototype.host = null;
+
+        /**
+         * ServerMessage players.
+         * @member {murdermystery.IPlayers|null|undefined} players
+         * @memberof murdermystery.ServerMessage
+         * @instance
+         */
+        ServerMessage.prototype.players = null;
+
+        /**
+         * ServerMessage error.
+         * @member {murdermystery.IError|null|undefined} error
+         * @memberof murdermystery.ServerMessage
+         * @instance
+         */
+        ServerMessage.prototype.error = null;
+
+        /**
+         * ServerMessage alert.
+         * @member {murdermystery.IAlert|null|undefined} alert
+         * @memberof murdermystery.ServerMessage
+         * @instance
+         */
+        ServerMessage.prototype.alert = null;
+
+        /**
+         * ServerMessage setCharacter.
+         * @member {murdermystery.ISetCharacter|null|undefined} setCharacter
+         * @memberof murdermystery.ServerMessage
+         * @instance
+         */
+        ServerMessage.prototype.setCharacter = null;
+
+        /**
+         * ServerMessage fellowWolves.
+         * @member {murdermystery.IFellowWolves|null|undefined} fellowWolves
+         * @memberof murdermystery.ServerMessage
+         * @instance
+         */
+        ServerMessage.prototype.fellowWolves = null;
+
+        // OneOf field names bound to virtual getters and setters
+        var $oneOfFields;
+
+        /**
+         * ServerMessage data.
+         * @member {"handshake"|"host"|"players"|"error"|"alert"|"setCharacter"|"fellowWolves"|undefined} data
+         * @memberof murdermystery.ServerMessage
+         * @instance
+         */
+        Object.defineProperty(ServerMessage.prototype, "data", {
+            get: $util.oneOfGetter($oneOfFields = ["handshake", "host", "players", "error", "alert", "setCharacter", "fellowWolves"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * Creates a new ServerMessage instance using the specified properties.
+         * @function create
+         * @memberof murdermystery.ServerMessage
+         * @static
+         * @param {murdermystery.IServerMessage=} [properties] Properties to set
+         * @returns {murdermystery.ServerMessage} ServerMessage instance
+         */
+        ServerMessage.create = function create(properties) {
+            return new ServerMessage(properties);
+        };
+
+        /**
+         * Encodes the specified ServerMessage message. Does not implicitly {@link murdermystery.ServerMessage.verify|verify} messages.
+         * @function encode
+         * @memberof murdermystery.ServerMessage
+         * @static
+         * @param {murdermystery.IServerMessage} message ServerMessage message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ServerMessage.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.handshake != null && Object.hasOwnProperty.call(message, "handshake"))
+                $root.murdermystery.Handshake.encode(message.handshake, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.host != null && Object.hasOwnProperty.call(message, "host"))
+                $root.murdermystery.Host.encode(message.host, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            if (message.players != null && Object.hasOwnProperty.call(message, "players"))
+                $root.murdermystery.Players.encode(message.players, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.error != null && Object.hasOwnProperty.call(message, "error"))
+                $root.murdermystery.Error.encode(message.error, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.alert != null && Object.hasOwnProperty.call(message, "alert"))
+                $root.murdermystery.Alert.encode(message.alert, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            if (message.setCharacter != null && Object.hasOwnProperty.call(message, "setCharacter"))
+                $root.murdermystery.SetCharacter.encode(message.setCharacter, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+            if (message.fellowWolves != null && Object.hasOwnProperty.call(message, "fellowWolves"))
+                $root.murdermystery.FellowWolves.encode(message.fellowWolves, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ServerMessage message, length delimited. Does not implicitly {@link murdermystery.ServerMessage.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof murdermystery.ServerMessage
+         * @static
+         * @param {murdermystery.IServerMessage} message ServerMessage message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ServerMessage.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ServerMessage message from the specified reader or buffer.
+         * @function decode
+         * @memberof murdermystery.ServerMessage
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {murdermystery.ServerMessage} ServerMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ServerMessage.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.murdermystery.ServerMessage();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.handshake = $root.murdermystery.Handshake.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.host = $root.murdermystery.Host.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    message.players = $root.murdermystery.Players.decode(reader, reader.uint32());
+                    break;
+                case 4:
+                    message.error = $root.murdermystery.Error.decode(reader, reader.uint32());
+                    break;
+                case 5:
+                    message.alert = $root.murdermystery.Alert.decode(reader, reader.uint32());
+                    break;
+                case 6:
+                    message.setCharacter = $root.murdermystery.SetCharacter.decode(reader, reader.uint32());
+                    break;
+                case 7:
+                    message.fellowWolves = $root.murdermystery.FellowWolves.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ServerMessage message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof murdermystery.ServerMessage
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {murdermystery.ServerMessage} ServerMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ServerMessage.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ServerMessage message.
+         * @function verify
+         * @memberof murdermystery.ServerMessage
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ServerMessage.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            var properties = {};
+            if (message.handshake != null && message.hasOwnProperty("handshake")) {
+                properties.data = 1;
+                {
+                    var error = $root.murdermystery.Handshake.verify(message.handshake);
+                    if (error)
+                        return "handshake." + error;
+                }
+            }
+            if (message.host != null && message.hasOwnProperty("host")) {
+                if (properties.data === 1)
+                    return "data: multiple values";
+                properties.data = 1;
+                {
+                    var error = $root.murdermystery.Host.verify(message.host);
+                    if (error)
+                        return "host." + error;
+                }
+            }
+            if (message.players != null && message.hasOwnProperty("players")) {
+                if (properties.data === 1)
+                    return "data: multiple values";
+                properties.data = 1;
+                {
+                    var error = $root.murdermystery.Players.verify(message.players);
+                    if (error)
+                        return "players." + error;
+                }
+            }
+            if (message.error != null && message.hasOwnProperty("error")) {
+                if (properties.data === 1)
+                    return "data: multiple values";
+                properties.data = 1;
+                {
+                    var error = $root.murdermystery.Error.verify(message.error);
+                    if (error)
+                        return "error." + error;
+                }
+            }
+            if (message.alert != null && message.hasOwnProperty("alert")) {
+                if (properties.data === 1)
+                    return "data: multiple values";
+                properties.data = 1;
+                {
+                    var error = $root.murdermystery.Alert.verify(message.alert);
+                    if (error)
+                        return "alert." + error;
+                }
+            }
+            if (message.setCharacter != null && message.hasOwnProperty("setCharacter")) {
+                if (properties.data === 1)
+                    return "data: multiple values";
+                properties.data = 1;
+                {
+                    var error = $root.murdermystery.SetCharacter.verify(message.setCharacter);
+                    if (error)
+                        return "setCharacter." + error;
+                }
+            }
+            if (message.fellowWolves != null && message.hasOwnProperty("fellowWolves")) {
+                if (properties.data === 1)
+                    return "data: multiple values";
+                properties.data = 1;
+                {
+                    var error = $root.murdermystery.FellowWolves.verify(message.fellowWolves);
+                    if (error)
+                        return "fellowWolves." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a ServerMessage message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof murdermystery.ServerMessage
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {murdermystery.ServerMessage} ServerMessage
+         */
+        ServerMessage.fromObject = function fromObject(object) {
+            if (object instanceof $root.murdermystery.ServerMessage)
+                return object;
+            var message = new $root.murdermystery.ServerMessage();
+            if (object.handshake != null) {
+                if (typeof object.handshake !== "object")
+                    throw TypeError(".murdermystery.ServerMessage.handshake: object expected");
+                message.handshake = $root.murdermystery.Handshake.fromObject(object.handshake);
+            }
+            if (object.host != null) {
+                if (typeof object.host !== "object")
+                    throw TypeError(".murdermystery.ServerMessage.host: object expected");
+                message.host = $root.murdermystery.Host.fromObject(object.host);
+            }
+            if (object.players != null) {
+                if (typeof object.players !== "object")
+                    throw TypeError(".murdermystery.ServerMessage.players: object expected");
+                message.players = $root.murdermystery.Players.fromObject(object.players);
+            }
+            if (object.error != null) {
+                if (typeof object.error !== "object")
+                    throw TypeError(".murdermystery.ServerMessage.error: object expected");
+                message.error = $root.murdermystery.Error.fromObject(object.error);
+            }
+            if (object.alert != null) {
+                if (typeof object.alert !== "object")
+                    throw TypeError(".murdermystery.ServerMessage.alert: object expected");
+                message.alert = $root.murdermystery.Alert.fromObject(object.alert);
+            }
+            if (object.setCharacter != null) {
+                if (typeof object.setCharacter !== "object")
+                    throw TypeError(".murdermystery.ServerMessage.setCharacter: object expected");
+                message.setCharacter = $root.murdermystery.SetCharacter.fromObject(object.setCharacter);
+            }
+            if (object.fellowWolves != null) {
+                if (typeof object.fellowWolves !== "object")
+                    throw TypeError(".murdermystery.ServerMessage.fellowWolves: object expected");
+                message.fellowWolves = $root.murdermystery.FellowWolves.fromObject(object.fellowWolves);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ServerMessage message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof murdermystery.ServerMessage
+         * @static
+         * @param {murdermystery.ServerMessage} message ServerMessage
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ServerMessage.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (message.handshake != null && message.hasOwnProperty("handshake")) {
+                object.handshake = $root.murdermystery.Handshake.toObject(message.handshake, options);
+                if (options.oneofs)
+                    object.data = "handshake";
+            }
+            if (message.host != null && message.hasOwnProperty("host")) {
+                object.host = $root.murdermystery.Host.toObject(message.host, options);
+                if (options.oneofs)
+                    object.data = "host";
+            }
+            if (message.players != null && message.hasOwnProperty("players")) {
+                object.players = $root.murdermystery.Players.toObject(message.players, options);
+                if (options.oneofs)
+                    object.data = "players";
+            }
+            if (message.error != null && message.hasOwnProperty("error")) {
+                object.error = $root.murdermystery.Error.toObject(message.error, options);
+                if (options.oneofs)
+                    object.data = "error";
+            }
+            if (message.alert != null && message.hasOwnProperty("alert")) {
+                object.alert = $root.murdermystery.Alert.toObject(message.alert, options);
+                if (options.oneofs)
+                    object.data = "alert";
+            }
+            if (message.setCharacter != null && message.hasOwnProperty("setCharacter")) {
+                object.setCharacter = $root.murdermystery.SetCharacter.toObject(message.setCharacter, options);
+                if (options.oneofs)
+                    object.data = "setCharacter";
+            }
+            if (message.fellowWolves != null && message.hasOwnProperty("fellowWolves")) {
+                object.fellowWolves = $root.murdermystery.FellowWolves.toObject(message.fellowWolves, options);
+                if (options.oneofs)
+                    object.data = "fellowWolves";
+            }
+            return object;
+        };
+
+        /**
+         * Converts this ServerMessage to JSON.
+         * @function toJSON
+         * @memberof murdermystery.ServerMessage
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ServerMessage.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ServerMessage;
+    })();
+
+    murdermystery.SetName = (function() {
+
+        /**
+         * Properties of a SetName.
+         * @memberof murdermystery
+         * @interface ISetName
+         * @property {string|null} [name] SetName name
+         */
+
+        /**
+         * Constructs a new SetName.
+         * @memberof murdermystery
+         * @classdesc Represents a SetName.
+         * @implements ISetName
+         * @constructor
+         * @param {murdermystery.ISetName=} [properties] Properties to set
+         */
+        function SetName(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * SetName name.
+         * @member {string} name
+         * @memberof murdermystery.SetName
+         * @instance
+         */
+        SetName.prototype.name = "";
+
+        /**
+         * Creates a new SetName instance using the specified properties.
+         * @function create
+         * @memberof murdermystery.SetName
+         * @static
+         * @param {murdermystery.ISetName=} [properties] Properties to set
+         * @returns {murdermystery.SetName} SetName instance
+         */
+        SetName.create = function create(properties) {
+            return new SetName(properties);
+        };
+
+        /**
+         * Encodes the specified SetName message. Does not implicitly {@link murdermystery.SetName.verify|verify} messages.
+         * @function encode
+         * @memberof murdermystery.SetName
+         * @static
+         * @param {murdermystery.ISetName} message SetName message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        SetName.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified SetName message, length delimited. Does not implicitly {@link murdermystery.SetName.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof murdermystery.SetName
+         * @static
+         * @param {murdermystery.ISetName} message SetName message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        SetName.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a SetName message from the specified reader or buffer.
+         * @function decode
+         * @memberof murdermystery.SetName
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {murdermystery.SetName} SetName
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        SetName.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.murdermystery.SetName();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.name = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a SetName message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof murdermystery.SetName
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {murdermystery.SetName} SetName
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        SetName.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a SetName message.
+         * @function verify
+         * @memberof murdermystery.SetName
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        SetName.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.name != null && message.hasOwnProperty("name"))
+                if (!$util.isString(message.name))
+                    return "name: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a SetName message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof murdermystery.SetName
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {murdermystery.SetName} SetName
+         */
+        SetName.fromObject = function fromObject(object) {
+            if (object instanceof $root.murdermystery.SetName)
+                return object;
+            var message = new $root.murdermystery.SetName();
+            if (object.name != null)
+                message.name = String(object.name);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a SetName message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof murdermystery.SetName
+         * @static
+         * @param {murdermystery.SetName} message SetName
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        SetName.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults)
+                object.name = "";
+            if (message.name != null && message.hasOwnProperty("name"))
+                object.name = message.name;
+            return object;
+        };
+
+        /**
+         * Converts this SetName to JSON.
+         * @function toJSON
+         * @memberof murdermystery.SetName
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        SetName.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return SetName;
+    })();
+
+    murdermystery.StartGame = (function() {
+
+        /**
+         * Properties of a StartGame.
+         * @memberof murdermystery
+         * @interface IStartGame
+         */
+
+        /**
+         * Constructs a new StartGame.
+         * @memberof murdermystery
+         * @classdesc Represents a StartGame.
+         * @implements IStartGame
+         * @constructor
+         * @param {murdermystery.IStartGame=} [properties] Properties to set
+         */
+        function StartGame(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Creates a new StartGame instance using the specified properties.
+         * @function create
+         * @memberof murdermystery.StartGame
+         * @static
+         * @param {murdermystery.IStartGame=} [properties] Properties to set
+         * @returns {murdermystery.StartGame} StartGame instance
+         */
+        StartGame.create = function create(properties) {
+            return new StartGame(properties);
+        };
+
+        /**
+         * Encodes the specified StartGame message. Does not implicitly {@link murdermystery.StartGame.verify|verify} messages.
+         * @function encode
+         * @memberof murdermystery.StartGame
+         * @static
+         * @param {murdermystery.IStartGame} message StartGame message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        StartGame.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified StartGame message, length delimited. Does not implicitly {@link murdermystery.StartGame.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof murdermystery.StartGame
+         * @static
+         * @param {murdermystery.IStartGame} message StartGame message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        StartGame.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a StartGame message from the specified reader or buffer.
+         * @function decode
+         * @memberof murdermystery.StartGame
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {murdermystery.StartGame} StartGame
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        StartGame.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.murdermystery.StartGame();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a StartGame message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof murdermystery.StartGame
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {murdermystery.StartGame} StartGame
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        StartGame.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a StartGame message.
+         * @function verify
+         * @memberof murdermystery.StartGame
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        StartGame.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            return null;
+        };
+
+        /**
+         * Creates a StartGame message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof murdermystery.StartGame
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {murdermystery.StartGame} StartGame
+         */
+        StartGame.fromObject = function fromObject(object) {
+            if (object instanceof $root.murdermystery.StartGame)
+                return object;
+            return new $root.murdermystery.StartGame();
+        };
+
+        /**
+         * Creates a plain object from a StartGame message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof murdermystery.StartGame
+         * @static
+         * @param {murdermystery.StartGame} message StartGame
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        StartGame.toObject = function toObject() {
+            return {};
+        };
+
+        /**
+         * Converts this StartGame to JSON.
+         * @function toJSON
+         * @memberof murdermystery.StartGame
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        StartGame.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return StartGame;
+    })();
+
+    murdermystery.ClientMessage = (function() {
+
+        /**
+         * Properties of a ClientMessage.
+         * @memberof murdermystery
+         * @interface IClientMessage
+         * @property {murdermystery.ISetName|null} [setName] ClientMessage setName
+         * @property {murdermystery.IStartGame|null} [startGame] ClientMessage startGame
+         */
+
+        /**
+         * Constructs a new ClientMessage.
+         * @memberof murdermystery
+         * @classdesc Represents a ClientMessage.
+         * @implements IClientMessage
+         * @constructor
+         * @param {murdermystery.IClientMessage=} [properties] Properties to set
+         */
+        function ClientMessage(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ClientMessage setName.
+         * @member {murdermystery.ISetName|null|undefined} setName
+         * @memberof murdermystery.ClientMessage
+         * @instance
+         */
+        ClientMessage.prototype.setName = null;
+
+        /**
+         * ClientMessage startGame.
+         * @member {murdermystery.IStartGame|null|undefined} startGame
+         * @memberof murdermystery.ClientMessage
+         * @instance
+         */
+        ClientMessage.prototype.startGame = null;
+
+        // OneOf field names bound to virtual getters and setters
+        var $oneOfFields;
+
+        /**
+         * ClientMessage data.
+         * @member {"setName"|"startGame"|undefined} data
+         * @memberof murdermystery.ClientMessage
+         * @instance
+         */
+        Object.defineProperty(ClientMessage.prototype, "data", {
+            get: $util.oneOfGetter($oneOfFields = ["setName", "startGame"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * Creates a new ClientMessage instance using the specified properties.
+         * @function create
+         * @memberof murdermystery.ClientMessage
+         * @static
+         * @param {murdermystery.IClientMessage=} [properties] Properties to set
+         * @returns {murdermystery.ClientMessage} ClientMessage instance
+         */
+        ClientMessage.create = function create(properties) {
+            return new ClientMessage(properties);
+        };
+
+        /**
+         * Encodes the specified ClientMessage message. Does not implicitly {@link murdermystery.ClientMessage.verify|verify} messages.
+         * @function encode
+         * @memberof murdermystery.ClientMessage
+         * @static
+         * @param {murdermystery.IClientMessage} message ClientMessage message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ClientMessage.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.setName != null && Object.hasOwnProperty.call(message, "setName"))
+                $root.murdermystery.SetName.encode(message.setName, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.startGame != null && Object.hasOwnProperty.call(message, "startGame"))
+                $root.murdermystery.StartGame.encode(message.startGame, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ClientMessage message, length delimited. Does not implicitly {@link murdermystery.ClientMessage.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof murdermystery.ClientMessage
+         * @static
+         * @param {murdermystery.IClientMessage} message ClientMessage message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ClientMessage.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ClientMessage message from the specified reader or buffer.
+         * @function decode
+         * @memberof murdermystery.ClientMessage
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {murdermystery.ClientMessage} ClientMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ClientMessage.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.murdermystery.ClientMessage();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.setName = $root.murdermystery.SetName.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.startGame = $root.murdermystery.StartGame.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ClientMessage message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof murdermystery.ClientMessage
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {murdermystery.ClientMessage} ClientMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ClientMessage.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ClientMessage message.
+         * @function verify
+         * @memberof murdermystery.ClientMessage
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ClientMessage.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            var properties = {};
+            if (message.setName != null && message.hasOwnProperty("setName")) {
+                properties.data = 1;
+                {
+                    var error = $root.murdermystery.SetName.verify(message.setName);
+                    if (error)
+                        return "setName." + error;
+                }
+            }
+            if (message.startGame != null && message.hasOwnProperty("startGame")) {
+                if (properties.data === 1)
+                    return "data: multiple values";
+                properties.data = 1;
+                {
+                    var error = $root.murdermystery.StartGame.verify(message.startGame);
+                    if (error)
+                        return "startGame." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a ClientMessage message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof murdermystery.ClientMessage
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {murdermystery.ClientMessage} ClientMessage
+         */
+        ClientMessage.fromObject = function fromObject(object) {
+            if (object instanceof $root.murdermystery.ClientMessage)
+                return object;
+            var message = new $root.murdermystery.ClientMessage();
+            if (object.setName != null) {
+                if (typeof object.setName !== "object")
+                    throw TypeError(".murdermystery.ClientMessage.setName: object expected");
+                message.setName = $root.murdermystery.SetName.fromObject(object.setName);
+            }
+            if (object.startGame != null) {
+                if (typeof object.startGame !== "object")
+                    throw TypeError(".murdermystery.ClientMessage.startGame: object expected");
+                message.startGame = $root.murdermystery.StartGame.fromObject(object.startGame);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ClientMessage message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof murdermystery.ClientMessage
+         * @static
+         * @param {murdermystery.ClientMessage} message ClientMessage
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ClientMessage.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (message.setName != null && message.hasOwnProperty("setName")) {
+                object.setName = $root.murdermystery.SetName.toObject(message.setName, options);
+                if (options.oneofs)
+                    object.data = "setName";
+            }
+            if (message.startGame != null && message.hasOwnProperty("startGame")) {
+                object.startGame = $root.murdermystery.StartGame.toObject(message.startGame, options);
+                if (options.oneofs)
+                    object.data = "startGame";
+            }
+            return object;
+        };
+
+        /**
+         * Converts this ClientMessage to JSON.
+         * @function toJSON
+         * @memberof murdermystery.ClientMessage
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ClientMessage.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ClientMessage;
     })();
 
     return murdermystery;

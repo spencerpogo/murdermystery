@@ -14,10 +14,6 @@ message Handshake {
 
 message Host { bool isHost = 1; }
 
-message SetName { string name = 1; }
-
-message StartGame {}
-
 message Players {
   message Player {
     string name = 1;
@@ -59,3 +55,26 @@ message SetCharacter {
 }
 
 message FellowWolves { repeated int32 ids = 1; }
+
+message ServerMessage {
+  oneof data {
+    Handshake handshake = 1;
+    Host host = 2;
+    Players players = 3;
+    Error error = 4;
+    Alert alert = 5;
+    SetCharacter set_character = 6;
+    FellowWolves fellow_wolves = 7;
+  }
+}
+
+message SetName { string name = 1; }
+
+message StartGame {}
+
+message ClientMessage {
+  oneof data {
+    SetName set_name = 1;
+    StartGame start_game = 2;
+  }
+}
