@@ -19,8 +19,15 @@ fi
 # TODO: Require pbjs
 ROOT=${1:-$(pwd)}
 
+GO_PB_PKG=$ROOT/backend/protocol/pb
+
 echo "Generating go code..."
-protoc -I=$ROOT --go_out=$ROOT/backend/protocol/pb $ROOT/*.proto
+protoc -I=$ROOT --go_out=$GO_PB_PKG $ROOT/*.proto
+
+# This is absolutely terrible, but protobuf has forced my hand. 
+echo "type IsServerMessage_Data = isServerMessage_Data" >> $GO_PB_PKG/main.pb.go
+SERVERMSG_TYPES="Handshake Host Players Error Alert SetCharacter FellowWolves"
+node -e 'console.log(`func ToServerMessage(m interface{ ProtoMessage() }) *ServerMessage {\n  switch r := m.(type) {`);console.log(process.argv.slice(1).map(i=>`  case *${i}:\n    return &ServerMessage{Data: &ServerMessage_${i}{${i}: r}}`).join(`\n`));console.log(`  default:\n    return &ServerMessage{}\n  }\n}`)' $SERVERMSG_TYPES >> $GO_PB_PKG/main.pb.go
 
 echo "Generating JS code..."
 npm run pbjs -- -t static-module -w commonjs -o $ROOT/pbjs/protobuf.bundle.js $ROOT/*.proto

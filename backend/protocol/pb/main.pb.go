@@ -1255,3 +1255,24 @@ func file_main_proto_init() {
 	file_main_proto_goTypes = nil
 	file_main_proto_depIdxs = nil
 }
+type IsServerMessage_Data = isServerMessage_Data
+func ToServerMessage(m interface{ProtoMessage()}) *ServerMessage {
+  switch r := m.(type) {
+  case *Handshake:
+    return &ServerMessage{Data: &ServerMessage_Handshake{Handshake: r}}
+  case *Host:
+    return &ServerMessage{Data: &ServerMessage_Host{Host: r}}
+  case *Players:
+    return &ServerMessage{Data: &ServerMessage_Players{Players: r}}
+  case *Error:
+    return &ServerMessage{Data: &ServerMessage_Error{Error: r}}
+  case *Alert:
+    return &ServerMessage{Data: &ServerMessage_Alert{Alert: r}}
+  case *SetCharacter:
+    return &ServerMessage{Data: &ServerMessage_SetCharacter{SetCharacter: r}}
+  case *FellowWolves:
+    return &ServerMessage{Data: &ServerMessage_FellowWolves{FellowWolves: r}}
+  default:
+    return &ServerMessage{}
+  }
+}

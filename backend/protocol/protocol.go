@@ -9,13 +9,14 @@ import (
 )
 
 // Marshal marshals a message and handles any errors
-func Marshal(message proto.Message) ([]byte, error) {
-	msg, err := proto.Marshal(message)
+func Marshal(message interface{ ProtoMessage() }) ([]byte, error) {
+	var msg *pb.ServerMessage = pb.ToServerMessage(message)
+	data, err := proto.Marshal(msg)
 	if err != nil {
 		log.Printf("Protocol error: %s\n", err)
 		return []byte{}, err
 	}
-	return msg, nil
+	return data, nil
 }
 
 // Unmarshal decodes a message. If invalid result will be nil
