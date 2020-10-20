@@ -35,3 +35,7 @@ yarn-error.log*
 
 # IDEA
 .idea
+
+# Generated protobuf code
+pbjs/
+backend/protocol/pb
