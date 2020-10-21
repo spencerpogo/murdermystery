@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/Scoder12/murdermystery/backend/protocol/pb"
-	"google.golang.org/protobuf/proto"
 
 	"github.com/Scoder12/murdermystery/backend/protocol"
 	"gopkg.in/olahol/melody.v1"
@@ -69,7 +68,6 @@ func New(destroyFn func()) *Game {
 	g.m.HandleDisconnect(g.handleDisconnect)
 	g.m.HandleMessage(g.handleMsg)
 	g.m.HandleSentMessageBinary(func(s *melody.Session, msg []byte) {
-		log.Println("Hello!")
 		g.lock.Lock()
 		defer g.lock.Unlock()
 		var b strings.Builder
@@ -133,7 +131,7 @@ func (g *Game) updateHost() {
 		}
 	}
 	if bestM != nil {
-		msg, err := proto.Marshal(&pb.Host{IsHost: true})
+		msg, err := protocol.Marshal(&pb.Host{IsHost: true})
 		if err != nil {
 			return
 		}
