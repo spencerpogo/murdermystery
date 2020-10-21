@@ -99,7 +99,7 @@ func (g *Game) handleMsg(s *melody.Session, data []byte) {
 		return
 	}
 	//log.Printf("[%v] ↑ %s\n", c.ID, string(msg))
-	var msg *pb.ServerMessage = protocol.Unmarshal(data)
+	var msg *pb.ClientMessage = protocol.Unmarshal(data)
 	if msg == nil {
 		log.Printf("[%v] Invalid data", c.ID)
 		s.Close()
