@@ -1,8 +1,10 @@
 package game
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -66,10 +68,17 @@ func New(destroyFn func()) *Game {
 	g.m.HandleConnect(g.handleJoin)
 	g.m.HandleDisconnect(g.handleDisconnect)
 	g.m.HandleMessage(g.handleMsg)
-	g.m.HandleSentMessage(func(s *melody.Session, msg []byte) {
+	g.m.HandleSentMessageBinary(func(s *melody.Session, msg []byte) {
+		log.Println("Hello!")
 		g.lock.Lock()
 		defer g.lock.Unlock()
-		log.Printf("[%v] ↓ %s", g.getID(s), string(msg))
+		var b strings.Builder
+		fmt.Fprintf(&b, "[%v] ↓ [", g.getID(s))
+		for _, c := range msg {
+			fmt.Fprintf(&b, "%v, ", int(c))
+		}
+		fmt.Fprintf(&b, "]\n")
+		log.Printf(b.String())
 	})
 
 	return g
