@@ -58,6 +58,7 @@ type Game struct {
 func New(destroyFn func()) *Game {
 	g := &Game{
 		m:         melody.New(),
+		nextID:    1,
 		destroyFn: destroyFn,
 		clients:   make(map[*melody.Session]*Client),
 	}
