@@ -15,12 +15,8 @@ import CharacterSpinner from "./CharacterSpinner";
 import { EventEmitter2 } from "eventemitter2";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
+import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import { forcedTranslate as t } from "../translate";
-
-enum RPC_CALLS {
-  setName = 0,
-  startGame = 1,
-}
 
 enum ReadyState {
   CONNECTING = 0,
@@ -67,57 +63,76 @@ export default function GameClient({
 
   const [character, setCharacter] = useState<string | null>(null);
 
-  const LISTENERS = {
-    host: function handleHost(msg: any) {
-      if (!msg || !msg.hasOwnProperty("isHost")) return;
-      setIsHost(!!msg.isHost);
-    },
+  function handleHost(msg: any) {
+    if (!msg || !msg.hasOwnProperty("isHost")) return;
+    setIsHost(!!msg.isHost);
+  }
 
-    players: function updatePlayers(msg: any) {
-      if (!msg || !msg.names) return;
-      const newNames = Object.keys(msg.names).map((pid: any, i: number) => {
-        return {
-          pid,
-          name: msg.names[pid],
-          isHost: msg.hostID == pid,
-        };
-      });
-      setNames(newNames);
-    },
+  function handlePlayers(msg: any) {
+    if (!msg || !msg.names) return;
+    const newNames = Object.keys(msg.names).map((pid: any, i: number) => {
+      return {
+        pid,
+        name: msg.names[pid],
+        isHost: msg.hostID == pid,
+      };
+    });
+    setNames(newNames);
+  }
 
-    error: function handleError(msg: any) {
-      if (!msg) return;
-      setErrorNotice(getServerMessage(msg.reason, "Server closed connection"));
-    },
+  function handleError(msg: any) {
+    if (!msg) return;
+    setErrorNotice(getServerMessage(msg.reason, "Server closed connection"));
+  }
 
-    alert: function handleAlert(data: any) {
-      if (!data || !data.msg) return;
-      setAlertContent(
-        getServerMessage(
-          data.msg,
-          "There was an error while performing that action"
-        )
-      );
-    },
-    setCharacter: function handleSetCharacter(msg: any) {
-      if (!msg || !msg.value) return;
-      setCharacter(msg.value);
-    },
+  function handleAlert(data: any) {
+    if (!data || !data.msg) return;
+    setAlertContent(
+      getServerMessage(
+        data.msg,
+        "There was an error while performing that action"
+      )
+    );
+  }
+  function handleSetCharacter(msg: any) {
+    if (!msg || !msg.value) return;
+    setCharacter(msg.value);
+  }
+
+  const getHandler = (
+    msg: protobuf.IServerMessage
+  ): ((msg: protobuf.IServerMessage) => void) => {
+    if (msg.handshake) return () => msgs.emit("handshake", msg);
+    if (msg.host) return handleHost;
+    if (msg.players) return handlePlayers;
+    if (msg.error) return handleError;
+    if (msg.alert) return handleAlert;
+    if (msg.setCharacter) return handleSetCharacter;
+    if (msg.fellowWolves) return () => {};
+    throw new Error("Not implemented. ");
   };
 
-  const parseMessage = (ev: MessageEvent<any>) => {
-    let msg;
+  const parseMessage = (ev: MessageEvent<ArrayBuffer>) => {
+    let msg: protobuf.IServerMessage;
+    let handler: (msg: protobuf.IServerMessage) => void;
     try {
-      msg = JSON.parse(ev.data);
+      msg = protobuf.ServerMessage.decode(new Uint8Array(ev.data));
+      handler = getHandler(msg);
     } catch (e) {
       console.error("Message decode error:", e);
       return;
     }
-    if (!msg.type) {
-      console.error("Missing message type!");
+    console.log(msg);
+    handler(msg);
+  };
+
+  const send = (msg: protobuf.IClientMessage) => {
+    if (!ws) {
+      console.error("Try to send() while ws is null");
+      return;
     }
     console.log(msg);
-    msgs.emit(msg.type || "unknown", msg);
+    ws.send(protobuf.ClientMessage.encode(msg).finish());
   };
 
   const addListeners = () => {
@@ -125,26 +140,11 @@ export default function GameClient({
       console.error("Try to addListeners() while ws is null");
       return;
     }
+    ws.binaryType = "arraybuffer";
     ws.addEventListener("message", (ev: MessageEvent<any>) => parseMessage(ev));
     ws.addEventListener("close", () => {
       setDidDisconnect(true);
     });
-    for (const evt of Object.keys(LISTENERS)) {
-      msgs.on(evt, (msg) => LISTENERS[evt](msg));
-    }
-  };
-
-  const rpc = (call: string, arg: any) => {
-    if (!ws) {
-      console.error("Try to rpc() while ws is null");
-      return;
-    }
-    const rpcID = RPC_CALLS[call];
-    if (typeof rpcID === "undefined") {
-      console.error(new Error(`Invalid RPC call ${call}`));
-      return;
-    }
-    ws.send(String.fromCharCode(65 + rpcID) + JSON.stringify(arg));
   };
 
   const waitForMessage = (type: string): Promise<any> => {
@@ -154,7 +154,9 @@ export default function GameClient({
   };
 
   const handshake = async () => {
-    rpc("setName", nameProp);
+    send({
+      setName: { name: nameProp },
+    });
     const handshakeRes = await waitForMessage("handshake");
     if (!handshakeRes) setErrorNotice("Error");
     const { error } = handshakeRes;
@@ -197,7 +199,7 @@ export default function GameClient({
         <Lobby
           names={names}
           isHost={isHost}
-          start={() => rpc("startGame", {})}
+          start={() => send({ startGame: {} })}
         />
       );
     }
