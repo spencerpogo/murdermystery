@@ -66,7 +66,7 @@ func New(destroyFn func()) *Game {
 
 	g.m.HandleConnect(g.handleJoin)
 	g.m.HandleDisconnect(g.handleDisconnect)
-	g.m.HandleMessage(g.handleMsg)
+	g.m.HandleMessageBinary(g.handleMsg)
 	g.m.HandleSentMessageBinary(func(s *melody.Session, msg []byte) {
 		g.lock.Lock()
 		defer g.lock.Unlock()
