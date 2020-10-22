@@ -56,6 +56,11 @@ message SetCharacter {
 
 message FellowWolves { repeated int32 ids = 1; }
 
+message VoteRequest {
+  repeated int32 choice_IDs = 1;
+  int32 duration_sec = 2;
+}
+
 message ServerMessage {
   oneof data {
     Handshake handshake = 1;
@@ -65,6 +70,7 @@ message ServerMessage {
     Alert alert = 5;
     SetCharacter set_character = 6;
     FellowWolves fellow_wolves = 7;
+    VoteRequest vote_request = 8;
   }
 }
 

@@ -28,7 +28,7 @@ protoc -I=$ROOT --go_out=$GO_PB_PKG $ROOT/*.proto
 echo "type IsServerMessage_Data = isServerMessage_Data" >> $GO_PB_PKG/main.pb.go
 
 echo "Generating JS code..."
-npm run pbjs -- -t static-module -w commonjs -o $ROOT/pbjs/protobuf.bundle.js $ROOT/*.proto
+npm run pbjs -- -t static-module -w commonjs -o $ROOT/pbjs/protobuf.js $ROOT/*.proto
 
 echo "Generating Typescript definitions..."
-npm run pbts -- -o $ROOT/pbjs/protobuf.d.ts $ROOT/pbjs/protobuf.bundle.js
+npm run pbts -- -o $ROOT/pbjs/protobuf.d.ts $ROOT/pbjs/protobuf.js

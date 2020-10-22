@@ -25,6 +25,8 @@ func toServerMessage(m interface{ ProtoMessage() }) *pb.ServerMessage {
 		return &pb.ServerMessage{Data: &pb.ServerMessage_SetCharacter{SetCharacter: r}}
 	case *pb.FellowWolves:
 		return &pb.ServerMessage{Data: &pb.ServerMessage_FellowWolves{FellowWolves: r}}
+	case *pb.VoteRequest:
+		return &pb.ServerMessage{Data: &pb.ServerMessage_VoteRequest{VoteRequest: r}}
 	default:
 		return nil
 	}
