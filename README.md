@@ -45,7 +45,13 @@ generated code but also be updated so they stay in sync.
 
 To re-generate the protocol buffers code run `./tools/protoc.sh`.
 
-This will generate the files in `./backend/protocol/pb/` and `./pbjs/`.
+This will generate the following files:
+
+```
+./backend/protocol/pb/main.pb.go
+./pbjs/protobuf.js
+./pbjs/protobuf.d.ts
+```
 
 The script automatically checks if you have the required toolchain installed and tells
 you how to install if you don't.
@@ -84,6 +90,30 @@ PROJ="/path/to/repo"
 CompileDaemon -directory=$PROJ/backend -build='go build -o $PROJ/build/backend' -command '$PROJ/build/backend' -color -log-prefix=false
 ```
 
+## Development
+
+### Bot
+
+The bot is a script used for testing the server. The server has a player minimum, and
+the bot script allows the minimum to be filled automatically.
+
+In addition, it can be used to stress test the server under high load and consistently
+reproduce server-side bugs.
+
+To use the bot, you must have already built the protocol buffer code as described
+above and installed the `ws` dev dependency with `npm`.
+
+To run the bot, pass a game ID and number of bots, for example:
+
+```bash
+node ./tools/bot.js asdf 6
+```
+
+If you're using linux, the file is already executable and has a proper shebang, so you
+can omit `node`.
+
 ## License
+
+Copyright 2020 Scoder12.
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FScoder12%2Fmurdermystery.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FScoder12%2Fmurdermystery?ref=badge_large)
