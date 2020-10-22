@@ -7,9 +7,21 @@ import {
   useState,
 } from "react";
 
+import { murdermystery as protobuf } from "../pbjs/protobuf";
 import { forcedTranslate as t } from "../translate";
 
-const filenames = [
+const { Character } = protobuf.SetCharacter;
+
+// CHARACTER_INDEXES maps protobuf character enum values to indexes in filenames
+const CHARACTER_INDEXES = [
+  Character.CITIZEN,
+  Character.WEREWOLF,
+  Character.HEALER,
+  Character.PROPHET,
+  Character.HUNTER,
+];
+
+const FILENAMES = [
   "citizen.png",
   "werewolf.png",
   "healer.png",
@@ -18,10 +30,10 @@ const filenames = [
 ];
 const WIDTH = 226;
 const HEIGHT = 330;
-const reps = 10;
+const REPS = 10;
 
 const getImgs = (offset: number) =>
-  filenames.map((f, i) => {
+  FILENAMES.map((f, i) => {
     return (
       <Box d={"inline-block"} key={offset + i}>
         <Image
@@ -35,7 +47,7 @@ const getImgs = (offset: number) =>
   });
 let allImgs: ReactNode[] = [];
 let offset = 0;
-for (let i = 0; i < reps; i++) {
+for (let i = 0; i < REPS; i++) {
   let imgs = getImgs(offset);
   allImgs = allImgs.concat(imgs);
   offset += imgs.length;
@@ -49,7 +61,7 @@ for (let i = 0; i < reps; i++) {
  */
 const getTransformAmt = (card_ind: number) => {
   // always go at least across all cards 6 times, and account for spinner position
-  const min_dist = WIDTH * filenames.length * 7;
+  const min_dist = WIDTH * FILENAMES.length * 7;
 
   // A random px amount between 5 and 9 percent of card_width
   const rand = Math.random() * (WIDTH * 0.09) + WIDTH * 0.05;
@@ -72,11 +84,16 @@ enum Stage {
   done = 3,
 }
 
-export default function CharacterSpinner({ character }: { character: string }) {
-  character = character.toLowerCase();
-  const card_ind = filenames.indexOf(character + ".png");
+export default function CharacterSpinner({
+  character,
+}: {
+  character: protobuf.SetCharacter.Character;
+}) {
+  const card_ind = CHARACTER_INDEXES.indexOf(character);
   if (card_ind == -1) throw new Error("Invalid character: " + character);
-  const filename = filenames[card_ind];
+
+  const filename = FILENAMES[card_ind];
+  const name = filename.split(".")[0];
 
   const [stage, setStage] = useState<Stage>(Stage.waiting);
   const [shouldAnimate, setShouldAnimate] = useState<boolean>(true);
@@ -170,9 +187,7 @@ export default function CharacterSpinner({ character }: { character: string }) {
           <Text color="gray">{t("You are")}</Text>
         </Flex>
         <Flex width="full" justify="center">
-          <Heading>
-            {t(character[0].toUpperCase() + character.slice(1))}
-          </Heading>
+          <Heading>{t(name[0].toUpperCase() + name.slice(1))}</Heading>
         </Flex>
         <Flex width="full" justify="center">
           <Image src={"/" + filename} height="xl" />

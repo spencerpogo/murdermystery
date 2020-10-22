@@ -1,13 +1,16 @@
 import { Badge, Button, Flex, Heading, Text } from "@chakra-ui/core";
 
+import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import { forcedTranslate as t } from "../translate";
 
 export default function Lobby({
-  names,
+  players,
   isHost,
+  hostId,
   start,
 }: {
-  names: { name: string; isHost: boolean }[];
+  players: protobuf.Players.IPlayer[];
+  hostId: number;
   isHost: boolean;
   start: () => void;
 }) {
@@ -27,12 +30,13 @@ export default function Lobby({
         <Button>{t("Copy")}</Button>
       </Flex>
       <ul>
-        {names.map((player) => {
-          if (!player || !player.name) return null;
+        {players.map((p) => {
+          if (!p.name) return null;
+          let pIsHost = p.id == hostId;
           return (
-            <li key={player.name + player.isHost.toString()}>
-              {player.name}
-              {player.isHost && hostBadge}
+            <li key={p.name + pIsHost.toString()}>
+              <span>{p.name}</span>
+              {pIsHost && hostBadge}
             </li>
           );
         })}

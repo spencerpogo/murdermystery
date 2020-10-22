@@ -12,7 +12,6 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import CharacterSpinner from "./CharacterSpinner";
-import { EventEmitter2 } from "eventemitter2";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
@@ -25,17 +24,6 @@ enum ReadyState {
   CLOSED = 3,
 }
 
-const serverMessages = {
-  disconnect:
-    "Someone disconnected, reconnection is not yet implemented so game over",
-  started: "The game has already started",
-  notEnoughPlayers: "You need at least 6 players to start the game",
-  name: "Your name is invalid",
-};
-
-const getServerMessage = (key: string, fallback: string) =>
-  serverMessages[key] || key || fallback;
-
 export default function GameClient({
   server,
   id,
@@ -47,83 +35,83 @@ export default function GameClient({
 }) {
   const wsRef = useRef<WebSocket | null>(null);
   let ws = wsRef.current;
-  const msgsRef = useRef<EventEmitter2 | null>(null);
-  if (!msgsRef.current) {
-    msgsRef.current = new EventEmitter2();
-  }
-  const msgs = msgsRef.current;
 
   // isOpen is only used to re-render when connection is complete
   const [, setIsOpen] = useState<boolean>(false);
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
   const [didDisconnect, setDidDisconnect] = useState<boolean>(false);
   const [isHost, setIsHost] = useState<boolean>(false);
-  const [names, setNames] = useState<{ name: string; isHost: boolean }[]>([]);
+  const [players, setPlayers] = useState<protobuf.Players.IPlayer[]>([]);
+  const [hostId, setHostId] = useState<number>(-1);
   const [alertContent, setAlertContent] = useState<string | null>(null);
 
-  const [character, setCharacter] = useState<string | null>(null);
+  const [character, setCharacter] = useState<protobuf.SetCharacter.Character>(
+    protobuf.SetCharacter.Character.NONE
+  );
 
-  function handleHost(msg: any) {
-    if (!msg || !msg.hasOwnProperty("isHost")) return;
+  function handleHost(msg: protobuf.IHost) {
     setIsHost(!!msg.isHost);
   }
 
-  function handlePlayers(msg: any) {
-    if (!msg || !msg.names) return;
-    const newNames = Object.keys(msg.names).map((pid: any, i: number) => {
-      return {
-        pid,
-        name: msg.names[pid],
-        isHost: msg.hostID == pid,
-      };
-    });
-    setNames(newNames);
+  function handlePlayers(msg: protobuf.IPlayers) {
+    setPlayers(msg.players || []);
+    setHostId(msg.hostId || -1);
   }
 
-  function handleError(msg: any) {
-    if (!msg) return;
-    setErrorNotice(getServerMessage(msg.reason, "Server closed connection"));
+  function handleError(err: protobuf.IError) {
+    let error = "Error";
+    if (err.msg == protobuf.Error.E_type.BADNAME) {
+      error = "Your name is invalid";
+    } else if (err.msg == protobuf.Error.E_type.DISCONNECT) {
+      error =
+        "Someone disconnected, reconnection is not yet implemented so game over";
+    }
+    setErrorNotice(error);
   }
 
-  function handleAlert(data: any) {
-    if (!data || !data.msg) return;
-    setAlertContent(
-      getServerMessage(
-        data.msg,
-        "There was an error while performing that action"
-      )
-    );
-  }
-  function handleSetCharacter(msg: any) {
-    if (!msg || !msg.value) return;
-    setCharacter(msg.value);
+  function handleAlert(data: protobuf.IAlert) {
+    let error = "There was an error while performing that action";
+    if (data.msg == protobuf.Alert.Msg.NEEDMOREPLAYERS) {
+      error = "You need at least 6 players to start the game";
+    }
+    setAlertContent(error);
   }
 
-  const getHandler = (
-    msg: protobuf.IServerMessage
-  ): ((msg: protobuf.IServerMessage) => void) => {
-    if (msg.handshake) return () => msgs.emit("handshake", msg);
-    if (msg.host) return handleHost;
-    if (msg.players) return handlePlayers;
-    if (msg.error) return handleError;
-    if (msg.alert) return handleAlert;
-    if (msg.setCharacter) return handleSetCharacter;
+  function handleSetCharacter(msg: protobuf.ISetCharacter) {
+    msg.character && setCharacter(msg.character);
+  }
+
+  function handleHandshake(msg: protobuf.IHandshake) {
+    if (msg.err != protobuf.Handshake.Error.OK) {
+      let error = "Error";
+      if (msg.err == protobuf.Handshake.Error.STARTED) {
+        error = "The game has already started";
+      }
+      setErrorNotice(error);
+    }
+    setIsOpen(true);
+  }
+
+  const callHandler = (msg: protobuf.IServerMessage) => {
+    if (msg.handshake) return handleHandshake(msg.handshake);
+    if (msg.host) return handleHost(msg.host);
+    if (msg.players) return handlePlayers(msg.players);
+    if (msg.error) return handleError(msg.error);
+    if (msg.alert) return handleAlert(msg.alert);
+    if (msg.setCharacter) return handleSetCharacter(msg.setCharacter);
     if (msg.fellowWolves) return () => {};
     throw new Error("Not implemented. ");
   };
 
   const parseMessage = (ev: MessageEvent<ArrayBuffer>) => {
     let msg: protobuf.IServerMessage;
-    let handler: (msg: protobuf.IServerMessage) => void;
     try {
       msg = protobuf.ServerMessage.decode(new Uint8Array(ev.data));
-      handler = getHandler(msg);
+      console.log(msg);
+      callHandler(msg);
     } catch (e) {
       console.error("Message decode error:", e);
-      return;
     }
-    console.log(msg);
-    handler(msg);
   };
 
   const send = (msg: protobuf.IClientMessage) => {
@@ -147,25 +135,10 @@ export default function GameClient({
     });
   };
 
-  const waitForMessage = (type: string): Promise<any> => {
-    return new Promise((resolve) => {
-      msgs.once(type, (msg) => resolve(msg));
-    });
-  };
-
   const handshake = async () => {
     send({
       setName: { name: nameProp },
     });
-    const handshakeRes = await waitForMessage("handshake");
-    if (!handshakeRes) setErrorNotice("Error");
-    const { error } = handshakeRes;
-    console.log(handshakeRes);
-    if (error) {
-      console.log(error);
-      setErrorNotice(getServerMessage(error, "Error"));
-    }
-    setIsOpen(true);
   };
 
   // setup websocket
@@ -197,7 +170,8 @@ export default function GameClient({
     } else {
       view = (
         <Lobby
-          names={names}
+          players={players}
+          hostId={hostId}
           isHost={isHost}
           start={() => send({ startGame: {} })}
         />
