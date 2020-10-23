@@ -1,7 +1,5 @@
 # Murder Mystery
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FScoder12%2Fmurdermystery.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FScoder12%2Fmurdermystery?ref=badge_shield)
-
 Murdermystery is an online multiplayer game of deception.
 
 ## Architecture
@@ -115,5 +113,3 @@ can omit `node`.
 ## License
 
 Copyright 2020 Scoder12.
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FScoder12%2Fmurdermystery.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FScoder12%2Fmurdermystery?ref=badge_large)
