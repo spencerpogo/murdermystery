@@ -22,12 +22,14 @@ ROOT=${1:-$(pwd)}
 GO_PB_PKG=$ROOT/backend/protocol/pb
 JS_PB_PKG=$ROOT/pbjs
 
-echo "Generating go code..."
-mkdir -p $GO_PB_PKG
-protoc -I=$ROOT --go_out=$GO_PB_PKG $ROOT/*.proto
+if [[ "$2" != "--no-golang" ]]; then
+  echo "Generating go code..."
+  mkdir -p $GO_PB_PKG
+  protoc -I=$ROOT --go_out=$GO_PB_PKG $ROOT/*.proto
 
-# This is absolutely terrible, but protobuf has forced my hand. 
-echo "type IsServerMessage_Data = isServerMessage_Data" >> $GO_PB_PKG/main.pb.go
+  # This is absolutely terrible, but protobuf has forced my hand. 
+  echo "type IsServerMessage_Data = isServerMessage_Data" >> $GO_PB_PKG/main.pb.go
+fi
 
 if [[ "$2" != "--no-js" ]]; then
   echo "Generating JS code..."
