@@ -20,15 +20,18 @@ fi
 ROOT=${1:-$(pwd)}
 
 GO_PB_PKG=$ROOT/backend/protocol/pb
+JS_PB_PKG=$ROOT/pbjs
 
 echo "Generating go code..."
+mkdir -p $GO_PB_PKG
 protoc -I=$ROOT --go_out=$GO_PB_PKG $ROOT/*.proto
 
 # This is absolutely terrible, but protobuf has forced my hand. 
 echo "type IsServerMessage_Data = isServerMessage_Data" >> $GO_PB_PKG/main.pb.go
 
 echo "Generating JS code..."
-npm run pbjs -- -t static-module -w commonjs -o $ROOT/pbjs/protobuf.js $ROOT/*.proto
+mkdir -p $JS_PB_PKG
+npm run pbjs -- -t static-module -w commonjs -o $JS_PB_PKG/protobuf.js $ROOT/*.proto
 
 echo "Generating Typescript definitions..."
-npm run pbts -- -o $ROOT/pbjs/protobuf.d.ts $ROOT/pbjs/protobuf.js
+npm run pbts -- -o $JS_PB_PKG/protobuf.d.ts $JS_PB_PKG/protobuf.js
