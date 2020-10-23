@@ -2,38 +2,37 @@ name: Build Backend
 
 on:
   push:
-    branches: [ master ]
-    paths: 
+    branches: [master]
+    paths:
       - backend
   pull_request:
-    branches: [ master ]
-    paths: 
+    branches: [master]
+    paths:
       - backend
+      - tools
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.13
 
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.13
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
-    
-    - name: Setup protoc
-      uses: arduino/setup-protoc@v1.1.0
-    
-    - name: Install protoc-gen-go
-      run: go get -u google.golang.org/protobuf/cmd/protoc-gen-go
+      - name: Setup protoc
+        uses: arduino/setup-protoc@v1.1.0
 
-    - name: Build protocol buffers code
-      run: bash ./tools/protoc.sh $(pwd) --no-js
+      - name: Install protoc-gen-go
+        run: go get -u google.golang.org/protobuf/cmd/protoc-gen-go
 
-    - name: Build
-      run: go build -v .
-      working-directory: ./backend
+      - name: Build protocol buffers code
+        run: bash ./tools/protoc.sh $(pwd) --no-js
+
+      - name: Build
+        run: go build -v .
+        working-directory: ./backend
