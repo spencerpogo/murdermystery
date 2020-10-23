@@ -25,7 +25,7 @@ jobs:
       uses: arduino/setup-protoc@v1.1.0
     
     - name: Install protoc-gen-go
-      run: go get -u protoc-gen-go
+      run: go get -u google.golang.org/protobuf/cmd/protoc-gen-go
 
     - name: Build protocol buffers code
       run: bash ./tools/protoc.sh
