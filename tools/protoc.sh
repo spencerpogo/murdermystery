@@ -24,6 +24,7 @@ JS_PB_PKG=$ROOT/pbjs
 
 echo "Generating go code..."
 mkdir -p $GO_PB_PKG
+ls -l $GO_PB_PKG
 protoc -I=$ROOT --go_out=$GO_PB_PKG $ROOT/*.proto
 
 # This is absolutely terrible, but protobuf has forced my hand. 
