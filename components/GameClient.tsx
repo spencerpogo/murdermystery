@@ -33,22 +33,36 @@ export default function GameClient({
   id: string;
   nameProp: string;
 }) {
+  // Main websocket
   const wsRef = useRef<WebSocket | null>(null);
   let ws = wsRef.current;
 
+  // State
+
   // isOpen is only used to re-render when connection is complete
   const [, setIsOpen] = useState<boolean>(false);
+  // Represents a *fatal* error set to us by server.
+  // Can only be one of protobuf.Error.E_type but enum value is converted to a message.
+  // If this is set, an error banner will be shown with t(errorNotice)
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
+  // Same as setErrorNotice("Disconnected from server") but lower priority.
+  // Will only show up as a fallback if error notice is not set
   const [didDisconnect, setDidDisconnect] = useState<boolean>(false);
+  // Are we the host? Used to determine whether "Start Game" is enabled on Lobby
   const [isHost, setIsHost] = useState<boolean>(false);
+  // The players we know of. Server will sync these with us whever they update.
   const [players, setPlayers] = useState<protobuf.Players.IPlayer[]>([]);
+  // Who the host is. Used for showing the "Host" badge next to them in the lobby
   const [hostId, setHostId] = useState<number>(-1);
+  // If set, a modal will pop with alertContent and then it will be cleared.
+  // Server will tell us when to set this
   const [alertContent, setAlertContent] = useState<string | null>(null);
-
+  // Our character. Used by the spinner.
   const [character, setCharacter] = useState<protobuf.SetCharacter.Character>(
     protobuf.SetCharacter.Character.NONE
   );
 
+  // Message handlers
   function handleHost(msg: protobuf.IHost) {
     setIsHost(!!msg.isHost);
   }
@@ -92,6 +106,11 @@ export default function GameClient({
     setIsOpen(true);
   }
 
+  // Utitility functions
+
+  // Call the proper handler based on the ServerMessage.
+  // Protobuf guarantees only one of these cases will be true due to `oneof`, so this
+  //  is the best way to call the correct handler.
   const callHandler = (msg: protobuf.IServerMessage) => {
     if (msg.handshake) return handleHandshake(msg.handshake);
     if (msg.host) return handleHost(msg.host);
@@ -103,6 +122,7 @@ export default function GameClient({
     throw new Error("Not implemented. ");
   };
 
+  // Process a message from the websocket.
   const parseMessage = (ev: MessageEvent<ArrayBuffer>) => {
     let msg: protobuf.IServerMessage;
     try {
@@ -114,6 +134,7 @@ export default function GameClient({
     }
   };
 
+  // Send encodes and sends a protobuf message to the server.
   const send = (msg: protobuf.IClientMessage) => {
     if (!ws) {
       console.error("Try to send() while ws is null");
@@ -121,18 +142,6 @@ export default function GameClient({
     }
     console.log(msg);
     ws.send(protobuf.ClientMessage.encode(msg).finish());
-  };
-
-  const addListeners = () => {
-    if (!ws) {
-      console.error("Try to addListeners() while ws is null");
-      return;
-    }
-    ws.binaryType = "arraybuffer";
-    ws.addEventListener("message", (ev: MessageEvent<any>) => parseMessage(ev));
-    ws.addEventListener("close", () => {
-      setDidDisconnect(true);
-    });
   };
 
   const handshake = async () => {
@@ -150,12 +159,27 @@ export default function GameClient({
       setErrorNotice("Error while opening connection");
       return;
     }
+    // update ws reference
     ws = wsRef.current;
-    addListeners();
+    // Use proper binary type (no blobs)
+    ws.binaryType = "arraybuffer";
+    // handshake when it opens
     ws.addEventListener("open", () => handshake());
+    // Handle messages
+    ws.addEventListener("message", (ev: MessageEvent<any>) => parseMessage(ev));
+    // Handle discconects
+    ws.addEventListener("close", () => {
+      setDidDisconnect(true);
+    });
+
+    // Cleanup: close websocket
     return () => ws?.close();
   }, []);
 
+  // UI
+
+  // The order of these checks is important.
+  // First, fatal errors are highest priority.
   if (errorNotice || didDisconnect) {
     return (
       <Alert status="error">
@@ -163,40 +187,46 @@ export default function GameClient({
         <AlertTitle>{t(errorNotice || "Disconnected from server")}</AlertTitle>
       </Alert>
     );
-  } else if (ws && ws.readyState == ReadyState.OPEN) {
-    let view;
-    if (character) {
-      view = <CharacterSpinner character={character || ""} />;
-    } else {
-      view = (
-        <Lobby
-          players={players}
-          hostId={hostId}
-          isHost={isHost}
-          start={() => send({ startGame: {} })}
-        />
-      );
-    }
-
-    return (
-      <>
-        {view}
-        <Modal
-          onClose={() => setAlertContent(null)}
-          isOpen={alertContent != null}
-          isCentered
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalCloseButton />
-            <ModalBody>
-              <Text>{alertContent ? t(alertContent) : ""}</Text>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      </>
-    );
-  } else {
+    // Use the websocket readyState as the single source of truth for whether the connection is open.
+  } else if (!ws || ws.readyState != ReadyState.OPEN) {
     return <Loader />;
   }
+  // Don't care if connection is open but handshake is incomplete, in that case render
+  //  an empty lobby instead
+
+  // If we are here the game is all ready.
+
+  let view; // The main component we will render
+  if (character) {
+    // TODO: Store whether this has completed
+    view = <CharacterSpinner character={character || ""} />;
+  } else {
+    view = (
+      <Lobby
+        players={players}
+        hostId={hostId}
+        isHost={isHost}
+        start={() => send({ startGame: {} })}
+      />
+    );
+  }
+
+  return (
+    <>
+      {view}
+      <Modal
+        onClose={() => setAlertContent(null)}
+        isOpen={alertContent != null}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>{alertContent ? t(alertContent) : ""}</Text>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
 }
