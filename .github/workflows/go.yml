@@ -28,7 +28,7 @@ jobs:
       run: go get -u google.golang.org/protobuf/cmd/protoc-gen-go
 
     - name: Build protocol buffers code
-      run: bash ./tools/protoc.sh
+      run: bash ./tools/protoc.sh $(pwd) --no-js
 
     - name: Build
       run: go build -v .
