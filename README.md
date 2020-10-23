@@ -42,6 +42,13 @@ so that it can be built without installing protoc, but if the proto file is chan
 generated code but also be updated so they stay in sync.
 
 To re-generate the protocol buffers code run `./tools/protoc.sh`.
+It works without any options, but you can also pass the repository root as the first
+argument and a language to skip as the second argument.
+
+```bash
+./tools/protoc.sh # OR
+./tools/protoc.sh </path/to/repo> [--no-js|--no-golang]
+```
 
 This will generate the following files:
 
