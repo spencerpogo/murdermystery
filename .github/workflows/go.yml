@@ -4,12 +4,13 @@ on:
   push:
     branches: [master]
     paths:
-      - backend
+      - backend/**
+      - tools/**
   pull_request:
     branches: [master]
     paths:
-      - backend
-      - tools
+      - backend/**
+      - tools/**
 
 jobs:
   build:
