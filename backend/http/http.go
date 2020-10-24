@@ -19,16 +19,13 @@ func getDestroyFunc(games map[string]*game.Game, gamesMu *sync.Mutex, gid string
 }
 
 // StartServer starts the HTTP server
-func StartServer(iface string) {
+func StartServer(iface string, fs http.FileSystem) {
 	r := gin.Default()
 
 	games := make(map[string]*game.Game)
 	var gamesMu sync.Mutex
 
 	// routes
-	r.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "Murder Mystery Backend v0.0.1")
-	})
 	r.GET("/game/:id", func(c *gin.Context) {
 		gid := c.Param("id")
 
@@ -43,6 +40,10 @@ func StartServer(iface string) {
 
 		g.HandleRequest(c.Writer, c.Request)
 	})
+
+  r.NoRoute(func (c *gin.Context) {
+    c.FileFromFS(c.Request.URL.Path, fs)
+  })
 
 	log.Fatalln(r.Run(iface))
 }
