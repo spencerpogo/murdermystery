@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+     - uses: actions/checkout@v2
+
+     - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.13
+
+     - name: Use Node.js v14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Setup protoc
+        uses: arduino/setup-protoc@v1.1.0
+
+      - name: Install protoc-gen-go
+        run: go get -u google.golang.org/protobuf/cmd/protoc-gen-go
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+
+      - uses: bahmutov/npm-install@v1
+
+      - name: Build protocol buffers code
+        run: bash ./tools/protoc.sh
+
+      - name: Run build script
+        run: bash ./tools/build.sh
+
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          asset_path: ./build/backend
+          asset_name: backend
+          asset_content_type: application/exe
