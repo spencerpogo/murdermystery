@@ -61,6 +61,10 @@ export default function GameClient({
   const [character, setCharacter] = useState<protobuf.SetCharacter.Character>(
     protobuf.SetCharacter.Character.NONE
   );
+  // Whether the character spinner is done
+  const [spinDone, setSpinDone] = useState<boolean>(false);
+  // Fellow wolves. Shown to the player after character spinner.
+  const [fellowWolves, setFellowWolves] = useState<number[]>([]);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -106,6 +110,10 @@ export default function GameClient({
     setIsOpen(true);
   }
 
+  function handleFellowWolves(msg: protobuf.IFellowWolves) {
+    setFellowWolves(msg.ids || []);
+  }
+
   // Utitility functions
 
   // Call the proper handler based on the ServerMessage.
@@ -118,7 +126,7 @@ export default function GameClient({
     if (msg.error) return handleError(msg.error);
     if (msg.alert) return handleAlert(msg.alert);
     if (msg.setCharacter) return handleSetCharacter(msg.setCharacter);
-    if (msg.fellowWolves) return () => {};
+    if (msg.fellowWolves) return handleFellowWolves(msg.fellowWolves);
     throw new Error("Not implemented. ");
   };
 
