@@ -24,14 +24,21 @@ enum ReadyState {
   CLOSED = 3,
 }
 
-export default function GameClient({
+/*enum Scene {
+  NONE = 0,
+  SPINNER = 1,
+}*/
+
+function GameClientInner({
   server,
   id,
   nameProp,
+  onError,
 }: {
   server: string;
   id: string;
   nameProp: string;
+  onError: (e: string) => void;
 }) {
   // Main websocket
   const wsRef = useRef<WebSocket | null>(null);
@@ -39,15 +46,6 @@ export default function GameClient({
 
   // State
 
-  // isOpen is only used to re-render when connection is complete
-  const [, setIsOpen] = useState<boolean>(false);
-  // Represents a *fatal* error set to us by server.
-  // Can only be one of protobuf.Error.E_type but enum value is converted to a message.
-  // If this is set, an error banner will be shown with t(errorNotice)
-  const [errorNotice, setErrorNotice] = useState<string | null>(null);
-  // Same as setErrorNotice("Disconnected from server") but lower priority.
-  // Will only show up as a fallback if error notice is not set
-  const [didDisconnect, setDidDisconnect] = useState<boolean>(false);
   // Are we the host? Used to determine whether "Start Game" is enabled on Lobby
   const [isHost, setIsHost] = useState<boolean>(false);
   // The players we know of. Server will sync these with us whever they update.
@@ -61,6 +59,10 @@ export default function GameClient({
   const [character, setCharacter] = useState<protobuf.SetCharacter.Character>(
     protobuf.SetCharacter.Character.NONE
   );
+  // Fellow wolves. Shown to the player after character spinner.
+  //const [fellowWolves, setFellowWolves] = useState<number[]>([]);
+  // The scene the game is in right now
+  //const [scene, setScene] = useState<Scene>(Scene.NONE);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -80,7 +82,7 @@ export default function GameClient({
       error =
         "Someone disconnected, reconnection is not yet implemented so game over";
     }
-    setErrorNotice(error);
+    onError(error);
   }
 
   function handleAlert(data: protobuf.IAlert) {
@@ -101,9 +103,12 @@ export default function GameClient({
       if (msg.err == protobuf.Handshake.Error.STARTED) {
         error = "The game has already started";
       }
-      setErrorNotice(error);
+      onError(error);
     }
-    setIsOpen(true);
+  }
+
+  function handleFellowWolves(msg: protobuf.IFellowWolves) {
+    //setFellowWolves(msg.ids || []);
   }
 
   // Utitility functions
@@ -118,7 +123,7 @@ export default function GameClient({
     if (msg.error) return handleError(msg.error);
     if (msg.alert) return handleAlert(msg.alert);
     if (msg.setCharacter) return handleSetCharacter(msg.setCharacter);
-    if (msg.fellowWolves) return () => {};
+    if (msg.fellowWolves) return handleFellowWolves(msg.fellowWolves);
     throw new Error("Not implemented. ");
   };
 
@@ -156,7 +161,7 @@ export default function GameClient({
       wsRef.current = new WebSocket(`${server}/game/${id}`);
     } catch (e) {
       console.error(e);
-      setErrorNotice("Error while opening connection");
+      onError("Error while opening connection");
       return;
     }
     // update ws reference
@@ -169,7 +174,7 @@ export default function GameClient({
     ws.addEventListener("message", (ev: MessageEvent<any>) => parseMessage(ev));
     // Handle discconects
     ws.addEventListener("close", () => {
-      setDidDisconnect(true);
+      onError("Disconnected from server");
     });
 
     // Cleanup: close websocket
@@ -179,16 +184,8 @@ export default function GameClient({
   // UI
 
   // The order of these checks is important.
-  // First, fatal errors are highest priority.
-  if (errorNotice || didDisconnect) {
-    return (
-      <Alert status="error">
-        <AlertIcon />
-        <AlertTitle>{t(errorNotice || "Disconnected from server")}</AlertTitle>
-      </Alert>
-    );
-    // Use the websocket readyState as the single source of truth for whether the connection is open.
-  } else if (!ws || ws.readyState != ReadyState.OPEN) {
+  // Use the websocket readyState as the single source of truth for whether the connection is open.
+  if (!ws || ws.readyState != ReadyState.OPEN) {
     return <Loader />;
   }
   // Don't care if connection is open but handshake is incomplete, in that case render
@@ -197,10 +194,7 @@ export default function GameClient({
   // If we are here the game is all ready.
 
   let view; // The main component we will render
-  if (character) {
-    // TODO: Store whether this has completed
-    view = <CharacterSpinner character={character || ""} />;
-  } else {
+  if (!character) {
     view = (
       <Lobby
         players={players}
@@ -209,6 +203,9 @@ export default function GameClient({
         start={() => send({ startGame: {} })}
       />
     );
+  } else {
+    // TODO: Store whether this has completed
+    view = <CharacterSpinner character={character || ""} />;
   }
 
   return (
@@ -228,5 +225,33 @@ export default function GameClient({
         </ModalContent>
       </Modal>
     </>
+  );
+}
+
+export default function GameClient({
+  server,
+  id,
+  nameProp,
+}: {
+  server: string;
+  id: string;
+  nameProp: string;
+}) {
+  const [error, setError] = useState<string>("");
+  if (error) {
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        <AlertTitle>{t(error)}</AlertTitle>
+      </Alert>
+    );
+  }
+  return (
+    <GameClientInner
+      server={server}
+      id={id}
+      nameProp={nameProp}
+      onError={(err: string) => !error && setError(err)}
+    />
   );
 }
