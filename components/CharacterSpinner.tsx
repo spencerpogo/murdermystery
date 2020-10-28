@@ -21,30 +21,29 @@ const CHARACTER_INDEXES = [
   Character.HUNTER,
 ];
 
-const FILENAMES = [
-  "citizen.png",
-  "werewolf.png",
-  "healer.png",
-  "prophet.png",
-  "hunter.png",
-];
+const NAMES = ["Citizen", "Werewolf", "Healer", "Prophet", "Hunter"];
 const WIDTH = 226;
 const HEIGHT = 330;
 const REPS = 10;
 
+const getImgSrc = (name: string) => "/" + name.toLowerCase() + ".webp";
+
+// offset is required so keys are unique
 const getImgs = (offset: number) =>
-  FILENAMES.map((f, i) => {
+  NAMES.map((name, i) => {
     return (
       <Box d={"inline-block"} key={offset + i}>
         <Image
-          src={"/" + f}
-          alt={"TODO"}
+          src={getImgSrc(name)}
+          alt={t(name)}
           width={WIDTH + "px"}
           height={HEIGHT + "px"}
         />
       </Box>
     );
   });
+
+// get a list of JSX that is all images repeated REPS times
 let allImgs: ReactNode[] = [];
 let offset = 0;
 for (let i = 0; i < REPS; i++) {
@@ -61,7 +60,7 @@ for (let i = 0; i < REPS; i++) {
  */
 const getTransformAmt = (card_ind: number) => {
   // always go at least across all cards 6 times, and account for spinner position
-  const min_dist = WIDTH * FILENAMES.length * 7;
+  const min_dist = WIDTH * NAMES.length * 7;
 
   // A random px amount between 5 and 9 percent of card_width
   const rand = Math.random() * (WIDTH * 0.09) + WIDTH * 0.05;
@@ -79,23 +78,24 @@ const getSpinnerPos = (
     : 0;
 
 enum Stage {
-  waiting = 1,
-  spinning = 2,
-  done = 3,
+  WAIT = 1,
+  SPIN = 2,
+  SHOW = 3,
 }
 
 export default function CharacterSpinner({
   character,
+  onFinish,
 }: {
   character: protobuf.SetCharacter.Character;
+  onFinish: () => void;
 }) {
   const card_ind = CHARACTER_INDEXES.indexOf(character);
   if (card_ind == -1) throw new Error("Invalid character: " + character);
 
-  const filename = FILENAMES[card_ind];
-  const name = filename.split(".")[0];
+  const name = NAMES[card_ind];
 
-  const [stage, setStage] = useState<Stage>(Stage.waiting);
+  const [stage, setStage] = useState<Stage>(Stage.WAIT);
   const [shouldAnimate, setShouldAnimate] = useState<boolean>(true);
 
   // We will only be setting this once, but it depends on Math.random(), and it can't
@@ -111,14 +111,18 @@ export default function CharacterSpinner({
   // After 2s, start spinning, then 11s after that, switch to done
   useEffect(() => {
     let timeoutId: any;
-    if (stage == Stage.waiting) {
+    if (stage == Stage.WAIT) {
       timeoutId = setTimeout(() => {
-        setStage(Stage.spinning);
+        setStage(Stage.SPIN);
       }, 2000);
-    } else if (stage == Stage.spinning) {
+    } else if (stage == Stage.SPIN) {
       timeoutId = setTimeout(() => {
-        setStage(Stage.done);
+        setStage(Stage.SHOW);
       }, 11000);
+    } else if (stage == Stage.SHOW) {
+      timeoutId = setTimeout(() => {
+        onFinish();
+      }, 5000);
     }
 
     return () => clearTimeout(timeoutId);
@@ -146,7 +150,7 @@ export default function CharacterSpinner({
   // Guard for null tranformAmt to make typescript happy, in reality it is always set
   const finalTransform = (transformAmt || 0) - getSpinnerPos(lineContainerRef);
 
-  if (stage == Stage.waiting || stage == Stage.spinning) {
+  if (stage == Stage.WAIT || stage == Stage.SPIN) {
     return (
       <>
         <style jsx global>
@@ -154,10 +158,10 @@ export default function CharacterSpinner({
         </style>
         <Box
           transform={
-            stage == Stage.spinning ? `translateX(${-finalTransform}px)` : null
+            stage == Stage.SPIN ? `translateX(${-finalTransform}px)` : null
           }
           transition={
-            stage == Stage.spinning && shouldAnimate
+            stage == Stage.SPIN && shouldAnimate
               ? "transform 9.5s cubic-bezier(.31,.9985,.31,.9985)"
               : null
           }
@@ -180,19 +184,21 @@ export default function CharacterSpinner({
         </Box>
       </>
     );
-  } else {
+  } else if (stage == Stage.SHOW) {
     return (
       <>
         <Flex width="full" justify="center">
           <Text color="gray">{t("You are")}</Text>
         </Flex>
         <Flex width="full" justify="center">
-          <Heading>{t(name[0].toUpperCase() + name.slice(1))}</Heading>
+          <Heading>{t(name)}</Heading>
         </Flex>
         <Flex width="full" justify="center">
-          <Image src={"/" + filename} height="xl" />
+          <Image src={getImgSrc(name)} height="xl" />
         </Flex>
       </>
     );
   }
+  // Should never happen
+  return null;
 }

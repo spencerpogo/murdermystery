@@ -24,11 +24,6 @@ enum ReadyState {
   CLOSED = 3,
 }
 
-/*enum Scene {
-  NONE = 0,
-  SPINNER = 1,
-}*/
-
 function GameClientInner({
   server,
   id,
@@ -61,8 +56,7 @@ function GameClientInner({
   );
   // Fellow wolves. Shown to the player after character spinner.
   //const [fellowWolves, setFellowWolves] = useState<number[]>([]);
-  // The scene the game is in right now
-  //const [scene, setScene] = useState<Scene>(Scene.NONE);
+  const [spinDone, setSpinDone] = useState<boolean>(false);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -203,9 +197,15 @@ function GameClientInner({
         start={() => send({ startGame: {} })}
       />
     );
+  } else if (!spinDone) {
+    view = (
+      <CharacterSpinner
+        character={character || ""}
+        onFinish={() => setSpinDone(true)}
+      />
+    );
   } else {
-    // TODO: Store whether this has completed
-    view = <CharacterSpinner character={character || ""} />;
+    view = <p>Waiting</p>;
   }
 
   return (
