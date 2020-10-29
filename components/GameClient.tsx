@@ -15,6 +15,7 @@ import CharacterSpinner from "./CharacterSpinner";
 import FellowWolves from "./FellowWolves";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
+import Vote from "./Vote";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import { forcedTranslate as t } from "../translate";
 
@@ -65,6 +66,8 @@ function GameClientInner({
   const [fellowWolves, setFellowWolves] = useState<number[]>([]);
   // Whether the fellow wolves screen still needs to be shown
   const [showFellowWolves, setShowFellowWolves] = useState<boolean>(false);
+  // Current vote to be shown to the user.
+  const [voteRequest, setVoteRequest] = useState<number[]>([]);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -120,7 +123,17 @@ function GameClientInner({
     setShowFellowWolves(true);
   }
 
+  function handleVoteRequest(msg: protobuf.IVoteRequest) {
+    if (msg.choice_IDs) {
+      setVoteRequest(msg.choice_IDs);
+    }
+  }
+
   // Utitility functions
+
+  // Take a list of IDS and return a list of corresponding names
+  const IDsToNames = (ids: number[]) =>
+    ids.map((id) => (players[id] || {}).name || "").filter((n) => !!n);
 
   // Call the proper handler based on the ServerMessage.
   // Protobuf guarantees only one of these cases will be true due to `oneof`, so this
@@ -133,6 +146,7 @@ function GameClientInner({
     if (msg.alert) return handleAlert(msg.alert);
     if (msg.setCharacter) return handleSetCharacter(msg.setCharacter);
     if (msg.fellowWolves) return handleFellowWolves(msg.fellowWolves);
+    if (msg.voteRequest) return handleVoteRequest(msg.voteRequest);
     throw new Error("Not implemented. ");
   };
 
@@ -230,13 +244,9 @@ function GameClientInner({
       />
     );
   } else if (showFellowWolves) {
-    view = (
-      <FellowWolves
-        names={fellowWolves
-          .map((id) => (players[id] || {}).name || "")
-          .filter((n) => !!n)}
-      />
-    );
+    view = <FellowWolves names={IDsToNames(fellowWolves)} />;
+  } else if (voteRequest) {
+    view = <Vote names={IDsToNames(voteRequest)} />;
   } else {
     view = <p>Waiting</p>;
   }
