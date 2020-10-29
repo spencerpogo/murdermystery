@@ -88,31 +88,24 @@ func (g *Game) AssignCharacters() {
 func (g *Game) revealWolves() {
 	wolfSessions := []*melody.Session{}
 	wolfIDs := []int32{}
-	nonWolfIDs := []int32{}
-
-	for m, c := range g.clients {
-		if c.role == int32(pb.SetCharacter_WEREWOLF) {
-			wolfSessions = append(wolfSessions, m)
-			wolfIDs = append(wolfIDs, c.ID)
-		} else {
-			nonWolfIDs = append(nonWolfIDs, c.ID)
-		}
-	}
+	nonWolfSessions := []*melody.Session{}
 
 	msg, err := protocol.Marshal(&pb.FellowWolves{Ids: wolfIDs})
 	if err != nil {
 		return
 	}
-	msg2, err := protocol.Marshal(&pb.VoteRequest{Choice_IDs: nonWolfIDs})
-	if err != nil {
-		return
-	}
 
-	for i := range wolfSessions {
-		m := wolfSessions[i]
-		if !m.IsClosed() {
-			m.WriteBinary(msg)
-			m.WriteBinary(msg2)
+	for m, c := range g.clients {
+		if c.role == int32(pb.SetCharacter_WEREWOLF) {
+			wolfSessions = append(wolfSessions, m)
+			wolfIDs = append(wolfIDs, c.ID)
+			if !m.IsClosed() {
+				m.WriteBinary(msg)
+			}
+		} else {
+			nonWolfSessions = append(nonWolfSessions, m)
 		}
 	}
+
+	g.callVote(wolfSessions, nonWolfSessions)
 }

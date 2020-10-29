@@ -52,6 +52,9 @@ type Game struct {
 
 	// The host of the game
 	host *melody.Session
+
+	// The current vote taking place, nil if there is none
+	vote *Vote
 }
 
 // New constructs a new game

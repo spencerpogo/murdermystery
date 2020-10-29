@@ -3,6 +3,7 @@ package murdermystery;
 
 option go_package = ".;pb";
 
+// Server Messages
 message Handshake {
   enum Error {
     UNKNOWN = 0;
@@ -56,11 +57,19 @@ message SetCharacter {
 
 message FellowWolves { repeated int32 ids = 1; }
 
-message VoteRequest {
-  repeated int32 choice_IDs = 1;
-  int32 duration_sec = 2;
+message VoteRequest { repeated int32 choice_IDs = 1; }
+
+message VoteOver {}
+
+message VoteSync {
+  message Vote {
+    int32 id = 1;
+    int32 choice = 2;
+  }
+  repeated Vote votes = 1;
 }
 
+// The Server message
 message ServerMessage {
   oneof data {
     Handshake handshake = 1;
@@ -71,13 +80,17 @@ message ServerMessage {
     SetCharacter set_character = 6;
     FellowWolves fellow_wolves = 7;
     VoteRequest vote_request = 8;
+    VoteOver vote_over = 9;
+    VoteSync vote_sync = 10;
   }
 }
 
+// Client Messages
 message SetName { string name = 1; }
 
 message StartGame {}
 
+// The client message
 message ClientMessage {
   oneof data {
     SetName set_name = 1;
