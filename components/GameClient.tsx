@@ -271,6 +271,11 @@ export default function GameClient({
   nameProp: string;
 }) {
   const [error, setError] = useState<string>("");
+  // The onError function will set the error variable only if it is not already set. If
+  //  it is called rapidly, the error variable will be out of date and it could clobber
+  //  the error. The canSet variable allow it to ensure it only sets once per render.
+  let canSet = true;
+
   if (error) {
     return (
       <Alert status="error">
@@ -284,7 +289,13 @@ export default function GameClient({
       server={server}
       id={id}
       nameProp={nameProp}
-      onError={(err: string) => !error && setError(err)}
+      onError={(err: string) => {
+        console.log("Current error:", error, "Can set:", canSet, "New:", err);
+        if (canSet && !error) {
+          canSet = false;
+          setError(err);
+        }
+      }}
     />
   );
 }
