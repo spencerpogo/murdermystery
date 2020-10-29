@@ -1,3 +1,4 @@
+import FellowWolves from "components/FellowWolves";
 import GameClient from "../components/GameClient";
 import Layout from "components/Layout";
 import NameSelector from "components/NameSelector";
@@ -7,6 +8,8 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 function useGameContent() {
+  return <FellowWolves names={["a", "b", "c"]} />;
+
   const { query } = useRouter();
   const { id } = query;
   const server = query.srv || "ws://localhost:8080";

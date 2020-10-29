@@ -12,6 +12,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import CharacterSpinner from "./CharacterSpinner";
+import FellowWolves from "./FellowWolves";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
@@ -22,6 +23,10 @@ enum ReadyState {
   OPEN = 1,
   CLOSING = 2,
   CLOSED = 3,
+}
+
+interface PlayerIDMap {
+  [id: string]: protobuf.Players.IPlayer;
 }
 
 function GameClientInner({
@@ -44,7 +49,7 @@ function GameClientInner({
   // Are we the host? Used to determine whether "Start Game" is enabled on Lobby
   const [isHost, setIsHost] = useState<boolean>(false);
   // The players we know of. Server will sync these with us whever they update.
-  const [players, setPlayers] = useState<protobuf.Players.IPlayer[]>([]);
+  const [players, setPlayers] = useState<PlayerIDMap>({});
   // Who the host is. Used for showing the "Host" badge next to them in the lobby
   const [hostId, setHostId] = useState<number>(-1);
   // If set, a modal will pop with alertContent and then it will be cleared.
@@ -54,9 +59,12 @@ function GameClientInner({
   const [character, setCharacter] = useState<protobuf.SetCharacter.Character>(
     protobuf.SetCharacter.Character.NONE
   );
-  // Fellow wolves. Shown to the player after character spinner.
-  //const [fellowWolves, setFellowWolves] = useState<number[]>([]);
+  // Whether the character spinner is done
   const [spinDone, setSpinDone] = useState<boolean>(false);
+  // Fellow wolves. Shown to the player after character spinner.
+  const [fellowWolves, setFellowWolves] = useState<number[]>([]);
+  // Whether the fellow wolves screen still needs to be shown
+  const [showFellowWolves, setShowFellowWolves] = useState<boolean>(false);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -64,7 +72,13 @@ function GameClientInner({
   }
 
   function handlePlayers(msg: protobuf.IPlayers) {
-    setPlayers(msg.players || []);
+    let players: PlayerIDMap = {};
+    for (let p of msg.players || []) {
+      if (p.id && p.name) {
+        players[p.id] = p;
+      }
+    }
+    setPlayers(players);
     setHostId(msg.hostId || -1);
   }
 
@@ -102,7 +116,8 @@ function GameClientInner({
   }
 
   function handleFellowWolves(msg: protobuf.IFellowWolves) {
-    //setFellowWolves(msg.ids || []);
+    setFellowWolves(msg.ids || []);
+    setShowFellowWolves(true);
   }
 
   // Utitility functions
@@ -185,6 +200,16 @@ function GameClientInner({
   // Don't care if connection is open but handshake is incomplete, in that case render
   //  an empty lobby instead
 
+  useEffect(() => {
+    // If this check passes, the fellowWolves component will be rendered
+    // Clear it after 5s
+    if (character && spinDone && showFellowWolves) {
+      let timeoutId = setTimeout(() => setShowFellowWolves(false), 5000);
+      return () => clearTimeout(timeoutId);
+    }
+    return undefined;
+  }, [character, spinDone, showFellowWolves]);
+
   // If we are here the game is all ready.
 
   let view; // The main component we will render
@@ -202,6 +227,14 @@ function GameClientInner({
       <CharacterSpinner
         character={character || ""}
         onFinish={() => setSpinDone(true)}
+      />
+    );
+  } else if (showFellowWolves) {
+    view = (
+      <FellowWolves
+        names={fellowWolves
+          .map((id) => (players[id] || {}).name || "")
+          .filter((n) => !!n)}
       />
     );
   } else {

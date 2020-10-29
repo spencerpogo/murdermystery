@@ -9,7 +9,9 @@ export default function Lobby({
   hostId,
   start,
 }: {
-  players: protobuf.Players.IPlayer[];
+  players: {
+    [id: string]: protobuf.Players.IPlayer;
+  };
   hostId: number;
   isHost: boolean;
   start: () => void;
@@ -29,9 +31,11 @@ export default function Lobby({
         <Text as="i">{t("Share your link to invite others")}</Text>
         <Button>{t("Copy")}</Button>
       </Flex>
+      {/* Polish: style this a bit more, don't use <ul> */}
       <ul>
-        {players.map((p) => {
-          if (!p.name) return null;
+        {Object.keys(players).map((id) => {
+          let p = players[id];
+          if (!p || !p.name) return null;
           let pIsHost = p.id == hostId;
           return (
             <li key={p.name + pIsHost.toString()}>
