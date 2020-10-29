@@ -192,14 +192,6 @@ function GameClientInner({
 
   // UI
 
-  // The order of these checks is important.
-  // Use the websocket readyState as the single source of truth for whether the connection is open.
-  if (!ws || ws.readyState != ReadyState.OPEN) {
-    return <Loader />;
-  }
-  // Don't care if connection is open but handshake is incomplete, in that case render
-  //  an empty lobby instead
-
   useEffect(() => {
     // If this check passes, the fellowWolves component will be rendered
     // Clear it after 5s
@@ -209,6 +201,14 @@ function GameClientInner({
     }
     return undefined;
   }, [character, spinDone, showFellowWolves]);
+
+  // The order of these checks is important.
+  // Use the websocket readyState as the single source of truth for whether the connection is open.
+  if (!ws || ws.readyState != ReadyState.OPEN) {
+    return <Loader />;
+  }
+  // Don't care if connection is open but handshake is incomplete, in that case render
+  //  an empty lobby instead
 
   // If we are here the game is all ready.
 
