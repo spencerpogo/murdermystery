@@ -140,11 +140,11 @@ production linux amd64 build and attach it to the release.
 
 Badges:
 
-![Build Frontend](https://github.com/Scoder12/murdermystery/workflows/Node.js%20CI/badge.svg)
+![Node.js CI](https://github.com/Scoder12/murdermystery/workflows/Node.js%20CI/badge.svg)
 
 ![Build Backend](https://github.com/Scoder12/murdermystery/workflows/Build%20Backend/badge.svg)
 
-![Build Backend](https://github.com/Scoder12/murdermystery/workflows/Build%20Backend/badge.svg)
+![Release](https://github.com/Scoder12/murdermystery/workflows/Release/badge.svg)
 
 ### Bot
 
