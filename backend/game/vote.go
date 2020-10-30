@@ -56,7 +56,7 @@ func (v *Vote) IsVoter(s *melody.Session) bool {
 	return false
 }
 
-func (g *Game) callVote(voters, candidates []*melody.Session) {
+func (g *Game) callVote(voters, candidates []*melody.Session, vtype pb.VoteRequest_Type) {
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -73,6 +73,8 @@ func (g *Game) callVote(voters, candidates []*melody.Session) {
 		candidatesMap[c] = true
 	}
 
+	// We don't need to reference the vote type anywhere so not storing it, but can later
+	//  if needed
 	g.vote = &Vote{
 		voters:     votersMap,
 		candidates: candidatesMap,
@@ -88,7 +90,7 @@ func (g *Game) callVote(voters, candidates []*melody.Session) {
 		}
 	}
 
-	msg, err := protocol.Marshal(&pb.VoteRequest{Choice_IDs: ids})
+	msg, err := protocol.Marshal(&pb.VoteRequest{Choice_IDs: ids, Type: vtype})
 	if err != nil {
 		return
 	}
