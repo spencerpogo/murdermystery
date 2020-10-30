@@ -10,8 +10,9 @@ function useGameContent() {
   const { query } = useRouter();
   const { id } = query;
   const server = query.srv || "ws://localhost:8080";
+  const queryName = (query.name || "").toString();
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState<string>("");
 
   const nameComponent = <NameSelector onSubmit={(name) => setName(name)} />;
 
@@ -21,6 +22,9 @@ function useGameContent() {
     return nameComponent;
   }
   if (!name) {
+    if (queryName) {
+      setName(queryName);
+    }
     return nameComponent;
   }
   if (!id || Array.isArray(id)) {
