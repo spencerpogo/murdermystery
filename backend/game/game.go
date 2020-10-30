@@ -76,8 +76,11 @@ func New(destroyFn func()) *Game {
 		defer g.lock.Unlock()
 		var b strings.Builder
 		fmt.Fprintf(&b, "[%v] ↓ [", g.getID(s))
-		for _, c := range msg {
-			fmt.Fprintf(&b, "%v, ", int(c))
+		for i, c := range msg {
+			if i != 0 {
+				fmt.Fprint(&b, ",")
+			}
+			fmt.Fprintf(&b, "%v", int(c))
 		}
 		fmt.Fprintf(&b, "]\n")
 		log.Printf(b.String())
