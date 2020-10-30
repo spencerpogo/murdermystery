@@ -9,9 +9,9 @@ import (
 // Vote represents a vote taking place in the game
 type Vote struct {
 	// The clients who are allowed to vote
-	voters []*melody.Session
+	voters map[*melody.Session]bool
 	// The candidates who they can choose from
-	candidates []*melody.Session
+	candidates map[*melody.Session]bool
 	// The votes received from voters. map[voter]candidate
 	votes map[*melody.Session]*melody.Session
 }
@@ -23,7 +23,7 @@ func (v *Vote) End() {
 		return
 	}
 
-	for _, s := range v.voters {
+	for s := range v.voters {
 		if s != nil && !s.IsClosed() {
 			s.WriteBinary(msg)
 		}
@@ -48,7 +48,7 @@ func (v *Vote) HasConcensus() bool {
 
 // IsVoter checks whether a session is in v.voters
 func (v *Vote) IsVoter(s *melody.Session) bool {
-	for _, i := range v.voters {
+	for i := range v.voters {
 		if i == s {
 			return true
 		}
@@ -64,9 +64,18 @@ func (g *Game) callVote(voters, candidates []*melody.Session) {
 		g.vote.End()
 	}
 
+	votersMap := make(map[*melody.Session]bool)
+	for _, s := range voters {
+		votersMap[s] = true
+	}
+	candidatesMap := make(map[*melody.Session]bool)
+	for _, c := range candidates {
+		candidatesMap[c] = true
+	}
+
 	g.vote = &Vote{
-		voters:     voters,
-		candidates: candidates,
+		voters:     votersMap,
+		candidates: candidatesMap,
 		votes:      make(map[*melody.Session]*melody.Session),
 	}
 
@@ -89,4 +98,19 @@ func (g *Game) callVote(voters, candidates []*melody.Session) {
 			s.WriteBinary(msg)
 		}
 	}
+}
+
+func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVote) error {
+	if msg.Choice == 0 || g.vote == nil || !g.vote.IsVoter(s) {
+		return nil
+	}
+	// Find corresponding session by ID
+	choiceSession, _ := g.FindByID(msg.Choice)
+	if choiceSession == nil {
+		return nil
+	}
+	// Store vote
+	g.vote.votes[s] = choiceSession
+
+	return nil
 }

@@ -90,10 +90,13 @@ message SetName { string name = 1; }
 
 message StartGame {}
 
+message ClientVote { int32 choice = 1; }
+
 // The client message
 message ClientMessage {
   oneof data {
     SetName set_name = 1;
     StartGame start_game = 2;
+    ClientVote vote = 3;
   }
 }

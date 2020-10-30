@@ -180,3 +180,13 @@ func (g *Game) getID(s *melody.Session) int32 {
 	}
 	return c.ID
 }
+
+// FindByID finds a session and client from an ID. Both will be nil if invalid
+func (g *Game) FindByID(id int32) (*melody.Session, *Client) {
+	for s, c := range g.clients {
+		if c != nil && c.ID == id {
+			return s, c
+		}
+	}
+	return nil, nil
+}
