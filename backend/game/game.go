@@ -155,7 +155,7 @@ func (g *Game) syncPlayers() {
 	}
 
 	for _, c := range g.clients {
-		if c == nil {
+		if c == nil || len(c.name) == 0 {
 			return
 		}
 		players = append(players, &pb.Players_Player{Name: c.name, Id: c.ID})
