@@ -245,7 +245,7 @@ function GameClientInner({
     );
   } else if (showFellowWolves) {
     view = <FellowWolves names={IDsToNames(fellowWolves)} />;
-  } else if (voteRequest) {
+  } else if (voteRequest.length) {
     view = <Vote names={IDsToNames(voteRequest)} />;
   } else {
     view = <p>Waiting</p>;
