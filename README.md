@@ -11,15 +11,17 @@ It is meant to be fully internationalized, supporting both english and chinese.
 The server is written with Go.
 It uses Gin for HTTP and Melody for websockets.
 
-Communication between client and server uses protocol buffer wire format binary messages sent over a WebSocket connection.
+Communication between client and server uses protocol buffer wire format binary
+messages sent over a WebSocket connection. Although this is overkill for such a small
+project, it allows me to learn about protocol buffers hands on.
 
 ## Building
 
 ### Client
 
-It is planned to soon package the client bundle to be served by the server binary,
-using `next export` to generate HTML and `statik` to package the HTML, although this is
-not yet implemented.
+In production, the client bundle is exported into HTML and then server by the backend
+binary. This means that advanced Next.JS routing features such may not be available so
+that the app can be server by a different HTTP server.
 
 To run the frontend server in development mode:
 
@@ -27,12 +29,8 @@ To run the frontend server in development mode:
 npm run dev
 ```
 
-To build and run a production build:
-
-```bash
-npm run build
-npm start
-```
+To generate a production build of both the server and client, refer to the backend
+section of the building guide.
 
 ### Protocol Buffers
 
@@ -43,9 +41,9 @@ generated code but also be updated so they stay in sync.
 
 To re-generate the protocol buffers code run `./tools/protoc.sh`.
 It works without any options, but you can also pass the repository root as the first
-argument and a language to skip as the second argument.
+argument and a language to skip as the second argument. The skip MUST be second.
 
-```bash
+```
 ./tools/protoc.sh # OR
 ./tools/protoc.sh </path/to/repo> [--no-js|--no-golang]
 ```
@@ -61,41 +59,92 @@ This will generate the following files:
 The script automatically checks if you have the required toolchain installed and tells
 you how to install if you don't.
 
-The script it not tested on windows but everything other than the automatic tool chekcs
-should work with path modifications.
+The build scripts do not support Windows, but with modifications can definitely work on
+it. I may add Windows support later but it is not high priority as I develop and deploy
+exclusively on linux.
 
 ### Server
 
-To build the server, run the following commands:
+To generate a development build of the server, ensure the build directory exists, and
+run:
 
-```bash
-mkdir -p build
+```
 cd backend
 go build -o ../build/backend
 ```
 
+The directory the build command is run in matters. I have not yet figured out how to
+build it while being in the repository root.
+
+To generate a production build of the server, including bundling the frontend run the
+build script:
+
+```bash
+./tools/build.sh
+```
+
+The arguments for this script work similarly to the protobuf build script:
+
+```
+./tools/build.sh # OR
+./tools/build.sh </path/to/repo> [--no-clean]
+```
+
+If `--no-clean` is passed, the `build/html` directory will not be removed.
+
 This generates an executable `./build/backend`. To start the server run this file.
 
-The server will listen on `localhost:8080` by default.
-It optionally takes an interface to listen on in the `-addr` paramater:
+The server will listen on `http://localhost:8080` by default.
+It optionally takes an interface to listen on in the `-addr` paramater which is in
+the form of `iface:port`.
 
-It is planned to have a `debug` build tag that will enable gin debugging and disable
-the websocket origin check (because the frontend and backend servers run on different
-origins).
+To run the binary in production mode, set the environment variable `GIN_MODE=release`.
+
+It is planned to have a `GOENV=prod` variable that will disable many debug features,
+such as the disabled origin check and extra logging, but it is not yet implemented so
+the only way to disable these features is to edit the code.
 
 ```bash
 ./build/backend -addr localhost:1234
 ```
 
-For development, I use `CompileDaemon` which I'm not sure is the best option but works
-fine for me. This is the command I use:
+For development, I use `CompileDaemon` to automatically build the binary whenver any
+souce files change. It probably isn't the best option but covers my needs fine.
+
+You can install it like this:
+
+```bash
+go get github.com/githubnemo/CompileDaemon
+```
+
+This is the command I use to run it:
 
 ```bash
 PROJ="/path/to/repo"
 CompileDaemon -directory=$PROJ/backend -build='go build -o $PROJ/build/backend' -command '$PROJ/build/backend' -color -log-prefix=false
 ```
 
-## Development
+## Other Details
+
+### CI
+
+The CI system is run by GitHub Actions. I have not written any tests for either the
+frontend or backend yet, so the CI just checks if the frontend and backend builds are
+successful. This just makes sure no bad code is pushed to the repo.
+
+The backend CI job only runs whenever the `tools/` or `backend/` paths are changed to
+save CI minutes (not that I'm in danger of running out).
+
+Whenver a GitHub release is created, a release CI job will automatically generate a
+production linux amd64 build and attach it to the release.
+
+Badges:
+
+![Build Frontend](https://github.com/Scoder12/murdermystery/workflows/Node.js%20CI/badge.svg)
+
+![Build Backend](https://github.com/Scoder12/murdermystery/workflows/Build%20Backend/badge.svg)
+
+![Build Backend](https://github.com/Scoder12/murdermystery/workflows/Build%20Backend/badge.svg)
 
 ### Bot
 
