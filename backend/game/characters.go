@@ -90,22 +90,26 @@ func (g *Game) revealWolves() {
 	wolfIDs := []int32{}
 	nonWolfSessions := []*melody.Session{}
 
-	msg, err := protocol.Marshal(&pb.FellowWolves{Ids: wolfIDs})
-	if err != nil {
-		return
-	}
-
 	for m, c := range g.clients {
 		if c.role == int32(pb.SetCharacter_WEREWOLF) {
 			wolfSessions = append(wolfSessions, m)
 			wolfIDs = append(wolfIDs, c.ID)
-			if !m.IsClosed() {
-				m.WriteBinary(msg)
-			}
 		} else {
 			nonWolfSessions = append(nonWolfSessions, m)
 		}
 	}
 
-	g.callVote(wolfSessions, nonWolfSessions)
+	msg, err := protocol.Marshal(&pb.FellowWolves{Ids: wolfIDs})
+	if err != nil {
+		return
+	}
+
+	for _, s := range wolfSessions {
+		if !s.IsClosed() {
+			s.WriteBinary(msg)
+		}
+	}
+
+	// Allow game to be unlocked before calling
+	go g.callVote(wolfSessions, nonWolfSessions)
 }
