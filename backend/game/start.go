@@ -23,8 +23,8 @@ func (g *Game) startGameHandler(s *melody.Session, c *Client, msg *pb.StartGame)
 		return
 	}
 	online := 0
-	for s := range g.clients {
-		if s != nil && !s.IsClosed() {
+	for s, c := range g.clients {
+		if s != nil && !s.IsClosed() && c != nil && len(c.name) > 0 {
 			online++
 		}
 	}
