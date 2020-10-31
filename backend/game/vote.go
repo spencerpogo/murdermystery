@@ -1,6 +1,8 @@
 package game
 
 import (
+	"log"
+
 	"github.com/Scoder12/murdermystery/backend/protocol"
 	"github.com/Scoder12/murdermystery/backend/protocol/pb"
 	"gopkg.in/olahol/melody.v1"
@@ -113,6 +115,7 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 	}
 	// Store vote
 	g.vote.votes[s] = choiceSession
+	log.Println(g.vote.votes)
 
 	return nil
 }
