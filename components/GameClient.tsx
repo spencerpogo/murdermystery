@@ -246,7 +246,8 @@ function GameClientInner({
   } else if (showFellowWolves) {
     view = <FellowWolves names={IDsToNames(fellowWolves)} />;
   } else if (voteRequest.length) {
-    view = <Vote names={IDsToNames(voteRequest)} />;
+    // TODO: Get message, desc, votes from server
+    view = <Vote msg={"TODO"} names={IDsToNames(voteRequest)} votes={{}} />;
   } else {
     view = <p>Waiting</p>;
   }
