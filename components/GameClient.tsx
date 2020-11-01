@@ -68,6 +68,8 @@ function GameClientInner({
   const [showFellowWolves, setShowFellowWolves] = useState<boolean>(false);
   // Current vote to be shown to the user.
   const [voteRequest, setVoteRequest] = useState<number[]>([]);
+  // Current vote status
+  const [voteInfo, setVoteInfo] = useState<protobuf.VoteSync.IVote[]>([]);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -129,6 +131,12 @@ function GameClientInner({
     }
   }
 
+  function handleVoteSync(msg: protobuf.IVoteSync) {
+    if (msg.votes) {
+      setVoteInfo(msg.votes);
+    }
+  }
+
   // Utitility functions
 
   // Take a list of IDS and return a list of corresponding names
@@ -147,6 +155,7 @@ function GameClientInner({
     if (msg.setCharacter) return handleSetCharacter(msg.setCharacter);
     if (msg.fellowWolves) return handleFellowWolves(msg.fellowWolves);
     if (msg.voteRequest) return handleVoteRequest(msg.voteRequest);
+    if (msg.voteSync) return handleVoteSync(msg.voteSync);
     throw new Error("Not implemented. ");
   };
 
@@ -246,8 +255,14 @@ function GameClientInner({
   } else if (showFellowWolves) {
     view = <FellowWolves names={IDsToNames(fellowWolves)} />;
   } else if (voteRequest.length) {
-    // TODO: Get message, desc, votes from server
-    view = <Vote msg={"TODO"} names={IDsToNames(voteRequest)} votes={{}} />;
+    // Process voteSync message of [{ id, choice }] into map of { [choice]: voter[] }
+    let votes = {};
+    for (let vote of voteInfo) {
+      if (vote.id && vote.id > 0) {
+        votes[vote.choice || -1] = vote.id;
+      }
+    }
+    view = <Vote msg={"TODO"} names={IDsToNames(voteRequest)} votes={votes} />;
   } else {
     view = <p>Waiting</p>;
   }
