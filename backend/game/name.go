@@ -40,7 +40,7 @@ func (g *Game) setNameHandler(s *melody.Session, c *Client, msg *pb.SetName) {
 	}
 	name = strings.TrimSpace(name)
 
-	if len(name) == 0 || len(name) > 50 {
+	if len(name) == 0 || len(name) > 20 {
 		msg, err := protocol.Marshal(&pb.Error{Msg: pb.Error_BADNAME})
 		if err != nil {
 			return
