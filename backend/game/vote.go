@@ -16,6 +16,8 @@ type Vote struct {
 	candidates map[*melody.Session]bool
 	// The votes received from voters. map[voter]candidate
 	votes map[*melody.Session]*melody.Session
+	// The function to call whenever a vote is cast
+	onChange func(*Vote)
 }
 
 // End ends the vote. Assumed game mutex is locked.
@@ -35,12 +37,17 @@ func (v *Vote) End() {
 // HasConcensus return whether all votes are the same
 func (v *Vote) HasConcensus() bool {
 	var choice *melody.Session = nil
+	var choiceSet bool = false
 
-	for _, s := range v.votes {
-		if choice == nil {
+	for voter := range v.voters {
+		s := v.votes[voter]
+
+		if !choiceSet {
 			choice = s
+			choiceSet = true
 			continue
 		}
+
 		if s != choice {
 			return false
 		}
@@ -83,7 +90,10 @@ func (v *Vote) toPB(g *Game) *pb.VoteSync {
 	return &pb.VoteSync{Votes: pbVotes}
 }
 
-func (g *Game) callVote(voters, candidates []*melody.Session, vtype pb.VoteRequest_Type) {
+func (g *Game) callVote(
+	voters, candidates []*melody.Session,
+	vtype pb.VoteRequest_Type,
+	onChange func(*Vote)) {
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -106,6 +116,7 @@ func (g *Game) callVote(voters, candidates []*melody.Session, vtype pb.VoteReque
 		voters:     votersMap,
 		candidates: candidatesMap,
 		votes:      make(map[*melody.Session]*melody.Session),
+		onChange:   onChange,
 	}
 
 	// Get IDS
@@ -145,7 +156,7 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 	}
 	// Store vote
 	g.vote.votes[s] = choiceSession
-	log.Println(g.vote.votes)
+	log.Println(g.vote.votes, g.vote.HasConcensus())
 	g.syncVote()
 
 	return nil
@@ -154,6 +165,13 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 // SyncVote syncs the vote choices with all clients. Assumes game is locked!
 func (g *Game) syncVote() {
 	if g.vote == nil {
+		return
+	}
+
+	v := g.vote
+	v.onChange(v)
+	if g.vote != v {
+		// It was ended by the handler
 		return
 	}
 

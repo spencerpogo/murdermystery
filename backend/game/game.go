@@ -190,3 +190,14 @@ func (g *Game) FindByID(id int32) (*melody.Session, *Client) {
 	}
 	return nil, nil
 }
+
+// Handler assumes game is locked!!
+func (g *Game) wolfVoteHandler() func(v *Vote) {
+	return func(v *Vote) {
+		if g.vote != v || !v.HasConcensus() {
+			return
+		}
+		log.Println("Wolf vote over")
+		// TODO: Call prophet vote
+	}
+}

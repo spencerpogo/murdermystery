@@ -80,12 +80,12 @@ func (g *Game) AssignCharacters() {
 		m.WriteBinary(msg)
 		i++
 	}
-
-	g.revealWolves()
 }
 
-// Assumes game is locked
 func (g *Game) revealWolves() {
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
 	wolfSessions := []*melody.Session{}
 	wolfIDs := []int32{}
 	nonWolfSessions := []*melody.Session{}
@@ -111,5 +111,5 @@ func (g *Game) revealWolves() {
 	}
 
 	// Allow game to be unlocked before calling
-	go g.callVote(wolfSessions, nonWolfSessions, pb.VoteRequest_KILL)
+	go g.callVote(wolfSessions, nonWolfSessions, pb.VoteRequest_KILL, g.wolfVoteHandler())
 }

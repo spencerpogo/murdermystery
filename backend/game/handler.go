@@ -117,4 +117,5 @@ func (g *Game) handleMsg(s *melody.Session, data []byte) {
 
 func (g *Game) handleStart() {
 	g.AssignCharacters()
+	g.revealWolves()
 }
