@@ -127,6 +127,8 @@ func (g *Game) callVote(voters, candidates []*melody.Session, vtype pb.VoteReque
 			s.WriteBinary(msg)
 		}
 	}
+
+	g.syncVote()
 }
 
 func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVote) error {
@@ -149,7 +151,7 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 	return nil
 }
 
-// Assumes game is locked!
+// SyncVote syncs the vote choices with all clients. Assumes game is locked!
 func (g *Game) syncVote() {
 	if g.vote == nil {
 		return
