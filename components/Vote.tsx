@@ -2,9 +2,17 @@ import { Button, Heading, Stack, Text } from "@chakra-ui/core";
 
 import { forcedTranslate as t } from "../translate";
 
-function VoteButton({ text }: { text: string }) {
+function VoteButton({
+  text,
+  id,
+  onVote,
+}: {
+  text: string;
+  id: number;
+  onVote: (id: number) => void;
+}) {
   return (
-    <Button mt="2" variantColor="gray">
+    <Button mt="2" variantColor="gray" onClick={() => onVote(id)}>
       {text}
     </Button>
   );
@@ -25,21 +33,23 @@ function VotesDisplay({ name, voters }: { name: string; voters: string[] }) {
 export default function Vote({
   msg,
   desc,
-  names,
+  candidates,
   votes,
+  onVote,
 }: {
   msg: string;
   desc?: string;
-  names: string[];
+  candidates: [number, string][];
   votes: { [name: string]: string[] };
+  onVote: (candidateID: number) => void;
 }) {
   return (
     <>
       <Heading>{t(msg)}</Heading>
       {desc && <Text mt="2">{t(desc)}</Text>}
       <Stack mt="2">
-        {names.map((n) => (
-          <VoteButton key={n} text={n} />
+        {candidates.map(([cid, name]) => (
+          <VoteButton key={cid} text={name} id={cid} onVote={onVote} />
         ))}
       </Stack>
       <Heading as="h4" size="lg" mt="3" mb="2">

@@ -139,6 +139,8 @@ function GameClientInner({
 
   // Utitility functions
 
+  const IDToName = (id: number) => (players[id] || {}).name || "";
+
   // Take a list of IDS and return a list of corresponding names
   const IDsToNames = (ids: number[]) =>
     ids.map((id) => (players[id] || {}).name || "").filter((n) => !!n);
@@ -255,14 +257,40 @@ function GameClientInner({
   } else if (showFellowWolves) {
     view = <FellowWolves names={IDsToNames(fellowWolves)} />;
   } else if (voteRequest.length) {
-    // Process voteSync message of [{ id, choice }] into map of { [choice]: voter[] }
+    // Process the id list (number[]) into [ [id, name] ]
+    let candidates: [number, string][] = [];
+    for (let candidateID of voteRequest) {
+      let name: string = (players[candidateID] || {}).name || "";
+      if (name) {
+        candidates.push([candidateID, name]);
+      }
+    }
+
+    // Process voteSync message of [{ id, choice }] into map of { [choice]: string[] }
     let votes = {};
     for (let vote of voteInfo) {
       if (vote.id && vote.id > 0) {
-        votes[vote.choice || -1] = vote.id;
+        const voterName = IDToName(vote.id);
+        const candidateName =
+          !vote.choice || vote.choice == -1
+            ? t("Has not voted")
+            : IDToName(vote.choice || -1);
+        if (voterName && candidateName) {
+          votes[candidateName] = votes[candidateName] || [];
+          votes[candidateName].push(name);
+        }
       }
     }
-    view = <Vote msg={"TODO"} names={IDsToNames(voteRequest)} votes={votes} />;
+    view = (
+      <Vote
+        msg={"TODO"}
+        candidates={candidates}
+        votes={votes}
+        onVote={(candidateID: number) =>
+          send({ vote: { choice: candidateID } })
+        }
+      />
+    );
   } else {
     view = <p>Waiting</p>;
   }
