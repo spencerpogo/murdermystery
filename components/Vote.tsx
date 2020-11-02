@@ -101,7 +101,7 @@ export default function Vote({
         );
       })}
 
-      {noVote.length && (
+      {noVote.length ? (
         <>
           <Heading size="md" mb="2">
             {t("Has not voted")}
@@ -110,7 +110,7 @@ export default function Vote({
             <VoterBox key={name} name={name} />
           ))}
         </>
-      )}
+      ) : null}
     </>
   );
 }
