@@ -68,6 +68,8 @@ function GameClientInner({
   const [showFellowWolves, setShowFellowWolves] = useState<boolean>(false);
   // Current vote to be shown to the user.
   const [voteRequest, setVoteRequest] = useState<number[]>([]);
+  // Current vote description, will be translate in Vote component
+  const [voteDesc, setVoteDesc] = useState<string | null>(null);
   // Current vote status
   const [voteInfo, setVoteInfo] = useState<protobuf.VoteSync.IVote[]>([]);
 
@@ -127,6 +129,11 @@ function GameClientInner({
 
   function handleVoteRequest(msg: protobuf.IVoteRequest) {
     if (msg.choice_IDs) {
+      // Decode the vote type
+      const VOTE_TYPES: { [type: number]: string } = {
+        [protobuf.VoteRequest.Type.KILL]: "Choose someone to kill",
+      };
+      setVoteDesc(VOTE_TYPES[msg.type || -1] || "Please vote");
       setVoteRequest(msg.choice_IDs);
     }
   }
@@ -277,13 +284,14 @@ function GameClientInner({
             : IDToName(vote.choice || -1);
         if (voterName && candidateName) {
           votes[candidateName] = votes[candidateName] || [];
-          votes[candidateName].push(name);
+          votes[candidateName].push(voterName);
         }
       }
     }
+
     view = (
       <Vote
-        msg={"TODO"}
+        msg={voteDesc || "Please vote"}
         candidates={candidates}
         votes={votes}
         onVote={(candidateID: number) =>
