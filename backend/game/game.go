@@ -181,7 +181,8 @@ func (g *Game) getID(s *melody.Session) int32 {
 	return c.ID
 }
 
-// FindByID finds a session and client from an ID. Both will be nil if invalid
+// FindByID finds a session and client from an ID. Both will be nil if invalid.
+// Assumes game is locked!
 func (g *Game) FindByID(id int32) (*melody.Session, *Client) {
 	for s, c := range g.clients {
 		if c != nil && c.ID == id {
@@ -191,13 +192,46 @@ func (g *Game) FindByID(id int32) (*melody.Session, *Client) {
 	return nil, nil
 }
 
-// Handler assumes game is locked!!
+// SessionsByRole returns all sessions that have and do not have a given role
+// Assumes game is locked!
+func (g *Game) SessionsByRole(role int32) ([]*melody.Session, []*melody.Session) {
+	hasRole := []*melody.Session{}
+	doesntHaveRole := []*melody.Session{}
+
+	for s, c := range g.clients {
+		if c != nil {
+			if c.role == role {
+				hasRole = append(hasRole, s)
+			} else {
+				doesntHaveRole = append(doesntHaveRole, s)
+			}
+		}
+	}
+	return hasRole, doesntHaveRole
+}
+
+// Handler assumes game is locked
 func (g *Game) wolfVoteHandler() func(v *Vote) {
 	return func(v *Vote) {
 		if g.vote != v || !v.HasConcensus() {
 			return
 		}
 		log.Println("Wolf vote over")
-		// TODO: Call prophet vote
+		g.vote.End()
+
+		prophet, notProphet := g.SessionsByRole(int32(pb.SetCharacter_PROPHET))
+		go g.callVote(prophet, notProphet, pb.VoteRequest_PROPHET, g.prophetVoteHandler())
+	}
+}
+
+// Handler assumes game is locked
+func (g *Game) prophetVoteHandler() func(v *Vote) {
+	return func(v *Vote) {
+		if g.vote != v {
+			return
+		}
+		log.Println("Prophet vote over")
+		g.vote.End()
+		// TODO: Show requested person's status, call next vote
 	}
 }
