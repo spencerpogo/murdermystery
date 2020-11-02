@@ -11,6 +11,7 @@ message Handshake {
     STARTED = 2;
   }
   Error err = 1;
+  int32 id = 2;
 }
 
 message Host { bool isHost = 1; }

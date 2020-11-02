@@ -40,6 +40,8 @@ function GameClientInner({
 
   // State
 
+  // Our player ID
+  const [playerID, setPlayerID] = useState<number>(-1);
   // Are we the host? Used to determine whether "Start Game" is enabled on Lobby
   const [isHost, setIsHost] = useState<boolean>(false);
   // The players we know of. Server will sync these with us whever they update.
@@ -112,6 +114,9 @@ function GameClientInner({
         error = "The game has already started";
       }
       onError(error);
+    }
+    if (msg.id) {
+      setPlayerID(msg.id);
     }
   }
 
@@ -255,7 +260,11 @@ function GameClientInner({
       />
     );
   } else if (showFellowWolves) {
-    view = <FellowWolves names={IDsToNames(fellowWolves)} />;
+    view = (
+      <FellowWolves
+        names={IDsToNames(fellowWolves.filter((id) => id != playerID))}
+      />
+    );
   } else if (voteRequest.length) {
     // Process the id list (number[]) into [ [id, name] ]
     let candidates: [number, string][] = [];

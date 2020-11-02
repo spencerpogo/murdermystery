@@ -32,7 +32,7 @@ func (g *Game) handleJoin(s *melody.Session) {
 	g.nextID++
 	g.clients[s] = c
 
-	msg, err := protocol.Marshal(&pb.Handshake{Err: pb.Handshake_OK})
+	msg, err := protocol.Marshal(&pb.Handshake{Err: pb.Handshake_OK, Id: c.ID})
 	if err != nil {
 		return
 	}
