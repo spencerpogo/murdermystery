@@ -19,13 +19,6 @@ import Vote from "./Vote";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import { forcedTranslate as t } from "../translate";
 
-enum ReadyState {
-  CONNECTING = 0,
-  OPEN = 1,
-  CLOSING = 2,
-  CLOSED = 3,
-}
-
 interface PlayerIDMap {
   [id: string]: protobuf.Players.IPlayer;
 }
@@ -236,7 +229,7 @@ function GameClientInner({
 
   // The order of these checks is important.
   // Use the websocket readyState as the single source of truth for whether the connection is open.
-  if (!ws || ws.readyState != ReadyState.OPEN) {
+  if (!ws || ws.readyState != WebSocket.OPEN) {
     return <Loader />;
   }
   // Don't care if connection is open but handshake is incomplete, in that case render
