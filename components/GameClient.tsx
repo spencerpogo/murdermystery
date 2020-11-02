@@ -268,13 +268,19 @@ function GameClientInner({
 
     // Process voteSync message of [{ id, choice }] into map of { [choice]: string[] }
     let votes = {};
+    let noVote: string[] = [];
     for (let vote of voteInfo) {
       if (vote.id && vote.id > 0) {
         const voterName = IDToName(vote.id);
-        const candidateName =
-          !vote.choice || vote.choice == -1
-            ? t("Has not voted")
-            : IDToName(vote.choice || -1);
+
+        let candidateName: string = "";
+        // -1 == no vote
+        if (vote.choice && vote.choice != -1) {
+          candidateName = IDToName(vote.choice || -1);
+        } else {
+          noVote.push(voterName);
+        }
+
         if (voterName && candidateName) {
           votes[candidateName] = votes[candidateName] || [];
           votes[candidateName].push(voterName);
@@ -287,6 +293,7 @@ function GameClientInner({
         msg={voteDesc || "Please vote"}
         candidates={candidates}
         votes={votes}
+        noVote={noVote}
         onVote={(candidateID: number) =>
           send({ vote: { choice: candidateID } })
         }

@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/core";
+import { Box, Button, Flex, Heading, Text } from "@chakra-ui/core";
 
 import { forcedTranslate as t } from "../translate";
 
@@ -6,6 +6,25 @@ interface Choice {
   name?: string;
   id?: number;
   votes?: string[];
+}
+
+function VoterBox({ name }: { name: string }) {
+  return (
+    <Box
+      ml="2"
+      mr="2"
+      mb="1"
+      pt="1"
+      pr="1"
+      pb="1"
+      pl="1"
+      wordBreak="break-word"
+      border="1px solid white"
+      borderRadius="2px"
+    >
+      {name}
+    </Box>
+  );
 }
 
 function VotesDisplay({
@@ -26,21 +45,8 @@ function VotesDisplay({
         {name}
       </Button>
       <Box mt="2">
-        {voters.map((i) => (
-          <Box
-            ml="2"
-            mr="2"
-            mb="1"
-            pt="1"
-            pr="1"
-            pb="1"
-            pl="1"
-            wordBreak="break-word"
-            border="1px solid white"
-            borderRadius="2px"
-          >
-            {i}
-          </Box>
+        {voters.map((name) => (
+          <VoterBox key={name} name={name} />
         ))}
       </Box>
     </Box>
@@ -59,12 +65,14 @@ export default function Vote({
   desc,
   candidates,
   votes,
+  noVote,
   onVote,
 }: {
   msg: string;
   desc?: string;
   candidates: [number, string][];
   votes: { [name: string]: string[] };
+  noVote: string[];
   onVote: (candidateID: number) => void;
 }) {
   let voteGroups: [Choice?, Choice?][] = splitIntoChunks(
@@ -92,6 +100,17 @@ export default function Vote({
           </Flex>
         );
       })}
+
+      {noVote.length && (
+        <>
+          <Heading size="md" mb="2">
+            {t("Has not voted")}
+          </Heading>
+          {noVote.map((name) => (
+            <VoterBox key={name} name={name} />
+          ))}
+        </>
+      )}
     </>
   );
 }
