@@ -15,7 +15,7 @@ import CharacterSpinner from "./CharacterSpinner";
 import FellowWolves from "./FellowWolves";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
-import Vote from "./Vote";
+import WolfVote from "./WolfVote";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import { forcedTranslate as t } from "../translate";
 
@@ -289,8 +289,7 @@ function GameClientInner({
     }
 
     view = (
-      <Vote
-        msg={voteDesc || "Please vote"}
+      <WolfVote
         candidates={candidates}
         votes={votes}
         noVote={noVote}

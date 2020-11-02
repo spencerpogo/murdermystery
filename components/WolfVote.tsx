@@ -61,15 +61,11 @@ function splitIntoChunks(arr: any[], chunkSize: number): any[] {
 }
 
 export default function Vote({
-  msg,
-  desc,
   candidates,
   votes,
   noVote,
   onVote,
 }: {
-  msg: string;
-  desc?: string;
   candidates: [number, string][];
   votes: { [name: string]: string[] };
   noVote: string[];
@@ -82,8 +78,8 @@ export default function Vote({
 
   return (
     <>
-      <Heading>{t(msg)}</Heading>
-      {desc && <Text mt="2">{t(desc)}</Text>}
+      <Heading>{t("Choose someone to kill")}</Heading>
+      <Text mt="2">{t("Everyone must agree")}</Text>
       {voteGroups.map((candidates) => {
         console.log(candidates);
         return (
