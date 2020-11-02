@@ -1,33 +1,57 @@
-import { Button, Heading, Stack, Text } from "@chakra-ui/core";
+import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/core";
 
 import { forcedTranslate as t } from "../translate";
 
-function VoteButton({
-  text,
-  id,
+interface Choice {
+  name?: string;
+  id?: number;
+  votes?: string[];
+}
+
+function VotesDisplay({
+  candidate,
   onVote,
 }: {
-  text: string;
-  id: number;
-  onVote: (id: number) => void;
+  candidate: Choice;
+  onVote: (cid: number) => void;
 }) {
+  const name: string = candidate.name || "";
+  const id: number = typeof candidate.id === "number" ? candidate.id : -1;
+  const voters: string[] = candidate.votes || [];
+
+  // TODO: Maybe make this a little prettier?
   return (
-    <Button mt="2" variantColor="gray" onClick={() => onVote(id)}>
-      {text}
-    </Button>
+    <Box mr="2" width="50%">
+      <Button variantColor="gray" width="100%" onClick={() => onVote(id)}>
+        {name}
+      </Button>
+      <Box mt="2">
+        {voters.map((i) => (
+          <Box
+            ml="2"
+            mr="2"
+            mb="1"
+            pt="1"
+            pr="1"
+            pb="1"
+            pl="1"
+            wordBreak="break-word"
+            border="1px solid white"
+            borderRadius="2px"
+          >
+            {i}
+          </Box>
+        ))}
+      </Box>
+    </Box>
   );
 }
 
-function VotesDisplay({ name, voters }: { name: string; voters: string[] }) {
-  // TODO: Maybe make this a little prettier?
-  return (
-    <>
-      <Heading size="md">{name}</Heading>
-      {voters.map((voter) => (
-        <Text key={voter}>{voter}</Text>
-      ))}
-    </>
-  );
+// Splits an array into chunks of at most chunkSize
+function splitIntoChunks(arr: any[], chunkSize: number): any[] {
+  return arr
+    .map((_, i) => (i % chunkSize == 0 ? arr.slice(i, i + chunkSize) : null))
+    .filter((i) => i != null);
 }
 
 export default function Vote({
@@ -43,28 +67,31 @@ export default function Vote({
   votes: { [name: string]: string[] };
   onVote: (candidateID: number) => void;
 }) {
+  let voteGroups: [Choice?, Choice?][] = splitIntoChunks(
+    candidates.map(([id, name]) => ({ name, id, votes: votes[name || ""] })),
+    2
+  );
+
   return (
     <>
       <Heading>{t(msg)}</Heading>
       {desc && <Text mt="2">{t(desc)}</Text>}
-      <Stack mt="2">
-        {candidates.map(([cid, name]) => (
-          <VoteButton key={cid} text={name} id={cid} onVote={onVote} />
-        ))}
-      </Stack>
-      <Heading as="h4" size="lg" mt="3" mb="2">
-        {t("Votes")}
-      </Heading>
-      {Object.keys(votes)
-        .filter((name) => votes[name].length)
-        .map((name) => (
-          <VotesDisplay
-            // I don't know what else to use
-            key={name + "\x00" + votes[name].join("\x00")}
-            name={name}
-            voters={votes[name]}
-          />
-        ))}
+      {voteGroups.map((candidates) => {
+        console.log(candidates);
+        return (
+          <Flex mt="3" minHeight="200px" key={JSON.stringify(candidates)}>
+            {candidates.map((candidate: Choice) =>
+              candidate.name ? (
+                <VotesDisplay
+                  key={JSON.stringify(candidate)}
+                  candidate={candidate}
+                  onVote={onVote}
+                />
+              ) : null
+            )}
+          </Flex>
+        );
+      })}
     </>
   );
 }
