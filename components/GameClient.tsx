@@ -62,7 +62,7 @@ function GameClientInner({
   // Current vote to be shown to the user.
   const [voteRequest, setVoteRequest] = useState<number[]>([]);
   // Current vote description, will be translate in Vote component
-  const [voteDesc, setVoteDesc] = useState<string | null>(null);
+  const [, setVoteDesc] = useState<string | null>(null);
   // Current vote status
   const [voteInfo, setVoteInfo] = useState<protobuf.VoteSync.IVote[]>([]);
 
