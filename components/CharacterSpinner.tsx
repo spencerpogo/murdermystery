@@ -87,7 +87,7 @@ export default function CharacterSpinner({
   character,
   onFinish,
 }: {
-  character: protobuf.SetCharacter.Character;
+  character: protobuf.Character;
   onFinish: () => void;
 }) {
   const card_ind = CHARACTER_INDEXES.indexOf(character);
