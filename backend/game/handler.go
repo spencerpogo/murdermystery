@@ -18,13 +18,15 @@ func (g *Game) handleJoin(s *melody.Session) {
 	log.Println("Lock aquired")
 
 	if g.started {
-		msg, err := protocol.Marshal(&pb.Handshake{Err: pb.Handshake_STARTED})
+		// Make them a spectator
+		g.spectators[s] = true
+		msg, err := protocol.Marshal(&pb.Handshake{Status: pb.Handshake_SPECTATOR, Id: -1})
 		if err != nil {
 			return
 		}
-		s.WriteBinary(msg)
-		time.Sleep(200 * time.Millisecond) // Allow plenty of time for the message to send
-		s.Close()
+		if !s.IsClosed() {
+			s.WriteBinary(msg)
+		}
 		return
 	}
 
@@ -32,7 +34,7 @@ func (g *Game) handleJoin(s *melody.Session) {
 	g.nextID++
 	g.clients[s] = c
 
-	msg, err := protocol.Marshal(&pb.Handshake{Err: pb.Handshake_OK, Id: c.ID})
+	msg, err := protocol.Marshal(&pb.Handshake{Status: pb.Handshake_OK, Id: c.ID})
 	if err != nil {
 		return
 	}
@@ -56,11 +58,14 @@ func (g *Game) handleDisconnect(s *melody.Session) {
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
-	c, ok := g.clients[s]
-	if ok {
-		log.Printf("[%v] Disconnected\n", c.ID)
-		delete(g.clients, s)
+	c := g.clients[s]
+	// They are probably a spectator, ignore the disconnect
+	if c == nil {
+		return
 	}
+
+	log.Printf("[%v] Disconnected\n", c.ID)
+	delete(g.clients, s)
 
 	if g.started {
 		log.Println("Stopping game")
@@ -97,6 +102,7 @@ func (g *Game) handleMsg(s *melody.Session, data []byte) {
 	c, ok := g.clients[s]
 	g.lock.Unlock()
 
+	// They are a spectator or some sort of race condition, ignore silently
 	if !ok {
 		return
 	}

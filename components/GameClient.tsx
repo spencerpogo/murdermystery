@@ -114,9 +114,9 @@ function GameClientInner({
   }
 
   function handleHandshake(msg: protobuf.IHandshake) {
-    if (msg.err != protobuf.Handshake.Error.OK) {
+    if (msg.status != protobuf.Handshake.Status.OK) {
       let error = "Error";
-      if (msg.err == protobuf.Handshake.Error.STARTED) {
+      if (msg.status == protobuf.Handshake.Status.SPECTATOR) {
         error = "The game has already started";
       }
       onError(error);

@@ -5,12 +5,12 @@ option go_package = ".;pb";
 
 // Server Messages
 message Handshake {
-  enum Error {
+  enum Status {
     UNKNOWN = 0;
     OK = 1;
-    STARTED = 2;
+    SPECTATOR = 2;
   }
-  Error err = 1;
+  Status status = 1;
   int32 id = 2;
 }
 

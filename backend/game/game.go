@@ -47,6 +47,9 @@ type Game struct {
 	// The clients in this server and their associated info
 	clients map[*melody.Session]*Client
 
+	// The spectators in this server
+	spectators map[*melody.Session]bool
+
 	// Whether the game has been started
 	started bool
 
@@ -60,10 +63,11 @@ type Game struct {
 // New constructs a new game
 func New(destroyFn func()) *Game {
 	g := &Game{
-		m:         melody.New(),
-		nextID:    1,
-		destroyFn: destroyFn,
-		clients:   make(map[*melody.Session]*Client),
+		m:          melody.New(),
+		nextID:     1,
+		destroyFn:  destroyFn,
+		clients:    make(map[*melody.Session]*Client),
+		spectators: make(map[*melody.Session]bool),
 	}
 	// For debug
 	g.m.Upgrader.CheckOrigin = func(r *http.Request) bool { return true }
@@ -120,8 +124,8 @@ func (g *Game) hostValid() bool {
 	if g.host == nil || g.host.IsClosed() {
 		return false
 	}
-	_, ok := g.clients[g.host]
-	return ok
+	c := g.clients[g.host]
+	return c != nil
 }
 
 // UpdateHost ensures the host of the game is valid. Assumes game is locked!
@@ -169,6 +173,10 @@ func (g *Game) syncPlayers() {
 		return
 	}
 	g.m.BroadcastBinary(msg)
+}
+
+func (g *Game) updateSpectators() {
+	// TODO
 }
 
 // A helper function to get the ID of a client
