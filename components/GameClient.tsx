@@ -249,7 +249,8 @@ function GameClientInner({
   // UI
 
   // The order of these checks is important.
-  // Use the websocket readyState as the single source of truth for whether the connection is open.
+  // Use the websocket readyState as the single source of truth for whether the
+  //  connection is open.
   if (!ws || ws.readyState != WebSocket.OPEN) {
     return <Loader />;
   }
