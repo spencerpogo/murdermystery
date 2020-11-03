@@ -157,6 +157,13 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 	// Store vote
 	g.vote.votes[s] = choiceSession
 	log.Println(g.vote.votes, g.vote.HasConcensus())
+
+	v := g.vote
+	v.onChange(v)
+	if g.vote != v {
+		// It was ended by the handler
+		return nil
+	}
 	g.syncVote()
 
 	return nil
@@ -165,13 +172,6 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 // SyncVote syncs the vote choices with all clients. Assumes game is locked!
 func (g *Game) syncVote() {
 	if g.vote == nil {
-		return
-	}
-
-	v := g.vote
-	v.onChange(v)
-	if g.vote != v {
-		// It was ended by the handler
 		return
 	}
 
