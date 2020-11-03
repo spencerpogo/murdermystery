@@ -15,6 +15,7 @@ import CharacterSpinner from "./CharacterSpinner";
 import FellowWolves from "./FellowWolves";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
+import ProphetReveal from "./ProphetReveal";
 import Vote from "./Vote";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import { forcedTranslate as t } from "../translate";
@@ -67,6 +68,11 @@ function GameClientInner({
   const [voteType, setVoteType] = useState<protobuf.VoteRequest.Type>(0);
   // Current vote status
   const [voteInfo, setVoteInfo] = useState<protobuf.VoteSync.IVote[]>([]);
+  // Prophet reveal screen
+  const [
+    prophetReveal,
+    setProphetReveal,
+  ] = useState<protobuf.IProphetReveal | null>(null);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -138,10 +144,14 @@ function GameClientInner({
     }
   }
 
-  function handleVoteOver(msg: protobuf.IVoteOver) {
+  function handleVoteOver(_: protobuf.IVoteOver) {
     // Clear vote data
     setVoteRequest([]);
     setVoteInfo([]);
+  }
+
+  function handleProphetReveal(msg: protobuf.IProphetReveal) {
+    setProphetReveal(msg);
   }
 
   // Utitility functions
@@ -155,7 +165,8 @@ function GameClientInner({
     return VOTE_TYPES[val || -1] || "Please vote";
   }
 
-  const IDToName = (id: number) => (players[id] || {}).name || "";
+  const IDToName = (id: number | null | undefined) =>
+    (players[id || -1] || {}).name || "";
 
   // Take a list of IDS and return a list of corresponding names
   const IDsToNames = (ids: number[]) =>
@@ -175,6 +186,7 @@ function GameClientInner({
     if (msg.voteRequest) return handleVoteRequest(msg.voteRequest);
     if (msg.voteSync) return handleVoteSync(msg.voteSync);
     if (msg.voteOver) return handleVoteOver(msg.voteOver);
+    if (msg.prophetReveal) return handleProphetReveal(msg.prophetReveal);
     throw new Error("Not implemented. ");
   };
 
@@ -234,6 +246,7 @@ function GameClientInner({
 
   // UI
 
+  // Fellow wolves remover
   useEffect(() => {
     // If this check passes, the fellowWolves component will be rendered
     // Clear it after 5s
@@ -243,6 +256,23 @@ function GameClientInner({
     }
     return undefined;
   }, [character, spinDone, showFellowWolves]);
+
+  // Prophet reveal remover
+  useEffect(() => {
+    // If this check passes, the ProphetReveal component will be rendered
+    // Clear it after 5s
+    if (
+      character &&
+      spinDone &&
+      !showFellowWolves &&
+      !voteRequest.length &&
+      prophetReveal
+    ) {
+      let timeoutId = setTimeout(() => setProphetReveal(null), 5000);
+      return () => clearTimeout(timeoutId);
+    }
+    return undefined;
+  });
 
   // The order of these checks is important.
   // Use the websocket readyState as the single source of truth for whether the connection is open.
@@ -325,6 +355,13 @@ function GameClientInner({
         }
       />
     );
+  } else if (prophetReveal) {
+    view = (
+      <ProphetReveal
+        name={IDToName(prophetReveal.id)}
+        good={!!prophetReveal.good}
+      />
+    );
   } else {
     view = <p>{t("It is night, you are sleeping")}</p>;
   }
@@ -378,7 +415,6 @@ export default function GameClient({
       id={id}
       nameProp={nameProp}
       onError={(err: string) => {
-        console.log("Current error:", error, "Can set:", canSet, "New:", err);
         if (canSet && !error) {
           canSet = false;
           setError(err);
