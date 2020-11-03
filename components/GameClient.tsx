@@ -42,7 +42,9 @@ function GameClientInner({
   // State
 
   // Our player ID
-  const [playerID, setPlayerID] = useState<number>(-1);
+  // Set to -2 so it is different from spectator ID of -1, otherwise we will never
+  //  re-render as a spectator
+  const [playerID, setPlayerID] = useState<number>(-2);
   // Are we the host? Used to determine whether "Start Game" is enabled on Lobby
   const [isHost, setIsHost] = useState<boolean>(false);
   // The players we know of. Server will sync these with us whever they update.
@@ -114,11 +116,11 @@ function GameClientInner({
   }
 
   function handleHandshake(msg: protobuf.IHandshake) {
-    if (msg.status != protobuf.Handshake.Status.OK) {
+    if (
+      msg.status != protobuf.Handshake.Status.OK &&
+      msg.status != protobuf.Handshake.Status.SPECTATOR
+    ) {
       let error = "Error";
-      if (msg.status == protobuf.Handshake.Status.SPECTATOR) {
-        error = "The game has already started";
-      }
       onError(error);
     }
     if (msg.id) {
@@ -257,7 +259,10 @@ function GameClientInner({
   // If we are here the game is all ready.
 
   let view; // The main component we will render
-  if (!character) {
+  if (playerID == -1) {
+    // We are a spectator
+    return <p>You are a spectator. Waiting for server to update us...</p>;
+  } else if (!character) {
     view = (
       <Lobby
         players={players}
@@ -337,6 +342,7 @@ function GameClientInner({
       />
     );
   } else {
+    // TODO: Prettify this, maybe an image here
     view = <p>{t("It is night, you are sleeping")}</p>;
   }
 
