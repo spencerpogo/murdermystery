@@ -214,7 +214,7 @@ function GameClientInner({
     ws.send(protobuf.ClientMessage.encode(msg).finish());
   };
 
-  const handshake = async () => {
+  const sendName = () => {
     send({
       setName: { name: nameProp },
     });
@@ -234,7 +234,7 @@ function GameClientInner({
     // Use proper binary type (no blobs)
     ws.binaryType = "arraybuffer";
     // handshake when it opens
-    ws.addEventListener("open", () => handshake());
+    ws.addEventListener("open", () => sendName());
     // Handle messages
     ws.addEventListener("message", (ev: MessageEvent<any>) => parseMessage(ev));
     // Handle discconects
