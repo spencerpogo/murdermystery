@@ -27,6 +27,8 @@ func (g *Game) handleJoin(s *melody.Session) {
 		if !s.IsClosed() {
 			s.WriteBinary(msg)
 		}
+		// Update immediately so the new client gets the current state
+		g.updateSpectators()
 		return
 	}
 
@@ -78,6 +80,8 @@ func (g *Game) handleDisconnect(s *melody.Session) {
 		log.Println("Stopping timer")
 		c.closeTimer.Stop()
 	}
+
+	g.syncPlayers()
 }
 
 func (g *Game) callHandler(s *melody.Session, c *Client, data *pb.ClientMessage) error {
