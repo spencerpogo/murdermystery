@@ -53,8 +53,8 @@ function GameClientInner({
   // Server will tell us when to set this
   const [alertContent, setAlertContent] = useState<string | null>(null);
   // Our character. Used by the spinner.
-  const [character, setCharacter] = useState<protobuf.SetCharacter.Character>(
-    protobuf.SetCharacter.Character.NONE
+  const [character, setCharacter] = useState<protobuf.Character>(
+    protobuf.Character.NONE
   );
   // Whether the character spinner is done
   const [spinDone, setSpinDone] = useState<boolean>(false);

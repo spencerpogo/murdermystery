@@ -227,7 +227,7 @@ func (g *Game) wolfVoteHandler() func(v *Vote) {
 		log.Println("Wolf vote over")
 		g.vote.End()
 
-		prophet, notProphet := g.SessionsByRole(int32(pb.SetCharacter_PROPHET))
+		prophet, notProphet := g.SessionsByRole(int32(pb.Character_PROPHET))
 		go g.callVote(prophet, notProphet, pb.VoteRequest_PROPHET, g.prophetVoteHandler())
 	}
 }
@@ -241,7 +241,7 @@ func (g *Game) prophetReveal(prophet, choice *melody.Session) bool {
 		return false
 	}
 	// They are good if they are anything but werewolf
-	good := choiceClient.role != int32(pb.SetCharacter_WEREWOLF)
+	good := choiceClient.role != int32(pb.Character_WEREWOLF)
 	// Send voter the result
 	msg, err := protocol.Marshal(&pb.ProphetReveal{Id: choiceClient.ID, Good: good})
 	if err != nil {

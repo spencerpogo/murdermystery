@@ -22,19 +22,19 @@ var CharacterMap = map[int]string{
 	5: "Hunter",
 }
 
-func genCharacterArray(numPlayers int) []pb.SetCharacter_Character {
+func genCharacterArray(numPlayers int) []pb.Character {
 	// There is one healer and one prophet always
-	res := []pb.SetCharacter_Character{pb.SetCharacter_HEALER, pb.SetCharacter_PROPHET}
+	res := []pb.Character{pb.Character_HEALER, pb.Character_PROPHET}
 	var numCits int = int(math.Floor(float64(numPlayers-2) / 2.0))
 	var numWolves int = (numPlayers - 2) - numCits
 
 	log.Println("2 special", numCits, "citizen", numWolves, "wolves")
 
 	for i := 0; i < numCits; i++ {
-		res = append(res, pb.SetCharacter_CITIZEN)
+		res = append(res, pb.Character_CITIZEN)
 	}
 	for i := 0; i < numWolves; i++ {
-		res = append(res, pb.SetCharacter_WEREWOLF)
+		res = append(res, pb.Character_WEREWOLF)
 	}
 	return res
 }
@@ -91,7 +91,7 @@ func (g *Game) revealWolves() {
 	nonWolfSessions := []*melody.Session{}
 
 	for m, c := range g.clients {
-		if c.role == int32(pb.SetCharacter_WEREWOLF) {
+		if c.role == int32(pb.Character_WEREWOLF) {
 			wolfSessions = append(wolfSessions, m)
 			wolfIDs = append(wolfIDs, c.ID)
 		} else {

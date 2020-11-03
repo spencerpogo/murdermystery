@@ -43,18 +43,16 @@ message Alert {
   Msg msg = 1;
 }
 
-message SetCharacter {
-  enum Character {
-    NONE = 0;
-    CITIZEN = 1;
-    WEREWOLF = 2;
-    HEALER = 3;
-    PROPHET = 4;
-    HUNTER = 5;
-  }
-
-  Character character = 1;
+enum Character {
+  NONE = 0;
+  CITIZEN = 1;
+  WEREWOLF = 2;
+  HEALER = 3;
+  PROPHET = 4;
+  HUNTER = 5;
 }
+
+message SetCharacter { Character character = 1; }
 
 message FellowWolves { repeated int32 ids = 1; }
 
