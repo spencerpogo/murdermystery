@@ -27,7 +27,7 @@ type Client struct {
 	name string
 
 	// role of the client
-	role int32
+	role pb.Character
 }
 
 // Game represents a running game
@@ -175,8 +175,26 @@ func (g *Game) syncPlayers() {
 	g.m.BroadcastBinary(msg)
 }
 
+// updateSpectators updates the connected spectators to the current game state
 func (g *Game) updateSpectators() {
-	// TODO
+	players := []*pb.SpectatorStatus_Player{}
+	for _, c := range g.clients {
+		if c != nil {
+			players = append(players, &pb.SpectatorStatus_Player{Character: c.role})
+		}
+	}
+
+	msg, err := protocol.Marshal(&pb.SpectatorStatus{Players: players})
+	if err != nil {
+		return
+	}
+	for s := range g.spectators {
+		if !s.IsClosed() {
+			s.WriteBinary(msg)
+		} else {
+			delete(g.spectators, s)
+		}
+	}
 }
 
 // A helper function to get the ID of a client
@@ -202,7 +220,7 @@ func (g *Game) FindByID(id int32) (*melody.Session, *Client) {
 
 // SessionsByRole returns all sessions that have and do not have a given role
 // Assumes game is locked!
-func (g *Game) SessionsByRole(role int32) ([]*melody.Session, []*melody.Session) {
+func (g *Game) SessionsByRole(role pb.Character) ([]*melody.Session, []*melody.Session) {
 	hasRole := []*melody.Session{}
 	doesntHaveRole := []*melody.Session{}
 
@@ -227,7 +245,7 @@ func (g *Game) wolfVoteHandler() func(v *Vote) {
 		log.Println("Wolf vote over")
 		g.vote.End()
 
-		prophet, notProphet := g.SessionsByRole(int32(pb.Character_PROPHET))
+		prophet, notProphet := g.SessionsByRole(pb.Character_PROPHET)
 		go g.callVote(prophet, notProphet, pb.VoteRequest_PROPHET, g.prophetVoteHandler())
 	}
 }
@@ -241,7 +259,7 @@ func (g *Game) prophetReveal(prophet, choice *melody.Session) bool {
 		return false
 	}
 	// They are good if they are anything but werewolf
-	good := choiceClient.role != int32(pb.Character_WEREWOLF)
+	good := choiceClient.role != pb.Character_WEREWOLF
 	// Send voter the result
 	msg, err := protocol.Marshal(&pb.ProphetReveal{Id: choiceClient.ID, Good: good})
 	if err != nil {

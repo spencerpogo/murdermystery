@@ -72,7 +72,7 @@ func (g *Game) AssignCharacters() {
 		}
 
 		role := roles[i]
-		c.role = int32(role)
+		c.role = role
 		msg, err := protocol.Marshal(&pb.SetCharacter{Character: role})
 		if err != nil {
 			return
@@ -91,7 +91,7 @@ func (g *Game) revealWolves() {
 	nonWolfSessions := []*melody.Session{}
 
 	for m, c := range g.clients {
-		if c.role == int32(pb.Character_WEREWOLF) {
+		if c.role == pb.Character_WEREWOLF {
 			wolfSessions = append(wolfSessions, m)
 			wolfIDs = append(wolfIDs, c.ID)
 		} else {

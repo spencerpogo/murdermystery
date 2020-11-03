@@ -81,6 +81,12 @@ message ProphetReveal {
   bool good = 2;
 }
 
+message SpectatorStatus {
+  // Using separate message to allow for more info later if needed
+  message Player { Character character = 1; }
+  repeated Player players = 1;
+}
+
 // The Server message
 message ServerMessage {
   oneof data {
