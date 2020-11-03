@@ -1,8 +1,21 @@
 import { Box, Heading, Stack } from "@chakra-ui/core";
 
 import { forcedTranslate as t } from "../translate";
+import { useEffect } from "react";
 
-export default function FellowWolves({ names }: { names: string[] }) {
+export default function FellowWolves({
+  names,
+  onDone,
+}: {
+  names: string[];
+  onDone: () => void;
+}) {
+  useEffect(() => {
+    // Call onDone after 5s
+    let timeoutId = setTimeout(() => onDone(), 5000);
+    return () => clearTimeout(timeoutId);
+  });
+
   return (
     <>
       <Heading textAlign="center">{t("Your fellow wolves")}</Heading>

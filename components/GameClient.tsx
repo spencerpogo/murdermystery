@@ -246,34 +246,6 @@ function GameClientInner({
 
   // UI
 
-  // Fellow wolves remover
-  useEffect(() => {
-    // If this check passes, the fellowWolves component will be rendered
-    // Clear it after 5s
-    if (character && spinDone && showFellowWolves) {
-      let timeoutId = setTimeout(() => setShowFellowWolves(false), 5000);
-      return () => clearTimeout(timeoutId);
-    }
-    return undefined;
-  }, [character, spinDone, showFellowWolves]);
-
-  // Prophet reveal remover
-  useEffect(() => {
-    // If this check passes, the ProphetReveal component will be rendered
-    // Clear it after 5s
-    if (
-      character &&
-      spinDone &&
-      !showFellowWolves &&
-      !voteRequest.length &&
-      prophetReveal
-    ) {
-      let timeoutId = setTimeout(() => setProphetReveal(null), 5000);
-      return () => clearTimeout(timeoutId);
-    }
-    return undefined;
-  });
-
   // The order of these checks is important.
   // Use the websocket readyState as the single source of truth for whether the connection is open.
   if (!ws || ws.readyState != WebSocket.OPEN) {
@@ -305,6 +277,7 @@ function GameClientInner({
     view = (
       <FellowWolves
         names={IDsToNames(fellowWolves.filter((id) => id != playerID))}
+        onDone={() => setShowFellowWolves(false)}
       />
     );
   } else if (voteRequest.length) {
@@ -360,6 +333,7 @@ function GameClientInner({
       <ProphetReveal
         name={IDToName(prophetReveal.id)}
         good={!!prophetReveal.good}
+        onDone={() => setProphetReveal(null)}
       />
     );
   } else {
