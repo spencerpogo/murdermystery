@@ -188,6 +188,7 @@ func (g *Game) updateSpectators() {
 	if err != nil {
 		return
 	}
+
 	for s := range g.spectators {
 		if !s.IsClosed() {
 			s.WriteBinary(msg)

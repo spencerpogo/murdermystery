@@ -101,6 +101,7 @@ message ServerMessage {
     VoteOver vote_over = 9;
     VoteSync vote_sync = 10;
     ProphetReveal prophet_reveal = 11;
+    SpectatorStatus spectator_status = 12;
   }
 }
 
