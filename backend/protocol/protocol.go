@@ -31,6 +31,8 @@ func toServerMessage(m interface{ ProtoMessage() }) *pb.ServerMessage {
 		return &pb.ServerMessage{Data: &pb.ServerMessage_VoteSync{VoteSync: r}}
 	case *pb.VoteOver:
 		return &pb.ServerMessage{Data: &pb.ServerMessage_VoteOver{VoteOver: r}}
+	case *pb.ProphetReveal:
+		return &pb.ServerMessage{Data: &pb.ServerMessage_ProphetReveal{ProphetReveal: r}}
 	default:
 		return nil
 	}

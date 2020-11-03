@@ -224,6 +224,27 @@ func (g *Game) wolfVoteHandler() func(v *Vote) {
 	}
 }
 
+// prohetReveal reveals whether choice is good or bad to prophet. Returns true on
+//  sucess, false otherwise. Assumes game is locked.
+func (g *Game) prophetReveal(prophet, choice *melody.Session) bool {
+	// Fetch client for choice
+	choiceClient := g.clients[choice]
+	if choiceClient == nil {
+		return false
+	}
+	// They are good if they are anything but werewolf
+	good := choiceClient.role != int32(pb.SetCharacter_WEREWOLF)
+	// Send voter the result
+	msg, err := protocol.Marshal(&pb.ProphetReveal{Id: choiceClient.ID, Good: good})
+	if err != nil {
+		return false
+	}
+	if !prophet.IsClosed() {
+		prophet.WriteBinary(msg)
+	}
+	return true
+}
+
 // Handler assumes game is locked
 func (g *Game) prophetVoteHandler() func(v *Vote) {
 	return func(v *Vote) {
@@ -231,7 +252,23 @@ func (g *Game) prophetVoteHandler() func(v *Vote) {
 			return
 		}
 		log.Println("Prophet vote over")
+
+		var voter *melody.Session
+		var choice *melody.Session
+		for iterVoter, iterChoice := range v.votes {
+			voter = iterVoter
+			choice = iterChoice
+			break
+		}
+
+		if voter != nil && choice != nil {
+			g.prophetReveal(voter, choice)
+		} else {
+			log.Println("Error: invalid choices in v.votes:", v)
+		}
+		// Doesn't really matter if this is at top or bottom, put at bottom just to be safe
 		g.vote.End()
-		// TODO: Show requested person's status, call next vote
+
+		// TODO: call next vote
 	}
 }

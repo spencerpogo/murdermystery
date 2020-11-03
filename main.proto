@@ -78,6 +78,11 @@ message VoteSync {
   repeated Vote votes = 1;
 }
 
+message ProphetReveal {
+  int32 id = 1;
+  bool good = 2;
+}
+
 // The Server message
 message ServerMessage {
   oneof data {
@@ -91,6 +96,7 @@ message ServerMessage {
     VoteRequest vote_request = 8;
     VoteOver vote_over = 9;
     VoteSync vote_sync = 10;
+    ProphetReveal prophet_reveal = 11;
   }
 }
 
