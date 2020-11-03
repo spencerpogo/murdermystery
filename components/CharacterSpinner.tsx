@@ -10,7 +10,7 @@ import {
 import { murdermystery as protobuf } from "../pbjs/protobuf";
 import { forcedTranslate as t } from "../translate";
 
-const { Character } = protobuf.SetCharacter;
+const { Character } = protobuf;
 
 // CHARACTER_INDEXES maps protobuf character enum values to indexes in filenames
 const CHARACTER_INDEXES = [
