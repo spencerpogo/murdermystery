@@ -63,8 +63,6 @@ function GameClientInner({
   const [showFellowWolves, setShowFellowWolves] = useState<boolean>(false);
   // Current vote to be shown to the user.
   const [voteRequest, setVoteRequest] = useState<number[]>([]);
-  // Current vote description, will be translate in Vote component
-  const [, setVoteDesc] = useState<string | null>(null);
   // Current vote status
   const [voteInfo, setVoteInfo] = useState<protobuf.VoteSync.IVote[]>([]);
 
@@ -127,11 +125,11 @@ function GameClientInner({
 
   function handleVoteRequest(msg: protobuf.IVoteRequest) {
     if (msg.choice_IDs) {
-      // Decode the vote type
+      /*// Decode the vote type
       const VOTE_TYPES: { [type: number]: string } = {
         [protobuf.VoteRequest.Type.KILL]: "Choose someone to kill",
       };
-      setVoteDesc(VOTE_TYPES[msg.type || -1] || "Please vote");
+      setVoteDesc(VOTE_TYPES[msg.type || -1] || "Please vote");*/
       setVoteRequest(msg.choice_IDs);
     }
   }
@@ -140,6 +138,12 @@ function GameClientInner({
     if (msg.votes) {
       setVoteInfo(msg.votes);
     }
+  }
+
+  function handleVoteOver(msg: protobuf.IVoteOver) {
+    // Clear vote data
+    setVoteRequest([]);
+    setVoteInfo([]);
   }
 
   // Utitility functions
@@ -163,6 +167,7 @@ function GameClientInner({
     if (msg.fellowWolves) return handleFellowWolves(msg.fellowWolves);
     if (msg.voteRequest) return handleVoteRequest(msg.voteRequest);
     if (msg.voteSync) return handleVoteSync(msg.voteSync);
+    if (msg.voteOver) return handleVoteOver(msg.voteOver);
     throw new Error("Not implemented. ");
   };
 
