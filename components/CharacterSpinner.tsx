@@ -12,7 +12,8 @@ import { forcedTranslate as t } from "../translate";
 
 const { Character } = protobuf;
 
-// CHARACTER_INDEXES maps protobuf character enum values to indexes in filenames
+// CHARACTER_INDEXES has protobuf character enum values in the same positions as the
+//  corresponding value in the NAMES array
 const CHARACTER_INDEXES = [
   Character.CITIZEN,
   Character.WEREWOLF,
