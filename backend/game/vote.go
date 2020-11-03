@@ -52,7 +52,9 @@ func (v *Vote) HasConcensus() bool {
 			return false
 		}
 	}
-	return true
+
+	// Don't return true if nobody has chosen
+	return choice != nil
 }
 
 // IsVoter checks whether a session is in v.voters
