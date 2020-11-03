@@ -15,7 +15,7 @@ import CharacterSpinner from "./CharacterSpinner";
 import FellowWolves from "./FellowWolves";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
-import WolfVote from "./WolfVote";
+import Vote from "./Vote";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import { forcedTranslate as t } from "../translate";
 
@@ -63,6 +63,8 @@ function GameClientInner({
   const [showFellowWolves, setShowFellowWolves] = useState<boolean>(false);
   // Current vote to be shown to the user.
   const [voteRequest, setVoteRequest] = useState<number[]>([]);
+  // Current vote type
+  const [voteType, setVoteType] = useState<protobuf.VoteRequest.Type>(0);
   // Current vote status
   const [voteInfo, setVoteInfo] = useState<protobuf.VoteSync.IVote[]>([]);
 
@@ -125,12 +127,8 @@ function GameClientInner({
 
   function handleVoteRequest(msg: protobuf.IVoteRequest) {
     if (msg.choice_IDs) {
-      /*// Decode the vote type
-      const VOTE_TYPES: { [type: number]: string } = {
-        [protobuf.VoteRequest.Type.KILL]: "Choose someone to kill",
-      };
-      setVoteDesc(VOTE_TYPES[msg.type || -1] || "Please vote");*/
       setVoteRequest(msg.choice_IDs);
+      setVoteType(msg.type || 0);
     }
   }
 
@@ -147,6 +145,15 @@ function GameClientInner({
   }
 
   // Utitility functions
+
+  function typeToMsg(val: protobuf.VoteRequest.Type | null | undefined) {
+    // Decode the vote type
+    const VOTE_TYPES: { [type: number]: string } = {
+      [protobuf.VoteRequest.Type.KILL]: "Choose someone to kill",
+      [protobuf.VoteRequest.Type.PROPHET]: "Choose someone to reveal",
+    };
+    return VOTE_TYPES[val || -1] || "Please vote";
+  }
 
   const IDToName = (id: number) => (players[id] || {}).name || "";
 
@@ -303,7 +310,13 @@ function GameClientInner({
     }
 
     view = (
-      <WolfVote
+      <Vote
+        msg={typeToMsg(voteType)}
+        desc={
+          voteType == protobuf.VoteRequest.Type.KILL
+            ? "Everyone must agree"
+            : ""
+        }
         candidates={candidates}
         votes={votes}
         noVote={noVote}
@@ -313,7 +326,7 @@ function GameClientInner({
       />
     );
   } else {
-    view = <p>Waiting</p>;
+    view = <p>{t("It is night, you are sleeping")}</p>;
   }
 
   return (
