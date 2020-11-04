@@ -180,7 +180,7 @@ func (g *Game) updateSpectators() {
 	players := []*pb.SpectatorStatus_Player{}
 	for _, c := range g.clients {
 		if c != nil {
-			players = append(players, &pb.SpectatorStatus_Player{Character: c.role})
+			players = append(players, &pb.SpectatorStatus_Player{Character: c.role, Name: c.name})
 		}
 	}
 
