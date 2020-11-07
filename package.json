@@ -15,7 +15,7 @@
     "@emotion/core": "^10.0.35",
     "@emotion/styled": "^10.0.27",
     "emotion-theming": "^10.0.27",
-    "next": "^9.5.5",
+    "next": "^10.0.1",
     "next-i18next": "^6.0.3",
     "protobufjs": "^6.10.1",
     "react": "16.13.1",
