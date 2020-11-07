@@ -19,7 +19,7 @@
     "next-i18next": "^7.0.1",
     "protobufjs": "^6.10.1",
     "react": "16.14.0",
-    "react-dom": "16.13.1",
+    "react-dom": "16.14.0",
     "react-websocket": "^2.1.0"
   },
   "devDependencies": {
