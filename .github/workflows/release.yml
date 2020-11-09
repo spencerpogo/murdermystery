@@ -46,13 +46,6 @@ jobs:
       - name: Run build script
         run: bash ./tools/build.sh
 
-      - name: Get release
-        if: ${{ github.event_name == 'release' }}
-        id: get_release
-        uses: bruceadams/get-release@v1.2.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
       - name: Upload Release Asset
         if: ${{ github.event_name == 'release' }}
         id: upload-release-asset
@@ -60,7 +53,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./build/backend
           asset_name: server_linux_x64
           asset_content_type: application/octet-stream
