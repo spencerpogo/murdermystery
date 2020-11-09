@@ -3,6 +3,7 @@ name: Release
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   release:
@@ -46,12 +47,14 @@ jobs:
         run: bash ./tools/build.sh
 
       - name: Get release
+        if: ${{ github.event_name == 'release' }}
         id: get_release
         uses: bruceadams/get-release@v1.2.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Upload Release Asset
+        if: ${{ github.event_name == 'release' }}
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
