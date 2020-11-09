@@ -32,8 +32,8 @@ jobs:
         run: go get -u google.golang.org/protobuf/cmd/protoc-gen-go
 
       - name: Build protocol buffers code
-        run: bash ./tools/protoc.sh $(pwd) --no-js
+        run: bash tools/protoc.sh . --no-js
 
       - name: Build
         run: go build -v .
-        working-directory: ./backend
+        working-directory: backend
