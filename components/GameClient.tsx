@@ -10,7 +10,6 @@ import {
   Text,
 } from "@chakra-ui/core";
 import Vote, { Choice } from "./Vote";
-import { useEffect, useRef, useState } from "react";
 
 import CharacterSpinner from "./CharacterSpinner";
 import FellowWolves from "./FellowWolves";
@@ -19,7 +18,9 @@ import Lobby from "./Lobby";
 import ProphetReveal from "./ProphetReveal";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import { forcedTranslate as t } from "../translate";
+import useGameSocket from "lib/useGameSocket";
 import useMessageHandler from "lib/useMessageHandler";
+import { useState } from "react";
 
 function GameClientInner({
   server,
@@ -32,10 +33,6 @@ function GameClientInner({
   nameProp: string;
   onError: (e: string) => void;
 }) {
-  // Main websocket
-  const wsRef = useRef<WebSocket | null>(null);
-  let ws = wsRef.current;
-
   // State
   const {
     // Message Parser
@@ -61,6 +58,13 @@ function GameClientInner({
     setAlertContent,
   } = useMessageHandler(onError);
 
+  const { isConnected, send } = useGameSocket(
+    `${server}/game/${id}`,
+    nameProp,
+    parseMessage,
+    onError
+  );
+
   // Utitility functions
 
   function typeToMsg(val: protobuf.VoteRequest.Type | null | undefined) {
@@ -79,54 +83,12 @@ function GameClientInner({
   const IDsToNames = (ids: number[]) =>
     ids.map((id) => (players[id] || {}).name || "").filter((n) => !!n);
 
-  // Send encodes and sends a protobuf message to the server.
-  const send = (msg: protobuf.IClientMessage) => {
-    if (!ws) {
-      console.error("Try to send() while ws is null");
-      return;
-    }
-    console.log(msg);
-    ws.send(protobuf.ClientMessage.encode(msg).finish());
-  };
-
-  const sendName = () => {
-    send({
-      setName: { name: nameProp },
-    });
-  };
-
-  // setup websocket
-  useEffect(() => {
-    try {
-      wsRef.current = new WebSocket(`${server}/game/${id}`);
-    } catch (e) {
-      console.error(e);
-      onError("Error while opening connection");
-      return;
-    }
-    // update ws reference
-    ws = wsRef.current;
-    // Use proper binary type (no blobs)
-    ws.binaryType = "arraybuffer";
-    // handshake when it opens
-    ws.addEventListener("open", () => sendName());
-    // Handle messages
-    ws.addEventListener("message", (ev: MessageEvent<any>) => parseMessage(ev));
-    // Handle discconects
-    ws.addEventListener("close", () => {
-      onError("Disconnected from server");
-    });
-
-    // Cleanup: close websocket
-    return () => ws?.close();
-  }, []);
-
   // UI
 
   // The order of these checks is important.
   // Use the websocket readyState as the single source of truth for whether the
   //  connection is open.
-  if (!ws || ws.readyState != WebSocket.OPEN) {
+  if (!isConnected()) {
     return <Loader />;
   }
   // Don't care if connection is open but handshake is incomplete, in that case render
