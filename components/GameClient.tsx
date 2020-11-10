@@ -171,7 +171,11 @@ function GameClientInner({
           name,
           id: candidateID,
           votes: voteInfo
-            .map((v) => (players[(v || {}).id || -1] || {}).name || "")
+            .map((v) =>
+              v && v.choice == candidateID
+                ? (players[(v || {}).id || -1] || {}).name || ""
+                : ""
+            )
             .filter((i) => i),
         });
       }
