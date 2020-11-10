@@ -2,7 +2,7 @@ import { Box, Button, Flex, Heading, Text } from "@chakra-ui/core";
 
 import { forcedTranslate as t } from "../translate";
 
-interface Choice {
+export interface Choice {
   name?: string;
   id?: number;
   votes?: string[];
@@ -64,21 +64,16 @@ export default function Vote({
   msg,
   desc,
   candidates,
-  votes,
   noVote,
   onVote,
 }: {
   msg: string;
   desc?: string;
-  candidates: [number, string][];
-  votes: { [name: string]: string[] };
+  candidates: Choice[];
   noVote: string[];
   onVote: (candidateID: number) => void;
 }) {
-  let voteGroups: [Choice?, Choice?][] = splitIntoChunks(
-    candidates.map(([id, name]) => ({ name, id, votes: votes[name || ""] })),
-    2
-  );
+  let voteGroups: [Choice?, Choice?][] = splitIntoChunks(candidates, 2);
 
   return (
     <>

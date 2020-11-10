@@ -9,6 +9,7 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/core";
+import Vote, { Choice } from "./Vote";
 import { useEffect, useRef, useState } from "react";
 
 import CharacterSpinner from "./CharacterSpinner";
@@ -16,7 +17,6 @@ import FellowWolves from "./FellowWolves";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
 import ProphetReveal from "./ProphetReveal";
-import Vote from "./Vote";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import { forcedTranslate as t } from "../translate";
 
@@ -288,32 +288,28 @@ function GameClientInner({
     );
   } else if (voteRequest.length) {
     // Process the id list (number[]) into [ [id, name] ]
-    let candidates: [number, string][] = [];
+    let candidates: Choice[] = [];
     for (let candidateID of voteRequest) {
       let name: string = (players[candidateID] || {}).name || "";
       if (name) {
-        candidates.push([candidateID, name]);
+        candidates.push({
+          name,
+          id: candidateID,
+          votes: voteInfo
+            .map((v) => (players[(v || {}).id || -1] || {}).name || "")
+            .filter((i) => i),
+        });
       }
     }
 
     // Process voteSync message of [{ id, choice }] into map of { [choice]: string[] }
-    let votes = {};
     let noVote: string[] = [];
     for (let vote of voteInfo) {
       if (vote.id && vote.id > 0) {
         const voterName = IDToName(vote.id);
-
-        let candidateName: string = "";
         // -1 == no vote
-        if (vote.choice && vote.choice != -1) {
-          candidateName = IDToName(vote.choice || -1);
-        } else {
+        if (vote.choice && vote.choice == -1) {
           noVote.push(voterName);
-        }
-
-        if (voterName && candidateName) {
-          votes[candidateName] = votes[candidateName] || [];
-          votes[candidateName].push(voterName);
         }
       }
     }
@@ -327,7 +323,6 @@ function GameClientInner({
             : ""
         }
         candidates={candidates}
-        votes={votes}
         noVote={noVote}
         onVote={(candidateID: number) =>
           send({ vote: { choice: candidateID } })
