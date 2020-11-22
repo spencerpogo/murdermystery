@@ -10,6 +10,7 @@ class Websocket extends Component {
     url: string;
     protocol?: string;
   };
+
   state: {
     ws: WebSocket;
   };
@@ -31,12 +32,12 @@ class Websocket extends Component {
   }
 
   sendMessage(message: string) {
-    let websocket = this.state.ws;
+    const websocket = this.state.ws;
     websocket.send(message);
   }
 
   setupWebsocket() {
-    let websocket = this.state.ws;
+    const websocket = this.state.ws;
 
     websocket.onopen = () => {
       if (typeof this.props.onOpen === "function") this.props.onOpen(websocket);

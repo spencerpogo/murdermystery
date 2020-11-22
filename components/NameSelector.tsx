@@ -1,7 +1,7 @@
 import { Box, Button, Input, Stack } from "@chakra-ui/core";
 import { ChangeEvent, useState } from "react";
 
-import t from "../translate";
+import t from "../lib/translate";
 
 function NameSelector({ onSubmit }: { onSubmit: (name: string) => void }) {
   const [name, setName] = useState("");

@@ -1,8 +1,13 @@
 import Head from "next/head";
-import { ReactNode } from "react";
-import t from "../translate";
+import { FC, ReactNode } from "react";
 
-export default function Layout({ children }: { children: ReactNode }) {
+import t from "../lib/translate";
+
+export interface LayoutProps {
+  children: ReactNode;
+}
+
+export const Layout: FC<LayoutProps> = ({ children }: LayoutProps) => {
   return (
     <>
       <Head>
@@ -12,4 +17,4 @@ export default function Layout({ children }: { children: ReactNode }) {
       {children}
     </>
   );
-}
+};

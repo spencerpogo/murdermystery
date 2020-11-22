@@ -1,28 +1,54 @@
 {
   "env": {
-    "browser": true,
+    "commonjs": true,
     "es2021": true,
     "node": true
   },
   "extends": [
     "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended",
     "airbnb",
-    "airbnb/hooks",
     "standard",
     "plugin:prettier/recommended"
   ],
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true
-    },
-    "ecmaVersion": 12,
-    "sourceType": "module"
+    "ecmaVersion": 12
   },
-  "plugins": ["react", "@typescript-eslint"],
+  "settings": {
+    "import/resolver": {
+      "typescript": {} // this loads <rootdir>/tsconfig.json to eslint
+    }
+  },
   "rules": {
-    "react/react-in-jsx-scope": "off"
-  }
+    "import/extensions": "off"
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true
+      },
+      "extends": [
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "airbnb/hooks"
+      ],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaFeatures": {
+          "jsx": true
+        },
+        "ecmaVersion": 12,
+        "sourceType": "module"
+      },
+      "plugins": ["react", "@typescript-eslint"],
+      "rules": {
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".ts"] }],
+        "react/jsx-curly-newline": "off",
+        "@typescript-eslint/no-empty-interface": "off"
+      }
+    }
+  ]
 }

@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/core";
 
-import { forcedTranslate as t } from "../translate";
+import { FC } from "react";
+import { forcedTranslate as t } from "lib/translate";
 
 export interface Choice {
   name?: string;
@@ -34,7 +35,7 @@ function VotesDisplay({
   candidate: Choice;
   onVote: (cid: number) => void;
 }) {
-  const name: string = candidate.name || "";
+  const candidateName: string = candidate.name || "";
   const id: number = typeof candidate.id === "number" ? candidate.id : -1;
   const voters: string[] = candidate.votes || [];
 
@@ -42,11 +43,11 @@ function VotesDisplay({
   return (
     <Box mr="2" width="50%">
       <Button variantColor="gray" width="100%" onClick={() => onVote(id)}>
-        {name}
+        {candidateName}
       </Button>
       <Box mt="2">
-        {voters.map((name) => (
-          <VoterBox key={name} name={name} />
+        {voters.map((voter) => (
+          <VoterBox key={voter} name={voter} />
         ))}
       </Box>
     </Box>
@@ -54,36 +55,41 @@ function VotesDisplay({
 }
 
 // Splits an array into chunks of at most chunkSize
-function splitIntoChunks(arr: any[], chunkSize: number): any[] {
-  return arr
-    .map((_, i) => (i % chunkSize == 0 ? arr.slice(i, i + chunkSize) : null))
-    .filter((i) => i != null);
+function splitIntoChunks<T>(arr: T[], chunkSize: number): [T, T][] {
+  const res = [];
+  for (let i = 0; i < arr.length; i += 1) {
+    if (i % chunkSize === 0) {
+      res.push(arr.slice(i, i + chunkSize) as [T, T]);
+    }
+  }
+  return res;
 }
 
-export default function Vote({
-  msg,
-  desc,
-  candidates,
-  noVote,
-  onVote,
-}: {
+export interface VoteProps {
   msg: string;
   desc?: string;
   candidates: Choice[];
   noVote: string[];
   onVote: (candidateID: number) => void;
-}) {
-  let voteGroups: [Choice?, Choice?][] = splitIntoChunks(candidates, 2);
+}
+
+export const Vote: FC<VoteProps> = ({
+  msg,
+  desc,
+  candidates,
+  noVote,
+  onVote,
+}: VoteProps) => {
+  const voteGroups: [Choice?, Choice?][] = splitIntoChunks(candidates, 2);
 
   return (
     <>
       <Heading>{t(msg)}</Heading>
       {desc ? <Text mt="2">{t(desc)}</Text> : null}
-      {voteGroups.map((candidates) => {
-        console.log(candidates);
+      {voteGroups.map((candGroup) => {
         return (
           <Flex mt="3" minHeight="200px" key={JSON.stringify(candidates)}>
-            {candidates.map((candidate: Choice) =>
+            {candGroup.map((candidate: Choice) =>
               candidate.name ? (
                 <VotesDisplay
                   key={JSON.stringify(candidate)}
@@ -108,4 +114,10 @@ export default function Vote({
       ) : null}
     </>
   );
-}
+};
+
+Vote.defaultProps = {
+  desc: "",
+};
+
+export default Vote;

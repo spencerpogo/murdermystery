@@ -39,20 +39,20 @@ const runBot = (gid, i) => {
   ws.on("open", () => send({ setName: { name } }));
 };
 
-if (require.main == module) {
+if (require.main === module) {
   const argv = process.argv.slice(1);
 
   const gameId = argv[1];
-  const count = parseInt(argv[2]);
+  const count = Number(argv[2]);
   console.log(argv[2], count);
 
-  if (!gameId || isNaN(count) || count < 1) {
+  if (!gameId || Number.isNaN(count) || count < 1) {
     process.stderr.write(
       `Usage: [BOT_SERVER=ws://xxx] ${argv[0]} <game id> <bot count>`
     );
   }
 
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < count; i += 1) {
     runBot(gameId, i);
   }
 }

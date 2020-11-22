@@ -1,6 +1,10 @@
+import { FC } from "react";
+
 import { Box, Skeleton } from "@chakra-ui/core";
 
-export default function Loader() {
+interface LoaderProps {}
+
+export const Loader: FC<LoaderProps> = () => {
   return (
     <Box>
       <Skeleton height="20px" my="10px" />
@@ -8,4 +12,6 @@ export default function Loader() {
       <Skeleton height="20px" my="10px" />
     </Box>
   );
-}
+};
+
+export default Loader;

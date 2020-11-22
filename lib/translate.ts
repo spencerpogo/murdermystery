@@ -1,4 +1,4 @@
-import translations from "./public/static/locales/zh/common.json";
+import translations from "../public/static/locales/zh/common.json";
 import { useClientOnly } from "components/ClientOnly";
 
 /**
@@ -9,7 +9,7 @@ import { useClientOnly } from "components/ClientOnly";
  * @param force If true, will skip useClientOnly(). Without this, hook mismatch errors
  *  can occur in some cases.
  */
-export default function translate(k: string, force: boolean = false): string {
+export default function translate(k: string, force = false): string {
   if (!force && !useClientOnly()) {
     return "";
   }
@@ -19,10 +19,9 @@ export default function translate(k: string, force: boolean = false): string {
     if (searchParams.get("zh") === "") {
       if (translations[k]) {
         return translations[k];
-      } else {
-        console.error(new Error("Untranslated phrase: " + k));
-        return k;
       }
+      console.error(new Error(`Untranslated phrase: ${k}`));
+      return k;
     }
   }
 

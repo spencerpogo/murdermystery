@@ -1,18 +1,20 @@
 import { Box, Heading, Stack } from "@chakra-ui/core";
+import { FC, useEffect } from "react";
 
-import { forcedTranslate as t } from "../translate";
-import { useEffect } from "react";
+import { forcedTranslate as t } from "lib/translate";
 
-export default function FellowWolves({
-  names,
-  onDone,
-}: {
+interface FellowWolvesProps {
   names: string[];
   onDone: () => void;
-}) {
+}
+
+export const FellowWolves: FC<FellowWolvesProps> = ({
+  names,
+  onDone,
+}: FellowWolvesProps) => {
   useEffect(() => {
     // Call onDone after 5s
-    let timeoutId = setTimeout(() => onDone(), 5000);
+    const timeoutId = setTimeout(() => onDone(), 5000);
     return () => clearTimeout(timeoutId);
   });
 
@@ -29,4 +31,6 @@ export default function FellowWolves({
       </Stack>
     </>
   );
-}
+};
+
+export default FellowWolves;

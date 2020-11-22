@@ -1,3 +1,8 @@
+import { forcedTranslate as t } from "lib/translate";
+import useGameSocket from "lib/useGameSocket";
+import useMessageHandler from "lib/useMessageHandler";
+import { FC, useState } from "react";
+
 import {
   Alert,
   AlertIcon,
@@ -9,30 +14,28 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/core";
-import Vote, { Choice } from "./Vote";
 
+import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import CharacterSpinner from "./CharacterSpinner";
 import FellowWolves from "./FellowWolves";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
 import ProphetReveal from "./ProphetReveal";
-import { murdermystery as protobuf } from "../pbjs/protobuf.js";
-import { forcedTranslate as t } from "../translate";
-import useGameSocket from "lib/useGameSocket";
-import useMessageHandler from "lib/useMessageHandler";
-import { useState } from "react";
+import Vote, { Choice } from "./Vote";
 
-function GameClientInner({
-  server,
-  id,
-  nameProp,
-  onError,
-}: {
+interface GameClientInnerProps {
   server: string;
-  id: string;
+  gameId: string;
   nameProp: string;
   onError: (e: string) => void;
-}) {
+}
+
+const GameClientInner: FC<GameClientInnerProps> = ({
+  server,
+  gameId,
+  nameProp,
+  onError,
+}: GameClientInnerProps) => {
   // State
   const {
     // Message Parser
@@ -59,7 +62,7 @@ function GameClientInner({
   } = useMessageHandler(onError);
 
   const { isConnected, send } = useGameSocket(
-    `${server}/game/${id}`,
+    `${server}/game/${gameId}`,
     nameProp,
     parseMessage,
     onError
@@ -97,10 +100,11 @@ function GameClientInner({
   // If we are here the game is all ready.
 
   let view; // The main component we will render
-  if (playerID == -1) {
+  if (playerID === -1) {
     // We are a spectator
     return <p>You are a spectator. Waiting for server to update us...</p>;
-  } else if (!character) {
+  }
+  if (!character) {
     view = (
       <Lobby
         players={players}
@@ -119,47 +123,47 @@ function GameClientInner({
   } else if (showFellowWolves) {
     view = (
       <FellowWolves
-        names={IDsToNames(fellowWolves.filter((id) => id != playerID))}
+        names={IDsToNames(fellowWolves.filter((id) => id !== playerID))}
         onDone={() => setShowFellowWolves(false)}
       />
     );
   } else if (voteRequest.length) {
     // Process the id list (number[]) into [ [id, name] ]
-    let candidates: Choice[] = [];
-    for (let candidateID of voteRequest) {
-      let name: string = (players[candidateID] || {}).name || "";
+    const candidates: Choice[] = [];
+    voteRequest.forEach((candidateID) => {
+      const name: string = (players[candidateID] || {}).name || "";
       if (name) {
         candidates.push({
           name,
           id: candidateID,
           votes: voteInfo
             .map((v) =>
-              v && v.choice == candidateID
+              v && v.choice === candidateID
                 ? (players[(v || {}).id || -1] || {}).name || ""
                 : ""
             )
             .filter((i) => i),
         });
       }
-    }
+    });
 
     // Process voteSync message of [{ id, choice }] into map of { [choice]: string[] }
-    let noVote: string[] = [];
-    for (let vote of voteInfo) {
+    const noVote: string[] = [];
+    voteInfo.forEach((vote) => {
       if (vote.id && vote.id > 0) {
         const voterName = IDToName(vote.id);
         // -1 == no vote
-        if (vote.choice && vote.choice == -1) {
+        if (vote.choice && vote.choice === -1) {
           noVote.push(voterName);
         }
       }
-    }
+    });
 
     view = (
       <Vote
         msg={typeToMsg(voteType)}
         desc={
-          voteType == protobuf.VoteRequest.Type.KILL
+          voteType === protobuf.VoteRequest.Type.KILL
             ? "Everyone must agree"
             : ""
         }
@@ -201,17 +205,19 @@ function GameClientInner({
       </Modal>
     </>
   );
-}
+};
 
-export default function GameClient({
-  server,
-  id,
-  nameProp,
-}: {
+interface GameClientProps {
   server: string;
   id: string;
   nameProp: string;
-}) {
+}
+
+export const GameClient: FC<GameClientProps> = ({
+  server,
+  id,
+  nameProp,
+}: GameClientProps) => {
   const [error, setError] = useState<string>("");
   // The onError function will set the error variable only if it is not already set. If
   //  it is called rapidly, the error variable will be out of date and it could clobber
@@ -229,7 +235,7 @@ export default function GameClient({
   return (
     <GameClientInner
       server={server}
-      id={id}
+      gameId={id}
       nameProp={nameProp}
       onError={(err: string) => {
         if (canSet && !error) {
@@ -239,4 +245,6 @@ export default function GameClient({
       }}
     />
   );
-}
+};
+
+export default GameClientInner;

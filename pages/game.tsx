@@ -1,7 +1,7 @@
 import GameClient from "../components/GameClient";
 import Layout from "components/Layout";
 import NameSelector from "components/NameSelector";
-import t from "../translate";
+import t from "../lib/translate";
 import { useClientOnly } from "components/ClientOnly";
 import { useRouter } from "next/router";
 import { useState } from "react";

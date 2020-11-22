@@ -1,17 +1,16 @@
 import { ReactNode, useEffect, useState } from "react";
 
-export function useClientOnly() {
-  const [hasMounted, setHasMounted] = useState(false);
+export function useClientOnly(): boolean {
+  const [hasMounted, setHasMounted] = useState<boolean>(false);
 
-  useEffect(() => setHasMounted(true));
+  useEffect(() => setHasMounted(true), []);
 
   return hasMounted;
 }
 
-export function ClientOnly({ children }: { children: ReactNode }) {
+export function ClientOnly({ children }: { children: ReactNode }): ReactNode {
   if (useClientOnly()) {
     return children;
-  } else {
-    return null;
   }
+  return null;
 }

@@ -1,21 +1,25 @@
+import { FC } from "react";
+
 import { Badge, Button, Flex, Heading, Text } from "@chakra-ui/core";
 
+import { forcedTranslate as t } from "../lib/translate";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
-import { forcedTranslate as t } from "../translate";
 
-export default function Lobby({
-  players,
-  isHost,
-  hostId,
-  start,
-}: {
+interface LobbyProps {
   players: {
     [id: string]: protobuf.Players.IPlayer;
   };
   hostId: number;
   isHost: boolean;
   start: () => void;
-}) {
+}
+
+export const Lobby: FC<LobbyProps> = ({
+  players,
+  isHost,
+  hostId,
+  start,
+}: LobbyProps) => {
   const hostBadge = (
     <Badge variant="outline" ml={1}>
       {t("Host")}
@@ -34,9 +38,9 @@ export default function Lobby({
       {/* Polish: style this a bit more, don't use <ul> */}
       <ul>
         {Object.keys(players).map((id) => {
-          let p = players[id];
+          const p = players[id];
           if (!p || !p.name) return null;
-          let pIsHost = p.id == hostId;
+          const pIsHost = p.id === hostId;
           return (
             <li key={p.name + pIsHost.toString()}>
               <span>{p.name}</span>
@@ -56,4 +60,6 @@ export default function Lobby({
       </Button>
     </>
   );
-}
+};
+
+export default Lobby;

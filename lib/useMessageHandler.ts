@@ -47,8 +47,8 @@ export default function useMessageHandler(onError: (msg: string) => void) {
   }
 
   function handlePlayers(msg: protobuf.IPlayers) {
-    let players: PlayerIDMap = {};
-    for (let p of msg.players || []) {
+    const players: PlayerIDMap = {};
+    for (const p of msg.players || []) {
       if (p.id && p.name) {
         players[p.id] = p;
       }
@@ -85,7 +85,7 @@ export default function useMessageHandler(onError: (msg: string) => void) {
       msg.status != protobuf.Handshake.Status.OK &&
       msg.status != protobuf.Handshake.Status.SPECTATOR
     ) {
-      let error = "Error";
+      const error = "Error";
       onError(error);
     }
     if (msg.id) {

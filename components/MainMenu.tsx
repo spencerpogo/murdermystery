@@ -29,7 +29,7 @@ export default function MainMenu({ t }: { t: (id: string) => string }) {
         </Heading>
         <Stack>
           <MenuBtn text={t("Join Game")} onClick={() => onOpen()} />
-          <MenuBtn text={t("Create Game")} isDisabled={true} />
+          <MenuBtn text={t("Create Game")} isDisabled />
         </Stack>
       </Box>
 

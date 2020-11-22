@@ -1,6 +1,6 @@
 import Layout from "components/Layout";
 import MainMenu from "components/MainMenu";
-import t from "../translate";
+import t from "../lib/translate";
 
 function Home() {
   return (
