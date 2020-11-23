@@ -39,3 +39,6 @@ yarn-error.log*
 # Generated protobuf code
 pbjs/
 backend/protocol/pb
+
+# Debug route for viewing components
+pages/debug.tsx
