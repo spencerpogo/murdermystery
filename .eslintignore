@@ -1,0 +1,6 @@
+# ESLint ignored files/directories
+
+# Built HTML
+build/
+# Generated protobuf js
+pbjs/

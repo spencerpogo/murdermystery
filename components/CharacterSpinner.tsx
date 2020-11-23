@@ -1,17 +1,16 @@
 import { Box, Flex, Heading, Image, Text } from "@chakra-ui/core";
+import t from "lib/translate";
+import { murdermystery as protobuf } from "pbjs/protobuf";
 import {
   Children,
+  cloneElement,
   FC,
   MutableRefObject,
   ReactNode,
-  cloneElement,
   useEffect,
   useRef,
   useState,
 } from "react";
-
-import { murdermystery as protobuf } from "pbjs/protobuf";
-import { forcedTranslate as t } from "lib/translate";
 
 const { Character } = protobuf;
 

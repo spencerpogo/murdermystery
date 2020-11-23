@@ -1,6 +1,6 @@
 import { Heading } from "@chakra-ui/core";
 import { FC, useEffect } from "react";
-import { forcedTranslate as t } from "../lib/translate";
+import t from "../lib/translate";
 
 export interface ProphetRevealProps {
   name: string;

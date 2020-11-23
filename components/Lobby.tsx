@@ -1,8 +1,6 @@
-import { FC } from "react";
-
 import { Badge, Button, Flex, Heading, Text } from "@chakra-ui/core";
-
-import { forcedTranslate as t } from "../lib/translate";
+import { FC } from "react";
+import t from "../lib/translate";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 
 interface LobbyProps {

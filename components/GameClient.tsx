@@ -9,7 +9,7 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/core";
-import { forcedTranslate as t } from "lib/translate";
+import t from "lib/translate";
 import useGameSocket from "lib/useGameSocket";
 import useMessageHandler from "lib/useMessageHandler";
 import { FC, useState } from "react";

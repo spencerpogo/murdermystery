@@ -1,7 +1,6 @@
 import { Box, Heading, Stack } from "@chakra-ui/core";
+import t from "lib/translate";
 import { FC, useEffect } from "react";
-
-import { forcedTranslate as t } from "lib/translate";
 
 interface FellowWolvesProps {
   names: string[];

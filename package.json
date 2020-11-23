@@ -9,8 +9,8 @@
     "export": "next export",
     "pbjs": "pbjs",
     "pbts": "pbts",
-    "lint": "eslint ./components ./lib ./pages ./tools",
-    "lint-fix": "eslint ./components ./lib ./pages ./tools --fix"
+    "lint": "eslint ./",
+    "lint-fix": "eslint ./ --fix"
   },
   "dependencies": {
     "@babel/parser": "^7.12.7",

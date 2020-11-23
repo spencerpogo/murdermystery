@@ -1,7 +1,6 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/core";
-
+import t from "lib/translate";
 import { FC } from "react";
-import { forcedTranslate as t } from "lib/translate";
 
 export interface Choice {
   name?: string;

@@ -147,12 +147,9 @@ export default function useMessageHandler(onError: (msg: string) => void) {
     let msg: protobuf.IServerMessage;
     try {
       msg = protobuf.ServerMessage.decode(new Uint8Array(ev.data));
-      // The message logging will stay for now
-      // eslint-disable-next-line no-console
       console.log(msg);
       callHandler(msg);
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.error("Message decode error:", e);
     }
   };
