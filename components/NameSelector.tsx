@@ -1,9 +1,14 @@
 import { Box, Button, Input, Stack } from "@chakra-ui/core";
-import { ChangeEvent, useState } from "react";
-
+import { ChangeEvent, FC, useState } from "react";
 import t from "../lib/translate";
 
-function NameSelector({ onSubmit }: { onSubmit: (name: string) => void }) {
+interface NameSelectorProps {
+  onSubmit: (name: string) => void;
+}
+
+export const NameSelector: FC<NameSelectorProps> = ({
+  onSubmit,
+}: NameSelectorProps) => {
   const [name, setName] = useState("");
   return (
     <Box>
@@ -21,6 +26,6 @@ function NameSelector({ onSubmit }: { onSubmit: (name: string) => void }) {
       </Stack>
     </Box>
   );
-}
+};
 
 export default NameSelector;

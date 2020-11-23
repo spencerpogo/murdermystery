@@ -9,10 +9,11 @@
     "export": "next export",
     "pbjs": "pbjs",
     "pbts": "pbts",
-    "lint": "eslint ./",
-    "lint-fix": "eslint ./ --fix"
+    "lint": "eslint ./components ./lib ./pages ./tools",
+    "lint-fix": "eslint ./components ./lib ./pages ./tools --fix"
   },
   "dependencies": {
+    "@babel/parser": "^7.12.7",
     "@chakra-ui/core": "^0.8.0",
     "@emotion/core": "^10.1.1",
     "@emotion/styled": "^10.0.27",

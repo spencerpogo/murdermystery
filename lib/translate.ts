@@ -1,5 +1,5 @@
-import translations from "../public/static/locales/zh/common.json";
 import { useClientOnly } from "components/ClientOnly";
+import translations from "../public/static/locales/zh/common.json";
 
 /**
  * Get translated version of a string from english.

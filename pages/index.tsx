@@ -1,8 +1,11 @@
 import Layout from "components/Layout";
 import MainMenu from "components/MainMenu";
+import { FC } from "react";
 import t from "../lib/translate";
 
-function Home() {
+interface HomeProps {}
+
+const Home: FC<HomeProps> = () => {
   return (
     <Layout>
       <main>
@@ -10,6 +13,6 @@ function Home() {
       </main>
     </Layout>
   );
-}
+};
 
 export default Home;

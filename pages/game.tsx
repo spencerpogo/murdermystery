@@ -1,10 +1,10 @@
-import GameClient from "../components/GameClient";
+import { useClientOnly } from "components/ClientOnly";
 import Layout from "components/Layout";
 import NameSelector from "components/NameSelector";
-import t from "../lib/translate";
-import { useClientOnly } from "components/ClientOnly";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { FC, useState } from "react";
+import GameClient from "../components/GameClient";
+import t from "../lib/translate";
 
 function useGameContent() {
   const { query } = useRouter();
@@ -14,7 +14,9 @@ function useGameContent() {
 
   const [name, setName] = useState<string>("");
 
-  const nameComponent = <NameSelector onSubmit={(name) => setName(name)} />;
+  const nameComponent = (
+    <NameSelector onSubmit={(newName) => setName(newName)} />
+  );
 
   if (!useClientOnly()) {
     // When pre-rednering, the id is never set so we don't want the error to be
@@ -39,10 +41,14 @@ function useGameContent() {
   );
 }
 
-export default function Game() {
+interface GameProps {}
+
+export const Game: FC<GameProps> = () => {
   return (
     <Layout>
       <main>{useGameContent()}</main>
     </Layout>
   );
-}
+};
+
+export default Game;

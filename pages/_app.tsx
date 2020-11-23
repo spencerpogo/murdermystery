@@ -1,10 +1,9 @@
+/* eslint-disable react/jsx-props-no-spreading */
+import { CSSReset, DarkMode, ThemeProvider } from "@chakra-ui/core";
+import { AppProps } from "next/app";
 import "../styles/globals.css";
 
-import { CSSReset, DarkMode, ThemeProvider } from "@chakra-ui/core";
-
-import { AppProps } from "next/app";
-
-const MyApp = ({ Component, pageProps }: AppProps) => {
+const MyApp = ({ Component, pageProps }: AppProps): JSX.Element => {
   return (
     <ThemeProvider>
       <CSSReset />

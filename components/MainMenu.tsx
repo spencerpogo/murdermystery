@@ -11,14 +11,13 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/core";
+import { FC } from "react";
 
-const MenuBtn = ({ text, ...rest }: { text: string; [rest: string]: any }) => (
-  <Button variantColor="blue" width="100%" {...rest}>
-    {text}
-  </Button>
-);
+export interface MainMenuProps {
+  t: (id: string) => string;
+}
 
-export default function MainMenu({ t }: { t: (id: string) => string }) {
+export const MainMenu: FC<MainMenuProps> = ({ t }: MainMenuProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -28,8 +27,12 @@ export default function MainMenu({ t }: { t: (id: string) => string }) {
           <Text color="red.700">{t("Murder Mystery")}</Text>
         </Heading>
         <Stack>
-          <MenuBtn text={t("Join Game")} onClick={() => onOpen()} />
-          <MenuBtn text={t("Create Game")} isDisabled />
+          <Button variantColor="blue" width="100%" onClick={() => onOpen()}>
+            {t("Join Game")}
+          </Button>
+          <Button variantColor="blue" width="100%" isDisabled>
+            {t("Create Game")}
+          </Button>
         </Stack>
       </Box>
 
@@ -45,4 +48,6 @@ export default function MainMenu({ t }: { t: (id: string) => string }) {
       </Modal>
     </>
   );
-}
+};
+
+export default MainMenu;

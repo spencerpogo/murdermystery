@@ -1,6 +1,5 @@
 import Head from "next/head";
 import { FC, ReactNode } from "react";
-
 import t from "../lib/translate";
 
 export interface LayoutProps {
@@ -18,3 +17,5 @@ export const Layout: FC<LayoutProps> = ({ children }: LayoutProps) => {
     </>
   );
 };
+
+export default Layout;

@@ -1,16 +1,18 @@
 import { Heading } from "@chakra-ui/core";
+import { FC, useEffect } from "react";
 import { forcedTranslate as t } from "../lib/translate";
-import { useEffect } from "react";
 
-export default function ProphetReveal({
-  name,
-  good,
-  onDone,
-}: {
+export interface ProphetRevealProps {
   name: string;
   good: boolean;
   onDone: () => void;
-}) {
+}
+
+export const ProphetReveal: FC<ProphetRevealProps> = ({
+  name,
+  good,
+  onDone,
+}: ProphetRevealProps) => {
   useEffect(() => {
     const timeoutId = setTimeout(() => onDone(), 5000);
     return () => clearTimeout(timeoutId);
@@ -29,4 +31,6 @@ export default function ProphetReveal({
       </Heading>
     </>
   );
-}
+};
+
+export default ProphetReveal;

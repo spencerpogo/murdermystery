@@ -5,6 +5,9 @@ export interface PlayerIDMap {
   [id: string]: protobuf.Players.IPlayer;
 }
 
+// Typing this function's return would be too complicated, plus it only returns once
+//  and the type can be inferred.
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default function useMessageHandler(onError: (msg: string) => void) {
   // Our player ID
   // Set to -2 so it is different from spectator ID of -1, otherwise we will never
@@ -47,21 +50,21 @@ export default function useMessageHandler(onError: (msg: string) => void) {
   }
 
   function handlePlayers(msg: protobuf.IPlayers) {
-    const players: PlayerIDMap = {};
-    for (const p of msg.players || []) {
+    const newPlayers: PlayerIDMap = {};
+    (msg.players || []).forEach((p) => {
       if (p.id && p.name) {
-        players[p.id] = p;
+        newPlayers[p.id] = p;
       }
-    }
-    setPlayers(players);
+    });
+    setPlayers(newPlayers);
     setHostId(msg.hostId || -1);
   }
 
   function handleError(err: protobuf.IError) {
     let error = "Error";
-    if (err.msg == protobuf.Error.E_type.BADNAME) {
+    if (err.msg === protobuf.Error.E_type.BADNAME) {
       error = "Your name is invalid";
-    } else if (err.msg == protobuf.Error.E_type.DISCONNECT) {
+    } else if (err.msg === protobuf.Error.E_type.DISCONNECT) {
       error =
         "Someone disconnected, reconnection is not yet implemented so game over";
     }
@@ -70,7 +73,7 @@ export default function useMessageHandler(onError: (msg: string) => void) {
 
   function handleAlert(data: protobuf.IAlert) {
     let error = "There was an error while performing that action";
-    if (data.msg == protobuf.Alert.Msg.NEEDMOREPLAYERS) {
+    if (data.msg === protobuf.Alert.Msg.NEEDMOREPLAYERS) {
       error = "You need at least 6 players to start the game";
     }
     setAlertContent(error);
@@ -82,8 +85,8 @@ export default function useMessageHandler(onError: (msg: string) => void) {
 
   function handleHandshake(msg: protobuf.IHandshake) {
     if (
-      msg.status != protobuf.Handshake.Status.OK &&
-      msg.status != protobuf.Handshake.Status.SPECTATOR
+      msg.status !== protobuf.Handshake.Status.OK &&
+      msg.status !== protobuf.Handshake.Status.SPECTATOR
     ) {
       const error = "Error";
       onError(error);
@@ -111,7 +114,7 @@ export default function useMessageHandler(onError: (msg: string) => void) {
     }
   }
 
-  function handleVoteOver(_: protobuf.IVoteOver) {
+  function handleVoteOver() {
     // Clear vote data
     setVoteRequest([]);
     setVoteInfo([]);
@@ -134,7 +137,7 @@ export default function useMessageHandler(onError: (msg: string) => void) {
     if (msg.fellowWolves) return handleFellowWolves(msg.fellowWolves);
     if (msg.voteRequest) return handleVoteRequest(msg.voteRequest);
     if (msg.voteSync) return handleVoteSync(msg.voteSync);
-    if (msg.voteOver) return handleVoteOver(msg.voteOver);
+    if (msg.voteOver) return handleVoteOver();
     if (msg.prophetReveal) return handleProphetReveal(msg.prophetReveal);
     throw new Error("Not implemented. ");
   };
@@ -144,9 +147,12 @@ export default function useMessageHandler(onError: (msg: string) => void) {
     let msg: protobuf.IServerMessage;
     try {
       msg = protobuf.ServerMessage.decode(new Uint8Array(ev.data));
+      // The message logging will stay for now
+      // eslint-disable-next-line no-console
       console.log(msg);
       callHandler(msg);
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error("Message decode error:", e);
     }
   };
