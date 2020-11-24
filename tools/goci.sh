@@ -64,12 +64,18 @@ ${OUTPUT}
 	fi
 }
 
+get_pkgs () {
+  go list ./... |
+    grep -vF 'github.com/Scoder12/murdermystery/backend/protocol/pb' |
+    grep -vF 'github.com/Scoder12/murdermystery/backend/statik'
+}
+
 # check_fmt is excute "go fmt" and generate ${COMMENT} and ${SUCCESS}
 check_fmt() {
   echo "Running gofmt"
 	set +e
   # Ignore generated protocol buffers code
-  tocheck=$(go list ./... | grep -vF 'github.com/Scoder12/murdermystery/backend/protocol/pb')
+  tocheck=$(get_pkgs)
 	UNFMT_FILES=$(sh -c "gofmt -l -s . $tocheck" 2>&1)
 	test -z "${UNFMT_FILES}"
 	SUCCESS=$?
