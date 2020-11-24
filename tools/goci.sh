@@ -68,7 +68,9 @@ ${OUTPUT}
 check_fmt() {
   echo "Running gofmt"
 	set +e
-	UNFMT_FILES=$(sh -c "gofmt -l -s . $*" 2>&1)
+  # Ignore generated protocol buffers code
+  tocheck=$(go list ./... | grep -vF 'github.com/Scoder12/murdermystery/backend/protocol/pb')
+	UNFMT_FILES=$(sh -c "gofmt -l -s . $tocheck" 2>&1)
 	test -z "${UNFMT_FILES}"
 	SUCCESS=$?
 
