@@ -190,7 +190,7 @@ $(cat result.txt)
 # check_shadow is excute "go vet -vettool=/go/bin/shadow" and generate ${COMMENT} and ${SUCCESS}
 check_shadow() {
 	set +e
-	OUTPUT=$(sh -c "go vet -vettool=/go/bin/shadow ${FLAGS} ./... $*" 2>&1)
+	OUTPUT=$(sh -c "go vet -vettool=$(which shadow) ${FLAGS} ./... $*" 2>&1)
 	SUCCESS=$?
 
 	set -e
