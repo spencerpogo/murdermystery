@@ -120,6 +120,7 @@ check_imports() {
 			FILE_DIFF=$(goimports -d -e "${file}" | sed -n '/@@.*/,//{/@@.*/d;p}')
 			FMT_OUTPUT="${FMT_OUTPUT}
 <details><summary><code>${file}</code></summary>
+
 \`\`\`diff
 ${FILE_DIFF}
 \`\`\`
@@ -148,9 +149,11 @@ check_lint() {
 		COMMENT="## ⚠ golint Failed
 $(echo "${OUTPUT}" | awk 'END{print}')
 <details><summary>Show Detail</summary>
+
 \`\`\`
 $(echo "${OUTPUT}" | sed -e '$d')
 \`\`\`
+
 </details>
 "
 	fi
@@ -172,7 +175,9 @@ check_sec() {
 \`\`\`
 $(tail -n 6 result.txt)
 \`\`\`
+
 <details><summary>Show Detail</summary>
+
 \`\`\`
 $(cat result.txt)
 \`\`\`
