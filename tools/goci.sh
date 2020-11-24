@@ -105,7 +105,7 @@ ${FMT_OUTPUT}
 # check_imports is excute go imports and generate ${COMMENT} and ${SUCCESS}
 check_imports() {
 	set +e
-	UNFMT_FILES=$(sh -c "goimports -l . $*" 2>&1)
+	UNFMT_FILES=$(sh -c "goimports -l . $*" 2>&1 | clean_pkgs)
 	test -z "${UNFMT_FILES}"
 	SUCCESS=$?
 
