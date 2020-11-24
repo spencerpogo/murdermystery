@@ -85,6 +85,7 @@ check_fmt() {
 			FILE_DIFF=$(gofmt -d -e "${file}" | sed -n '/@@.*/,//{/@@.*/d;p}')
 			FMT_OUTPUT="${FMT_OUTPUT}
 <details><summary><code>${file}</code></summary>
+
 \`\`\`diff
 ${FILE_DIFF}
 \`\`\`
