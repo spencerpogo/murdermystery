@@ -65,7 +65,7 @@ func (g *Game) AssignCharacters() {
 	for m, c := range g.clients {
 		// Would like to generate roles lazily in this loop,
 		//  but would be hard to make it both random and assign the correct amount.
-		// No one is allows to join/leave so the role array method works fine
+		// No one is allowed to join/leave so the role array method works fine
 
 		if m.IsClosed() || len(c.name) == 0 {
 			continue
@@ -77,7 +77,10 @@ func (g *Game) AssignCharacters() {
 		if err != nil {
 			return
 		}
-		m.WriteBinary(msg)
+		err = m.WriteBinary(msg)
+		if err != nil {
+			log.Println(err)
+		}
 		i++
 	}
 }
@@ -105,8 +108,9 @@ func (g *Game) revealWolves() {
 	}
 
 	for _, s := range wolfSessions {
-		if !s.IsClosed() {
-			s.WriteBinary(msg)
+		err = s.WriteBinary(msg)
+		if err != nil {
+			log.Println(err)
 		}
 	}
 

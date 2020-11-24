@@ -67,6 +67,10 @@ func Unmarshal(data []byte) (result *pb.ClientMessage) {
 	}()
 
 	m := &pb.ClientMessage{}
-	proto.Unmarshal(data, m)
+	err := proto.Unmarshal(data, m)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
 	return m
 }

@@ -28,8 +28,9 @@ func (v *Vote) End() {
 	}
 
 	for s := range v.voters {
-		if s != nil && !s.IsClosed() {
-			s.WriteBinary(msg)
+		if s != nil {
+			err = s.WriteBinary(msg)
+			printerr(err)
 		}
 	}
 }
@@ -136,9 +137,8 @@ func (g *Game) callVote(
 	}
 
 	for _, s := range voters {
-		if !s.IsClosed() {
-			s.WriteBinary(msg)
-		}
+		err = s.WriteBinary(msg)
+		printerr(err)
 	}
 
 	g.syncVote()
@@ -185,7 +185,8 @@ func (g *Game) syncVote() {
 
 	for voter := range g.vote.voters {
 		if !voter.IsClosed() {
-			voter.WriteBinary(msg)
+			err = voter.WriteBinary(msg)
+			printerr(err)
 		}
 	}
 }

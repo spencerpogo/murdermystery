@@ -14,6 +14,13 @@ import (
 	"gopkg.in/olahol/melody.v1"
 )
 
+// printerr handles an error
+func printerr(e error) {
+	if e != nil {
+		log.Println(e)
+	}
+}
+
 // Client represents a client in the game
 type Client struct {
 	// Identifier of the client. Should be treated as constant!
@@ -112,10 +119,12 @@ func (g *Game) End(reason pb.Error_EType) {
 	if err != nil {
 		return
 	}
-	g.m.BroadcastBinary(msg)
+	err = g.m.BroadcastBinary(msg)
+	printerr(err)
 	time.Sleep(200 * time.Millisecond)
 
-	g.m.Close()
+	err = g.m.Close()
+	printerr(err)
 	g.destroyFn()
 }
 
@@ -146,7 +155,10 @@ func (g *Game) updateHost() {
 		if err != nil {
 			return
 		}
-		bestM.WriteBinary(msg)
+		err = bestM.WriteBinary(msg)
+		if err == nil {
+			log.Println(err)
+		}
 		g.host = bestM
 	}
 }
@@ -172,7 +184,8 @@ func (g *Game) syncPlayers() {
 	if err != nil {
 		return
 	}
-	g.m.BroadcastBinary(msg)
+	err = g.m.BroadcastBinary(msg)
+	printerr(err)
 }
 
 // updateSpectators updates the connected spectators to the current game state
@@ -190,11 +203,8 @@ func (g *Game) updateSpectators() {
 	}
 
 	for s := range g.spectators {
-		if !s.IsClosed() {
-			s.WriteBinary(msg)
-		} else {
-			delete(g.spectators, s)
-		}
+		err = s.WriteBinary(msg)
+		printerr(err)
 	}
 }
 
@@ -266,9 +276,8 @@ func (g *Game) prophetReveal(prophet, choice *melody.Session) bool {
 	if err != nil {
 		return false
 	}
-	if !prophet.IsClosed() {
-		prophet.WriteBinary(msg)
-	}
+	err = prophet.WriteBinary(msg)
+	printerr(err)
 	return true
 }
 

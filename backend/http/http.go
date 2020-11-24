@@ -38,12 +38,15 @@ func StartServer(iface string, fs http.FileSystem) {
 		}
 		gamesMu.Unlock()
 
-		g.HandleRequest(c.Writer, c.Request)
+		err := g.HandleRequest(c.Writer, c.Request)
+		if err != nil {
+			log.Println(err)
+		}
 	})
 
-  r.NoRoute(func (c *gin.Context) {
-    c.FileFromFS(c.Request.URL.Path, fs)
-  })
+	r.NoRoute(func(c *gin.Context) {
+		c.FileFromFS(c.Request.URL.Path, fs)
+	})
 
 	log.Fatalln(r.Run(iface))
 }

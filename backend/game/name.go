@@ -45,9 +45,11 @@ func (g *Game) setNameHandler(s *melody.Session, c *Client, msg *pb.SetName) {
 		if err != nil {
 			return
 		}
-		s.WriteBinary(msg)
+		err = s.WriteBinary(msg)
+		printerr(err)
 		time.Sleep(200 * time.Millisecond)
-		s.Close()
+		err = s.Close()
+		printerr(err)
 	}
 	c.name = name
 

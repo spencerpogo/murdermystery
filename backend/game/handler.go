@@ -24,9 +24,8 @@ func (g *Game) handleJoin(s *melody.Session) {
 		if err != nil {
 			return
 		}
-		if !s.IsClosed() {
-			s.WriteBinary(msg)
-		}
+		err = s.WriteBinary(msg)
+		printerr(err)
 		// Update immediately so the new client gets the current state
 		g.updateSpectators()
 		return
@@ -40,7 +39,8 @@ func (g *Game) handleJoin(s *melody.Session) {
 	if err != nil {
 		return
 	}
-	s.WriteBinary(msg)
+	err = s.WriteBinary(msg)
+	printerr(err)
 
 	// For efficiency, the timer will be stopped if the client discconects fast enough
 	c.closeTimer = time.AfterFunc(2*time.Second, func() {
@@ -49,7 +49,8 @@ func (g *Game) handleJoin(s *melody.Session) {
 
 		if len(c.name) == 0 {
 			log.Printf("[%v] Did not name, closing\n", c.ID)
-			s.Close()
+			err = s.Close()
+			printerr(err)
 		}
 	})
 
@@ -114,14 +115,16 @@ func (g *Game) handleMsg(s *melody.Session, data []byte) {
 	var msg *pb.ClientMessage = protocol.Unmarshal(data)
 	if msg == nil {
 		log.Printf("[%v] Invalid data", c.ID)
-		s.Close()
+		err := s.Close()
+		printerr(err)
 		return
 	}
 
 	err := g.callHandler(s, c, msg)
 	if err != nil {
 		log.Println(err)
-		s.Close()
+		err = s.Close()
+		printerr(err)
 	}
 }
 

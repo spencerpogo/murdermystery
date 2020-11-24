@@ -33,7 +33,8 @@ func (g *Game) startGameHandler(s *melody.Session, c *Client, msg *pb.StartGame)
 		if err != nil {
 			return
 		}
-		s.WriteBinary(msg)
+		err = s.WriteBinary(msg)
+		printerr(err)
 		return
 	}
 
