@@ -94,7 +94,7 @@ func New(destroyFn func()) *Game {
 			fmt.Fprintf(&b, "%v", int(c))
 		}
 		fmt.Fprintf(&b, "]\n")
-		log.Printf(b.String())
+		log.Print(b.String())
 	})
 
 	return g

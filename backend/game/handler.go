@@ -96,7 +96,7 @@ func (g *Game) callHandler(s *melody.Session, c *Client, data *pb.ClientMessage)
 	case *pb.ClientMessage_Vote:
 		return g.handleVoteMessage(s, c, msg.Vote)
 	default:
-		return fmt.Errorf("Unrecognized op")
+		return fmt.Errorf("unrecognized op")
 	}
 }
 
