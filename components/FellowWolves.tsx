@@ -22,9 +22,9 @@ export const FellowWolves: FC<FellowWolvesProps> = ({
       <Heading textAlign="center">{t("Your fellow wolves")}</Heading>
       {/* Polish: maybe a wolf icon here? */}
       <Stack>
-        {names.map((n) => (
-          <Box key={n} w="100%" textAlign="center" mt="2">
-            {n}
+        {names.map((name) => (
+          <Box key={name} w="100%" textAlign="center" mt="2">
+            {name}
           </Box>
         ))}
       </Stack>
