@@ -1,3 +1,4 @@
+import { useClientOnly } from "components/ClientOnly";
 import translations from "../public/static/locales/zh/common.json";
 
 /**
@@ -20,3 +21,6 @@ export default function translate(k: string): string {
 
   return k;
 }
+
+export const useTranslate = (phrase: string): string =>
+  useClientOnly() ? translate(phrase) : phrase;

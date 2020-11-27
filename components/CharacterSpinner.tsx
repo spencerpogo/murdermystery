@@ -4,7 +4,6 @@ import t from "lib/translate";
 import { murdermystery as protobuf } from "pbjs/protobuf";
 import {
   Children,
-  cloneElement,
   FC,
   MutableRefObject,
   ReactNode,
@@ -36,7 +35,12 @@ const getImgSrc = (name: string) => `/${name.toLowerCase()}.webp`;
 
 const getImgs = () => {
   // A single round of images
-  const imgs = Children.map(NAMES, (name) => (
+  let names: string[] = [];
+  for (let round = 0; round < REPS; round += 1) {
+    names = names.concat(NAMES);
+  }
+
+  return Children.map(names, (name) => (
     <Box d="inline-block">
       <Image
         src={getImgSrc(name)}
@@ -46,12 +50,6 @@ const getImgs = () => {
       />
     </Box>
   ));
-  // The images, repeated
-  let res: ReactNode[] = [];
-  for (let round = 0; round < REPS; round += 1) {
-    res = res.concat(imgs.map((img) => cloneElement(img)));
-  }
-  return res;
 };
 
 // get a list of JSX that is all images repeated REPS times
