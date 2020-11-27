@@ -6,34 +6,82 @@ const {
 } = require("../pbjs/protobuf.js").murdermystery;
 
 const SERVER = process.env.BOT_SERVER || "ws://localhost:8080";
+const MIN_PLAYERS = 6;
 
 const getName = (i) => `Bot${i + 1}`;
+
+// Handlers for each message
+const handlers = [
+  // Sets ctx.isHost
+  (msg, ctx) => {
+    if (msg.host && msg.host.isHost) {
+      ctx.isHost = true;
+    }
+  },
+  // Will start game if we should
+  (msg, ctx) => {
+    if (
+      msg.players &&
+      ctx.isHost &&
+      msg.players.players &&
+      msg.players.players.length >= MIN_PLAYERS
+    ) {
+      ctx.send({ startGame: {} });
+    }
+  },
+  // When a vote starts
+  (msg, ctx) => {
+    if (msg.voteRequest) {
+      // Strategy: every client will randomly vote after a random amount of time.
+      // If another vote is received, they will copy it instead of voting themself.
+
+      const voteReq = msg.voteRequest.choice_IDs;
+      ctx.voteRequest = voteReq;
+      const sendRandomVote = () => {
+        // If the vote is still going on
+        if (ctx.voteRequest === voteReq) {
+          const choice = voteReq[Math.floor(Math.random() * voteReq.length)];
+          ctx.send({ vote: { choice } });
+        }
+      };
+      ctx.randVoteTimer = setTimeout(sendRandomVote, Math.random() * 1000);
+    }
+  },
+  // When a vote is received
+  (msg, ctx) => {
+    if (msg.voteSync && msg.voteSync.votes) {
+      const vote = msg.voteSync.votes.filter((v) => v.choice !== -1)[0];
+      if (vote && vote.choice) {
+        if (ctx.randVoteTimer) clearTimeout(ctx.randVoteTimer);
+        ctx.send({ vote: { choice: vote.choice } });
+      }
+    }
+  },
+  // When a vote is over
+  (msg, ctx) => {
+    if (msg.voteOver && ctx.randVoteTimer) {
+      clearTimeout(ctx.randVoteTimer);
+    }
+  },
+];
 
 const runBot = (gid, i) => {
   const name = getName(i);
   const ws = new NodeWebSocket(`${SERVER}/game/${gid}`);
-  let isHost = false;
+  const ctx = { isHost: false };
 
   const send = (pbMsg) => {
     console.log(`[${name}] ↑`, pbMsg);
     ws.send(ClientMessage.encode(pbMsg).finish());
   };
+  ctx.send = send;
 
   ws.on("message", (buffer) => {
     const msg = ServerMessage.decode(buffer);
     // msg.players gets collapsed so log it top level
     console.log(`[${name}] ↓`, msg.players ? msg.players : msg);
 
-    if (msg.host && msg.host.isHost) {
-      isHost = true;
-    } else if (
-      msg.players &&
-      isHost &&
-      msg.players.players &&
-      msg.players.players.length >= 6
-    ) {
-      send({ startGame: {} });
-    }
+    handlers.forEach((callback) => callback(msg, ctx));
   });
 
   ws.on("open", () => send({ setName: { name } }));
