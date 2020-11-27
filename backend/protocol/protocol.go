@@ -47,7 +47,7 @@ func Marshal(message interface{ ProtoMessage() }) ([]byte, error) {
 	data := []byte{}
 	var err error = nil
 	if msg == nil {
-		err = fmt.Errorf("Invalid message type")
+		err = fmt.Errorf("invalid message type")
 	} else {
 		data, err = proto.Marshal(msg)
 	}

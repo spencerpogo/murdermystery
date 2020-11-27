@@ -55,5 +55,4 @@ func (g *Game) setNameHandler(s *melody.Session, c *Client, msg *pb.SetName) {
 
 	log.Printf("[%v] Set name to %s", c.ID, name)
 	g.syncPlayers()
-	return
 }

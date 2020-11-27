@@ -74,7 +74,7 @@ func (v *Vote) toPB(g *Game) *pb.VoteSync {
 
 	for voter := range v.voters {
 		var voterID int32 = -1
-		c, _ := g.clients[voter]
+		c := g.clients[voter]
 		if c != nil {
 			voterID = c.ID
 		}
