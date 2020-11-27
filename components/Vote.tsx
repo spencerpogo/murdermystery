@@ -87,11 +87,15 @@ export const Vote: FC<VoteProps> = ({
       {desc ? <Text mt="2">{t(desc)}</Text> : null}
       {voteGroups.map((candGroup) => {
         return (
-          <Flex mt="3" minHeight="200px" key={JSON.stringify(candidates)}>
+          <Flex
+            mt="3"
+            minHeight="200px"
+            key={candGroup.map((c) => (c || {}).id).join(",")}
+          >
             {candGroup.map((candidate: Choice) =>
               candidate.name ? (
                 <VotesDisplay
-                  key={JSON.stringify(candidate)}
+                  key={candidate.id}
                   candidate={candidate}
                   onVote={onVote}
                 />
