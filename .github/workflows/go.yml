@@ -48,6 +48,10 @@ jobs:
         with:
           body: ${{ steps.lint.outputs.body }}
 
+      - name: Stop run if errors occurred
+        if: steps.lint.outputs.body != ''
+        run: exit 1
+
       - name: Build
         run: go build -v .
         working-directory: backend
