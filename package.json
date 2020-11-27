@@ -25,7 +25,7 @@
     "react-websocket": "^2.1.0"
   },
   "devDependencies": {
-    "@types/node": "^14.14.9",
+    "@types/node": "^14.14.10",
     "@types/react": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.1",
