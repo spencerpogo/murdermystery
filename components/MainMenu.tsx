@@ -10,7 +10,7 @@ import {
   Stack,
   Text,
   useDisclosure,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import { FC } from "react";
 
 export interface MainMenuProps {
@@ -27,10 +27,10 @@ export const MainMenu: FC<MainMenuProps> = ({ t }: MainMenuProps) => {
           <Text color="red.700">{t("Murder Mystery")}</Text>
         </Heading>
         <Stack>
-          <Button variantColor="blue" width="100%" onClick={() => onOpen()}>
+          <Button colorScheme="blue" width="100%" onClick={() => onOpen()}>
             {t("Join Game")}
           </Button>
-          <Button variantColor="blue" width="100%" isDisabled>
+          <Button colorScheme="blue" width="100%" isDisabled>
             {t("Create Game")}
           </Button>
         </Stack>

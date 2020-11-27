@@ -1,6 +1,5 @@
+import { Box, Skeleton } from "@chakra-ui/react";
 import { FC } from "react";
-
-import { Box, Skeleton } from "@chakra-ui/core";
 
 interface LoaderProps {}
 

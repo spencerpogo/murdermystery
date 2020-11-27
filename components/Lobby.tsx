@@ -1,4 +1,4 @@
-import { Badge, Button, Flex, Heading, Text } from "@chakra-ui/core";
+import { Badge, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import t from "../lib/translate";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
@@ -48,7 +48,7 @@ export const Lobby: FC<LobbyProps> = ({
         })}
       </ul>
       <Button
-        variantColor="blue"
+        colorScheme="blue"
         float="right"
         mt={10}
         isDisabled={!isHost}

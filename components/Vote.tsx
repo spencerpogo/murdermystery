@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/core";
+import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import t from "lib/translate";
 import { FC } from "react";
 
@@ -41,7 +41,7 @@ function VotesDisplay({
   // TODO: Maybe make this a little prettier?
   return (
     <Box mr="2" width="50%">
-      <Button variantColor="gray" width="100%" onClick={() => onVote(id)}>
+      <Button colorScheme="gray" width="100%" onClick={() => onVote(id)}>
         {candidateName}
       </Button>
       <Box mt="2">

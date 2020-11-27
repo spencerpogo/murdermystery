@@ -1,16 +1,18 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { CSSReset, DarkMode, ThemeProvider } from "@chakra-ui/core";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { AppProps } from "next/app";
 import "../styles/globals.css";
 
 const MyApp = ({ Component, pageProps }: AppProps): JSX.Element => {
   return (
-    <ThemeProvider>
-      <CSSReset />
-      <DarkMode>
-        <Component {...pageProps} />
-      </DarkMode>
-    </ThemeProvider>
+    <ChakraProvider
+      theme={extendTheme({
+        useSystemColorMode: false,
+        initialColorMode: "dark",
+      })}
+    >
+      <Component {...pageProps} />
+    </ChakraProvider>
   );
 };
 

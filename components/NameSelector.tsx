@@ -1,4 +1,4 @@
-import { Box, Button, Input, Stack } from "@chakra-ui/core";
+import { Box, Button, Input, Stack } from "@chakra-ui/react";
 import { ChangeEvent, FC, useState } from "react";
 import t from "../lib/translate";
 
@@ -20,7 +20,7 @@ export const NameSelector: FC<NameSelectorProps> = ({
           }
           type="text"
         />
-        <Button onClick={() => onSubmit(name)} variantColor="blue">
+        <Button onClick={() => onSubmit(name)} colorScheme="blue">
           {t("Join Game")}
         </Button>
       </Stack>

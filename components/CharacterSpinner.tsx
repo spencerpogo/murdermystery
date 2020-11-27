@@ -1,4 +1,5 @@
-import { Box, Flex, Heading, Image, Text } from "@chakra-ui/core";
+import { Box, Flex, Heading, Image, Text } from "@chakra-ui/react";
+import { motion } from "framer-motion";
 import t from "lib/translate";
 import { murdermystery as protobuf } from "pbjs/protobuf";
 import {
@@ -13,6 +14,8 @@ import {
 } from "react";
 
 const { Character } = protobuf;
+
+const MotionBox = motion.custom(Box);
 
 // CHARACTER_INDEXES has protobuf character enum values in the same positions as the
 //  corresponding value in the NAMES array
@@ -111,7 +114,7 @@ export const CharacterSpinner: FC<CharacterSpinnerProps> = ({
   }
 
   // The Box with the images. We need it to get the size of it
-  const lineContainerRef = useRef<HTMLElement | null>(null);
+  const lineContainerRef = useRef<HTMLDivElement | null>(null);
 
   // After 2s, start spinning, then 11s after that, switch to done
   useEffect(() => {
@@ -161,20 +164,18 @@ export const CharacterSpinner: FC<CharacterSpinnerProps> = ({
         <style jsx global>
           {"body{overflow-x: hidden;}"}
         </style>
-        <Box
-          transform={
-            stage === Stage.SPIN ? `translateX(${-finalTransform}px)` : null
-          }
+        <MotionBox
+          animate={stage === Stage.SPIN ? { x: -finalTransform } : undefined}
           transition={
             stage === Stage.SPIN && shouldAnimate
-              ? "transform 9.5s cubic-bezier(.31,.9985,.31,.9985)"
-              : null
+              ? { duration: 9.5, ease: [0.31, 0.9985, 0.31, 0.9985] }
+              : undefined
           }
         >
           <Box whiteSpace="nowrap" pos="absolute" pt="4px">
             {allImgs}
           </Box>
-        </Box>
+        </MotionBox>
 
         {/* Line */}
         <Box ref={lineContainerRef} pos="relative" height={`${HEIGHT + 21}px`}>

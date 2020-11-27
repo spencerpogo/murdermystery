@@ -1,4 +1,4 @@
-import { Box, Heading, Stack } from "@chakra-ui/core";
+import { Box, Heading, Stack } from "@chakra-ui/react";
 import t from "lib/translate";
 import { FC, useEffect } from "react";
 

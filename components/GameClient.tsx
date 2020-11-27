@@ -8,7 +8,7 @@ import {
   ModalContent,
   ModalOverlay,
   Text,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import t from "lib/translate";
 import useGameSocket from "lib/useGameSocket";
 import useMessageHandler from "lib/useMessageHandler";
