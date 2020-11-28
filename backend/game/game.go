@@ -17,7 +17,7 @@ import (
 // printerr handles an error
 func printerr(e error) {
 	if e != nil {
-		log.Println(e)
+		log.Printf("printerr: %s", e)
 	}
 }
 
