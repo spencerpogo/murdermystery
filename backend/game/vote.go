@@ -158,6 +158,10 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 	if choiceSession == nil {
 		return nil
 	}
+	if g.vote.votes[s] == choiceSession {
+		// The vote hasn't changed
+		return nil
+	}
 	// Store vote
 	g.vote.votes[s] = choiceSession
 	log.Println(g.vote.votes, g.vote.HasConcensus())
