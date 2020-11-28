@@ -53,7 +53,7 @@
       "prettier --write",
       "eslint --cache --fix"
     ],
-    "*.md": [
+    "*.{md,yml}": [
       "prettier --write"
     ]
   }
