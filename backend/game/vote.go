@@ -21,7 +21,9 @@ type Vote struct {
 }
 
 // End ends the vote. Assumed game mutex is locked.
-func (v *Vote) End() {
+func (v *Vote) End(g *Game) {
+	g.vote = nil
+
 	msg, err := protocol.Marshal(&pb.VoteOver{})
 	if err != nil {
 		return
@@ -101,7 +103,7 @@ func (g *Game) callVote(
 	defer g.lock.Unlock()
 
 	if g.vote != nil {
-		g.vote.End()
+		g.vote.End(g)
 	}
 
 	votersMap := make(map[*melody.Session]bool)

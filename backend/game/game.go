@@ -254,7 +254,7 @@ func (g *Game) wolfVoteHandler() func(v *Vote) {
 			return
 		}
 		log.Println("Wolf vote over")
-		g.vote.End()
+		g.vote.End(g)
 
 		prophet, notProphet := g.SessionsByRole(pb.Character_PROPHET)
 		go g.callVote(prophet, notProphet, pb.VoteRequest_PROPHET, g.prophetVoteHandler())
@@ -303,7 +303,7 @@ func (g *Game) prophetVoteHandler() func(v *Vote) {
 			log.Println("Error: invalid choices in v.votes:", v)
 		}
 		// Doesn't really matter if this is at top or bottom, put at bottom just to be safe
-		g.vote.End()
+		g.vote.End(g)
 
 		// TODO: call next vote
 	}
