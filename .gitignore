@@ -45,3 +45,6 @@ backend/statik/
 
 # Debug route for viewing components
 pages/debug.tsx
+
+# ESLint Cache
+.eslintcache
