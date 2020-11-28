@@ -6,6 +6,7 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalHeader,
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
@@ -196,8 +197,9 @@ const GameClientInner: FC<GameClientInnerProps> = ({
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
+          <ModalHeader>{alertContent ? alertContent.title : ""}</ModalHeader>
           <ModalBody>
-            <Text>{alertContent ? t(alertContent) : ""}</Text>
+            <Text>{alertContent ? t(alertContent.body) : ""}</Text>
           </ModalBody>
         </ModalContent>
       </Modal>

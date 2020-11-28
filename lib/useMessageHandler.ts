@@ -5,6 +5,11 @@ export interface PlayerIDMap {
   [id: string]: protobuf.Players.IPlayer;
 }
 
+export interface AlertContent {
+  title: string;
+  body: string;
+}
+
 // Typing this function's return would be too complicated, plus it only returns once
 //  and the type can be inferred.
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -21,7 +26,7 @@ export default function useMessageHandler(onError: (msg: string) => void) {
   const [hostId, setHostId] = useState<number>(-1);
   // If set, a modal will pop with alertContent and then it will be cleared.
   // Server will tell us when to set this
-  const [alertContent, setAlertContent] = useState<string | null>(null);
+  const [alertContent, setAlertContent] = useState<AlertContent | null>(null);
   // Our character. Used by the spinner.
   const [character, setCharacter] = useState<protobuf.Character>(
     protobuf.Character.NONE
@@ -76,7 +81,11 @@ export default function useMessageHandler(onError: (msg: string) => void) {
     if (data.msg === protobuf.Alert.Msg.NEEDMOREPLAYERS) {
       error = "You need at least 6 players to start the game";
     }
-    setAlertContent(error);
+    // TODO: Maybe allow for different alert titles, but so far haven't used any others
+    setAlertContent({
+      title: "You can't start the game yet",
+      body: error,
+    });
   }
 
   function handleSetCharacter(msg: protobuf.ISetCharacter) {
