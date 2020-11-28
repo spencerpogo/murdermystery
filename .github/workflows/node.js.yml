@@ -29,4 +29,8 @@ jobs:
       - name: Build protocol buffers code
         run: bash ./tools/protoc.sh $(pwd) --no-golang
 
-      - run: npm run build
+      - name: Lint
+        run: npm run lint
+
+      - name: Run next build
+        run: npm run build

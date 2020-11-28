@@ -29,7 +29,7 @@ jobs:
 
       - name: Install protoc-gen-go
         run: go get -u google.golang.org/protobuf/cmd/protoc-gen-go
-      
+
       - name: Install statik command line tool
         run: go get -u github.com/rakyll/statik
 
