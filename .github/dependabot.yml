@@ -1,21 +1,21 @@
 version: 2
 updates:
-# Maintain frontend npm dependencies
-- package-ecosystem: npm
-  directory: "/"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
+  # Maintain frontend npm dependencies
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
 
-# Maintain backend go dependencies
-- package-ecosystem: gomod
-  directory: "/backend"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
+  # Maintain backend go dependencies
+  - package-ecosystem: gomod
+    directory: "/backend"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
 
-# Maintain dependencies for GitHub Actions
-- package-ecosystem: "github-actions"
-  directory: "/"
-  schedule:
-    interval: "daily"
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
