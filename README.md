@@ -126,6 +126,29 @@ CompileDaemon -directory=$PROJ/backend -build='go build -o $PROJ/build/backend' 
 
 ## Other Details
 
+### Statik file and git
+
+The `backend/statik/statik.go` file is generated automatically by statik during the
+build process and contains static assets (HTML/CSS/JS) to be bundled into the server
+binary. I want to keep its current state checked into git (which is a simple page with
+a message explaining how to bundle the read UI) so that developers don't have to run
+statik before building the binary (if that files doesn't exist, the build fails). But I
+also don't want the full version checked in to git every time it is built, so I use
+this command, which makes git pretend the file is unchanged:
+
+```
+git update-index --assume-unchanged backend/statik/statik.go
+```
+
+I will not accept pull requests which don't run this command and consequently modify
+this file in git.
+
+To go back to the template version, run
+
+```
+git checkout origin/master backend/statik/statik.go
+```
+
 ### CI
 
 The CI system is run by GitHub Actions. I have not written any tests for either the
