@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Taken from https://github.com/grandcolline/golang-github-actions/blob/master/entrypoint.sh
-# and modified
+# and modified. No offsense to the original author but the code is kind of bad, and it
+# should not be used as an example of Scoder12's work. 
 
 set -e
 
