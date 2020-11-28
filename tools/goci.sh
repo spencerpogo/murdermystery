@@ -162,7 +162,7 @@ $(echo "${OUTPUT}" | sed -e '$d')
 # check_sec is excute gosec and generate ${COMMENT} and ${SUCCESS}
 check_sec() {
 	set +e
-	gosec -out result.txt ${FLAGS} ./...
+	gosec -out /tmp/gosecresult.txt ${FLAGS} ./...
 	SUCCESS=$?
 
 	set -e
@@ -173,18 +173,19 @@ check_sec() {
 	if [ "${SEND_COMMNET}" = "true" ]; then
 		COMMENT="## ⚠ gosec Failed
 \`\`\`
-$(tail -n 6 result.txt)
+$(tail -n 6 /tmp/gosecresult.txt)
 \`\`\`
 
 <details><summary>Show Detail</summary>
 
 \`\`\`
-$(cat result.txt)
+$(cat /tmp/gosecresult.txt)
 \`\`\`
 [Code Reference](https://github.com/securego/gosec#available-rules)
 </details>
 "
 	fi
+	rm /tmp/gosecresult.txt
 }
 
 # check_shadow is excute "go vet -vettool=/go/bin/shadow" and generate ${COMMENT} and ${SUCCESS}
