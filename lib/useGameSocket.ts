@@ -1,6 +1,8 @@
 import { murdermystery as protobuf } from "pbjs/protobuf";
 import { useEffect, useRef } from "react";
 
+import { STRINGS } from "./translate";
+
 interface GameSocket {
   send: (msg: protobuf.IClientMessage) => void;
   isConnected: () => boolean;
@@ -10,7 +12,7 @@ export default function useGameSocket(
   wsUrl: string,
   name: string,
   parseMessage: (ev: MessageEvent<unknown>) => void,
-  onError: (msg: string) => void
+  onError: (msg: STRINGS) => void
 ): GameSocket {
   // Main websocket
   const wsRef = useRef<WebSocket | null>(null);
@@ -38,7 +40,7 @@ export default function useGameSocket(
       wsRef.current = new WebSocket(wsUrl);
     } catch (e) {
       console.error(e);
-      onError("Error while opening connection");
+      onError(STRINGS.ERROR_OPENING_CONN);
       return;
     }
     // Already storing it in a ref, so this warning is invalid
@@ -54,7 +56,7 @@ export default function useGameSocket(
     );
     // Handle discconects
     ws.addEventListener("close", () => {
-      onError("Disconnected from server");
+      onError(STRINGS.SERVER_DISCONNECTED);
     });
 
     // Cleanup: close websocket

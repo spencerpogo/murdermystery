@@ -3,8 +3,9 @@ import Layout from "components/Layout";
 import NameSelector from "components/NameSelector";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
+
 import GameClient from "../components/GameClient";
-import t from "../lib/translate";
+import t, { STRINGS } from "../lib/translate";
 
 function useGameContent() {
   const { query } = useRouter();
@@ -30,7 +31,7 @@ function useGameContent() {
     return nameComponent;
   }
   if (!id || Array.isArray(id)) {
-    return <p>{t("Invalid game link")}</p>;
+    return <p>{t(STRINGS.INVALID_GAME_LINK)}</p>;
   }
   return (
     <GameClient

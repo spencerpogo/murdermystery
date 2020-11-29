@@ -1,19 +1,21 @@
 import { murdermystery as protobuf } from "pbjs/protobuf";
 import { useState } from "react";
 
+import { STRINGS } from "./translate";
+
 export interface PlayerIDMap {
   [id: string]: protobuf.Players.IPlayer;
 }
 
 export interface AlertContent {
-  title: string;
-  body: string;
+  title: STRINGS;
+  body: STRINGS;
 }
 
 // Typing this function's return would be too complicated, plus it only returns once
 //  and the type can be inferred.
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export default function useMessageHandler(onError: (msg: string) => void) {
+export default function useMessageHandler(onError: (msg: STRINGS) => void) {
   // Our player ID
   // Set to -2 so it is different from spectator ID of -1, otherwise we will never
   //  re-render as a spectator
@@ -66,24 +68,23 @@ export default function useMessageHandler(onError: (msg: string) => void) {
   }
 
   function handleError(err: protobuf.IError) {
-    let error = "Error";
+    let error = STRINGS.ERROR;
     if (err.msg === protobuf.Error.E_type.BADNAME) {
-      error = "Your name is invalid";
+      error = STRINGS.INVALID_NAME;
     } else if (err.msg === protobuf.Error.E_type.DISCONNECT) {
-      error =
-        "Someone disconnected, reconnection is not yet implemented so game over";
+      error = STRINGS.PLAYER_DISCONNECTED;
     }
     onError(error);
   }
 
   function handleAlert(data: protobuf.IAlert) {
-    let error = "There was an error while performing that action";
+    let error = STRINGS.ERROR_PERFORMING_ACTION;
     if (data.msg === protobuf.Alert.Msg.NEEDMOREPLAYERS) {
-      error = "You need at least 6 players to start the game";
+      error = STRINGS.NEED_MORE_PLAYERS;
     }
     // TODO: Maybe allow for different alert titles, but so far haven't used any others
     setAlertContent({
-      title: "You can't start the game yet",
+      title: STRINGS.YOU_CANT_START,
       body: error,
     });
   }
@@ -97,8 +98,7 @@ export default function useMessageHandler(onError: (msg: string) => void) {
       msg.status !== protobuf.Handshake.Status.OK &&
       msg.status !== protobuf.Handshake.Status.SPECTATOR
     ) {
-      const error = "Error";
-      onError(error);
+      onError(STRINGS.ERROR);
     }
     if (msg.id) {
       setPlayerID(msg.id);

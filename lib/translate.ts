@@ -1,4 +1,5 @@
 import { useClientOnly } from "components/ClientOnly";
+
 import enJSON from "../locales/en.json";
 import zhJSON from "../locales/zh.json";
 
@@ -21,6 +22,7 @@ export enum STRINGS {
   SHARE_TO_INVITE,
   COPY,
   HOST,
+  ERROR_OPENING_CONN,
   SERVER_CLOSED_CONN,
   INVALID_NAME,
   PLAYER_DISCONNECTED,

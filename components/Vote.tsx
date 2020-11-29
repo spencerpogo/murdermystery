@@ -1,6 +1,7 @@
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
-import t from "lib/translate";
+import t, { STRINGS } from "lib/translate";
 import { FC } from "react";
+
+import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 
 export interface Choice {
   name?: string;
@@ -65,8 +66,8 @@ function splitIntoChunks<T>(arr: T[], chunkSize: number): [T, T][] {
 }
 
 export interface VoteProps {
-  msg: string;
-  desc?: string;
+  msg: STRINGS;
+  desc?: STRINGS;
   candidates: Choice[];
   noVote: string[];
   onVote: (candidateID: number) => void;
@@ -108,7 +109,7 @@ export const Vote: FC<VoteProps> = ({
       {noVote.length ? (
         <>
           <Heading size="md" mb="2">
-            {t("Has not voted")}
+            {t(STRINGS.HAS_NOT_VOTED)}
           </Heading>
           {noVote.map((name) => (
             <VoterBox key={name} name={name} />
@@ -120,7 +121,7 @@ export const Vote: FC<VoteProps> = ({
 };
 
 Vote.defaultProps = {
-  desc: "",
+  desc: undefined,
 };
 
 export default Vote;

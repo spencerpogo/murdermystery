@@ -1,3 +1,6 @@
+import t, { STRINGS } from "lib/translate";
+import { FC } from "react";
+
 import {
   Box,
   Button,
@@ -11,27 +14,24 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { FC } from "react";
 
-export interface MainMenuProps {
-  t: (id: string) => string;
-}
+export interface MainMenuProps {}
 
-export const MainMenu: FC<MainMenuProps> = ({ t }: MainMenuProps) => {
+export const MainMenu: FC<MainMenuProps> = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <>
       <Box>
         <Heading mb="6" minHeight="1em">
-          <Text color="red.700">{t("Murder Mystery")}</Text>
+          <Text color="red.700">{t(STRINGS.TITLE)}</Text>
         </Heading>
         <Stack>
           <Button colorScheme="blue" width="100%" onClick={() => onOpen()}>
-            {t("Join Game")}
+            {t(STRINGS.JOIN_GAME)}
           </Button>
           <Button colorScheme="blue" width="100%" isDisabled>
-            {t("Create Game")}
+            {t(STRINGS.CREATE_GAME)}
           </Button>
         </Stack>
       </Box>
@@ -42,7 +42,7 @@ export const MainMenu: FC<MainMenuProps> = ({ t }: MainMenuProps) => {
         <ModalContent>
           <ModalCloseButton />
           <ModalBody>
-            <Text>{t("Ask the host to send you their game link")}</Text>
+            <Text>{t(STRINGS.NEED_GAME_LINK)}</Text>
           </ModalBody>
         </ModalContent>
       </Modal>

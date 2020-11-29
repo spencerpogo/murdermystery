@@ -1,3 +1,8 @@
+import t, { S, STRINGS } from "lib/translate";
+import useGameSocket from "lib/useGameSocket";
+import useMessageHandler from "lib/useMessageHandler";
+import { FC, useState } from "react";
+
 import {
   Alert,
   AlertIcon,
@@ -10,10 +15,7 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
-import t from "lib/translate";
-import useGameSocket from "lib/useGameSocket";
-import useMessageHandler from "lib/useMessageHandler";
-import { FC, useState } from "react";
+
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import CharacterSpinner from "./CharacterSpinner";
 import FellowWolves from "./FellowWolves";
@@ -26,7 +28,7 @@ interface GameClientInnerProps {
   server: string;
   gameId: string;
   nameProp: string;
-  onError: (e: string) => void;
+  onError: (e: STRINGS) => void;
 }
 
 const GameClientInner: FC<GameClientInnerProps> = ({
@@ -71,11 +73,11 @@ const GameClientInner: FC<GameClientInnerProps> = ({
 
   function typeToMsg(val: protobuf.VoteRequest.Type | null | undefined) {
     // Decode the vote type
-    const VOTE_TYPES: { [type: number]: string } = {
-      [protobuf.VoteRequest.Type.KILL]: "Choose someone to kill",
-      [protobuf.VoteRequest.Type.PROPHET]: "Choose someone to reveal",
+    const VOTE_TYPES: { [type: number]: STRINGS } = {
+      [protobuf.VoteRequest.Type.KILL]: STRINGS.PICK_KILL,
+      [protobuf.VoteRequest.Type.PROPHET]: STRINGS.PICK_REVEAL,
     };
-    return VOTE_TYPES[val || -1] || "Please vote";
+    return VOTE_TYPES[val || -1] || STRINGS.PLEASE_VOTE;
   }
 
   const IDToName = (id: number | null | undefined) =>
@@ -163,8 +165,8 @@ const GameClientInner: FC<GameClientInnerProps> = ({
         msg={typeToMsg(voteType)}
         desc={
           voteType === protobuf.VoteRequest.Type.KILL
-            ? "Everyone must agree"
-            : ""
+            ? STRINGS.NEED_CONSENSUS
+            : undefined
         }
         candidates={candidates}
         noVote={noVote}
@@ -183,7 +185,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     );
   } else {
     // TODO: Prettify this, maybe an image here
-    view = <p>{t("It is night, you are sleeping")}</p>;
+    view = <p>{t(S.IS_NIGHT)}</p>;
   }
 
   return (
@@ -218,7 +220,7 @@ export const GameClient: FC<GameClientProps> = ({
   id,
   nameProp,
 }: GameClientProps) => {
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<STRINGS | null>(null);
   // The onError function will set the error variable only if it is not already set. If
   //  it is called rapidly, the error variable will be out of date and it could clobber
   //  the error. The canSet variable allow it to ensure it only sets once per render.
@@ -237,7 +239,7 @@ export const GameClient: FC<GameClientProps> = ({
       server={server}
       gameId={id}
       nameProp={nameProp}
-      onError={(err: string) => {
+      onError={(err: STRINGS) => {
         if (canSet && !error) {
           canSet = false;
           setError(err);

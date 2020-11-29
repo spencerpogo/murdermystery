@@ -1,6 +1,5 @@
-import { Box, Flex, Heading, Image, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import t from "lib/translate";
+import t, { S } from "lib/translate";
 import { murdermystery as protobuf } from "pbjs/protobuf";
 import {
   Children,
@@ -11,6 +10,8 @@ import {
   useRef,
   useState,
 } from "react";
+
+import { Box, Flex, Heading, Image, Text } from "@chakra-ui/react";
 
 const { Character } = protobuf;
 
@@ -26,12 +27,13 @@ const CHARACTER_INDEXES = [
   Character.HUNTER,
 ];
 
-const NAMES = ["Citizen", "Werewolf", "Healer", "Prophet", "Hunter"];
+const NAMES = ["citizen", "werewolf", "healer", "prophet", "hunter"];
+const NAME_STRINGS = [S.CITIZEN, S.WEREWOLF, S.HEALER, S.PROPHET, S.HUNTER];
 const WIDTH = 226;
 const HEIGHT = 330;
 const REPS = 10;
 
-const getImgSrc = (name: string) => `/${name.toLowerCase()}.webp`;
+const getImgSrc = (name: string) => `/${name}.webp`;
 
 const getImgs = () => {
   // A single round of images
@@ -40,11 +42,11 @@ const getImgs = () => {
     names = names.concat(NAMES);
   }
 
-  return Children.map(names, (name) => (
+  return Children.map(names, (name, i: number) => (
     <Box d="inline-block">
       <Image
         src={getImgSrc(name)}
-        alt={t(name)}
+        alt={t(NAME_STRINGS[i])}
         width={`${WIDTH}px`}
         height={`${HEIGHT}px`}
       />
@@ -100,6 +102,7 @@ export const CharacterSpinner: FC<CharacterSpinnerProps> = ({
   if (cardInd === -1) throw new Error(`Invalid character: ${character}`);
 
   const name = NAMES[cardInd];
+  const nameString = NAME_STRINGS[cardInd];
 
   const [stage, setStage] = useState<Stage>(Stage.WAIT);
   const [shouldAnimate, setShouldAnimate] = useState<boolean>(true);
@@ -193,10 +196,10 @@ export const CharacterSpinner: FC<CharacterSpinnerProps> = ({
     return (
       <>
         <Flex width="full" justify="center">
-          <Text color="gray">{t("You are")}</Text>
+          <Text color="gray">{t(S.YOU_ARE)}</Text>
         </Flex>
         <Flex width="full" justify="center">
-          <Heading>{t(name)}</Heading>
+          <Heading>{t(nameString)}</Heading>
         </Flex>
         <Flex width="full" justify="center">
           <Image src={getImgSrc(name)} height="xl" />

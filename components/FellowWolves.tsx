@@ -1,6 +1,7 @@
-import { Box, Heading, Stack } from "@chakra-ui/react";
-import t from "lib/translate";
+import t, { S } from "lib/translate";
 import { FC, useEffect } from "react";
+
+import { Box, Heading, Stack } from "@chakra-ui/react";
 
 interface FellowWolvesProps {
   names: string[];
@@ -19,7 +20,7 @@ export const FellowWolves: FC<FellowWolvesProps> = ({
 
   return (
     <>
-      <Heading textAlign="center">{t("Your fellow wolves")}</Heading>
+      <Heading textAlign="center">{t(S.FELLOW_WOLVES)}</Heading>
       {/* Polish: maybe a wolf icon here? */}
       <Stack>
         {names.map((name) => (

@@ -15,6 +15,7 @@
   "SHARE_TO_INVITE": "Share your link to invite others",
   "COPY": "Copy",
   "HOST": "Host",
+  "ERROR_OPENING_CONN": "Error opening connection to server",
   "SERVER_CLOSED_CONN": "Server closed connection",
   "INVALID_NAME": "Your name is invalid",
   "PLAYER_DISCONNECTED": "Someone disconnected, reconnection is not yet implemented so game over",

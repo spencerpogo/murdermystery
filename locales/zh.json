@@ -15,6 +15,7 @@
   "SHARE_TO_INVITE": "分享您的链接邀请其他人",
   "COPY": "复制",
   "HOST": "主持人",
+  "ERROR_OPENING_CONN": "打开与服务器的连接时出错",
   "SERVER_CLOSED_CONN": "服务器关闭了连接",
   "INVALID_NAME": "您的名字无效",
   "PLAYER_DISCONNECTED": "有人断开连接，游戏结束了",

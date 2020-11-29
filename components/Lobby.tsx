@@ -1,6 +1,8 @@
-import { Badge, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { FC } from "react";
-import t from "../lib/translate";
+
+import { Badge, Button, Flex, Heading, Text } from "@chakra-ui/react";
+
+import t, { STRINGS } from "../lib/translate";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 
 interface LobbyProps {
@@ -20,18 +22,18 @@ export const Lobby: FC<LobbyProps> = ({
 }: LobbyProps) => {
   const hostBadge = (
     <Badge variant="outline" ml={1}>
-      {t("Host")}
+      {t(STRINGS.HOST)}
     </Badge>
   );
 
   return (
     <>
       <Heading as="h3" size="lg" mb={2}>
-        {t("Waiting for players")}
+        {t(STRINGS.WAITING_FOR_PLAYERS)}
       </Heading>
       <Flex mb={3} align="center" justify="space-between">
-        <Text as="i">{t("Share your link to invite others")}</Text>
-        <Button>{t("Copy")}</Button>
+        <Text as="i">{t(STRINGS.SHARE_TO_INVITE)}</Text>
+        <Button>{t(STRINGS.COPY)}</Button>
       </Flex>
       {/* Polish: style this a bit more, don't use <ul> */}
       <ul>
@@ -54,7 +56,7 @@ export const Lobby: FC<LobbyProps> = ({
         isDisabled={!isHost}
         onClick={() => start()}
       >
-        {isHost ? t("Start Game") : t("Wait for the host to start the game")}
+        {isHost ? t(STRINGS.START_GAME) : t(STRINGS.WAIT_FOR_HOST)}
       </Button>
     </>
   );
