@@ -16,7 +16,7 @@
     "@chakra-ui/react": "^1.0.1",
     "@emotion/react": "^11.1.1",
     "@emotion/styled": "^11.0.0",
-    "framer-motion": "^2.9.4",
+    "framer-motion": "^2.9.5",
     "next": "^10.0.3",
     "protobufjs": "^6.10.2",
     "react": "16.14.0",
