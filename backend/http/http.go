@@ -1,8 +1,10 @@
 package http
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/Scoder12/murdermystery/backend/game"
@@ -45,6 +47,11 @@ func StartServer(iface string, fs http.FileSystem) {
 	})
 
 	r.NoRoute(func(c *gin.Context) {
+		p := c.Request.URL.Path
+		if strings.HasPrefix(p, "/_next/static") {
+			fmt.Println("has /_next/static")
+			c.Header("Cache-Control", "public, max-age=31536000, immutable")
+		}
 		c.FileFromFS(c.Request.URL.Path, fs)
 	})
 
