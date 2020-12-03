@@ -1,5 +1,4 @@
 import { useClientOnly } from "components/ClientOnly";
-
 import enJSON from "../locales/en.json";
 import zhJSON from "../locales/zh.json";
 
@@ -61,17 +60,21 @@ const en: Language = enJSON;
  * Get translated version of a string from english.
  * If zh paramater is in querystring, will lookup key in chinese translations.
  * If chinese translation does not exist, warn and fallback to english.
+ * WARNING: This will cause hydration errors with SSG. useTranslate() is recommended
+ * instead.
  * @param k The key to translate, in english
  */
-export default function translate(s: STRINGS): string {
+export default function translate(phrase: STRINGS): string {
+  const key: string = STRINGS[phrase];
+
   if (typeof window !== "undefined" && window.location) {
     const searchParams = new URLSearchParams(window.location.search);
     if (searchParams.get("zh") === "") {
-      return zh[s];
+      return zh[key];
     }
   }
 
-  return en[s];
+  return en[key];
 }
 
 export const useTranslate = (phrase: STRINGS): string =>
