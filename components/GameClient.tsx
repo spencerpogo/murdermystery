@@ -1,8 +1,3 @@
-import t, { S, STRINGS } from "lib/translate";
-import useGameSocket from "lib/useGameSocket";
-import useMessageHandler from "lib/useMessageHandler";
-import { FC, useState } from "react";
-
 import {
   Alert,
   AlertIcon,
@@ -15,7 +10,10 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
-
+import t, { S, STRINGS } from "lib/translate";
+import useGameSocket from "lib/useGameSocket";
+import useMessageHandler from "lib/useMessageHandler";
+import { FC, useState } from "react";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import CharacterSpinner from "./CharacterSpinner";
 import FellowWolves from "./FellowWolves";
@@ -199,7 +197,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
-          <ModalHeader>{alertContent ? alertContent.title : ""}</ModalHeader>
+          <ModalHeader>{alertContent ? t(alertContent.title) : ""}</ModalHeader>
           <ModalBody>
             <Text>{alertContent ? t(alertContent.body) : ""}</Text>
           </ModalBody>
