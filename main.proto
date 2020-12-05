@@ -101,7 +101,6 @@ message ServerMessage {
     FellowWolves fellow_wolves = 7;
     VoteRequest vote_request = 8;
     VoteOver vote_over = 9;
-    VoteSync vote_sync = 10;
     ProphetReveal prophet_reveal = 11;
     SpectatorStatus spectator_status = 12;
   }

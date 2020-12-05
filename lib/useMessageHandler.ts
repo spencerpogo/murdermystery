@@ -1,6 +1,5 @@
 import { murdermystery as protobuf } from "pbjs/protobuf";
 import { useState } from "react";
-
 import { STRINGS } from "./translate";
 
 export interface PlayerIDMap {
@@ -117,12 +116,6 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     }
   }
 
-  function handleVoteSync(msg: protobuf.IVoteSync) {
-    if (msg.votes) {
-      setVoteInfo(msg.votes);
-    }
-  }
-
   function handleVoteOver() {
     // Clear vote data
     setVoteRequest([]);
@@ -145,14 +138,13 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     if (msg.setCharacter) return handleSetCharacter(msg.setCharacter);
     if (msg.fellowWolves) return handleFellowWolves(msg.fellowWolves);
     if (msg.voteRequest) return handleVoteRequest(msg.voteRequest);
-    if (msg.voteSync) return handleVoteSync(msg.voteSync);
     if (msg.voteOver) return handleVoteOver();
     if (msg.prophetReveal) return handleProphetReveal(msg.prophetReveal);
     throw new Error("Not implemented. ");
   };
 
   // Process a message from the websocket.
-  const parseMessage = (ev: MessageEvent<ArrayBuffer>) => {
+  const parseMessage = (ev: MessageEvent) => {
     let msg: protobuf.IServerMessage;
     try {
       msg = protobuf.ServerMessage.decode(new Uint8Array(ev.data));

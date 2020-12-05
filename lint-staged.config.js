@@ -5,5 +5,5 @@ module.exports = {
     () => "npx tsc --noemit",
   ],
   "*.{md,yml,json}": "prettier --write",
-  "backend/**/*.go": () => "cd backend && go vet .",
+  "{backend/**/*.go,main.proto}": () => "npm run go-vet",
 };

@@ -1,6 +1,5 @@
 import { murdermystery as protobuf } from "pbjs/protobuf";
 import { useEffect, useRef } from "react";
-
 import { STRINGS } from "./translate";
 
 interface GameSocket {
@@ -11,7 +10,7 @@ interface GameSocket {
 export default function useGameSocket(
   wsUrl: string,
   name: string,
-  parseMessage: (ev: MessageEvent<unknown>) => void,
+  parseMessage: (ev: MessageEvent) => void,
   onError: (msg: STRINGS) => void
 ): GameSocket {
   // Main websocket
@@ -51,9 +50,7 @@ export default function useGameSocket(
     // handshake when it opens
     ws.addEventListener("open", () => sendName());
     // Handle messages
-    ws.addEventListener("message", (ev: MessageEvent<unknown>) =>
-      parseMessage(ev)
-    );
+    ws.addEventListener("message", (ev: MessageEvent) => parseMessage(ev));
     // Handle discconects
     ws.addEventListener("close", () => {
       onError(STRINGS.SERVER_DISCONNECTED);

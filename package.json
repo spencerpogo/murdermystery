@@ -12,7 +12,8 @@
     "eslint": "eslint ./",
     "eslint-fix": "eslint ./ --fix",
     "type-check": "tsc --noemit",
-    "lint": "npm run eslint && npm run type-check"
+    "lint": "npm run eslint && npm run type-check",
+    "go-vet": "cd backend && go vet ."
   },
   "dependencies": {
     "@chakra-ui/react": "^1.0.1",
