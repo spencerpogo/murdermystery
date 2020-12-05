@@ -9,8 +9,10 @@
     "export": "next export",
     "pbjs": "pbjs",
     "pbts": "pbts",
-    "lint": "eslint ./",
-    "lint-fix": "eslint ./ --fix"
+    "eslint": "eslint ./",
+    "eslint-fix": "eslint ./ --fix",
+    "type-check": "tsc --noemit",
+    "lint": "npm run eslint && npm run type-check"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.0.1",
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@types/node": "^14.14.10",
     "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
     "eslint": "^7.14.0",
@@ -45,13 +48,12 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged && npm run lint"
     }
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "prettier --write",
-      "eslint --cache --fix"
+      "prettier --write"
     ],
     "*.{md,yml,json}": [
       "prettier --write"
