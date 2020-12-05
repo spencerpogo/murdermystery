@@ -7,12 +7,14 @@ on:
       - .github/workflows/**
       - backend/**
       - tools/**
+      - main.proto
   pull_request:
     branches: [master]
     paths:
       - .github/workflows/**
       - backend/**
       - tools/**
+      - main.proto
   workflow_dispatch:
 
 jobs:
