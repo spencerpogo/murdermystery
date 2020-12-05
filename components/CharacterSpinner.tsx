@@ -1,5 +1,6 @@
+import { Box, Flex, Heading, Image, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import t, { S } from "lib/translate";
+import { S, Translator, useTranslator } from "lib/translate";
 import { murdermystery as protobuf } from "pbjs/protobuf";
 import {
   Children,
@@ -10,8 +11,6 @@ import {
   useRef,
   useState,
 } from "react";
-
-import { Box, Flex, Heading, Image, Text } from "@chakra-ui/react";
 
 const { Character } = protobuf;
 
@@ -35,7 +34,7 @@ const REPS = 10;
 
 const getImgSrc = (name: string) => `/${name}.webp`;
 
-const getImgs = () => {
+const getImgs = (t: Translator) => {
   // A single round of images
   let names: string[] = [];
   for (let round = 0; round < REPS; round += 1) {
@@ -53,9 +52,6 @@ const getImgs = () => {
     </Box>
   ));
 };
-
-// get a list of JSX that is all images repeated REPS times
-const allImgs: ReactNode[] = getImgs();
 
 /**
  * @description This method finds the amount of pixels to go left from the left side of
@@ -98,6 +94,10 @@ export const CharacterSpinner: FC<CharacterSpinnerProps> = ({
   character,
   onFinish,
 }: CharacterSpinnerProps) => {
+  const t = useTranslator();
+  // get a list of JSX that is all images repeated REPS times
+  const allImgs: ReactNode[] = getImgs(t);
+
   const cardInd = CHARACTER_INDEXES.indexOf(character);
   if (cardInd === -1) throw new Error(`Invalid character: ${character}`);
 

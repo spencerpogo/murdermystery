@@ -1,4 +1,5 @@
 import { useClientOnly } from "components/ClientOnly";
+import { useRouter } from "next/router";
 import enJSON from "../locales/en.json";
 import zhJSON from "../locales/zh.json";
 
@@ -56,26 +57,24 @@ type Language = {
 const zh: Language = zhJSON;
 const en: Language = enJSON;
 
-/**
- * Get translated version of a string from english.
- * If zh paramater is in querystring, will lookup key in chinese translations.
- * If chinese translation does not exist, warn and fallback to english.
- * WARNING: This will cause hydration errors with SSG. useTranslate() is recommended
- * instead.
- * @param k The key to translate, in english
- */
-export default function translate(phrase: STRINGS): string {
-  const key: string = STRINGS[phrase];
+export type Translator = (phrase: STRINGS) => string;
 
-  if (typeof window !== "undefined" && window.location) {
-    const searchParams = new URLSearchParams(window.location.search);
-    if (searchParams.get("zh") === "") {
-      return zh[key];
-    }
+const makeTranslator = (dict: Language): Translator => (phrase: STRINGS) => {
+  const key: string = typeof phrase === "string" ? phrase : STRINGS[phrase];
+  return dict[key];
+};
+
+/**
+ * Gets the current translator based on the querystring.
+ * If zh paramater is in querystring, will lookup key in chinese translations,
+ * otherwise will use english.
+ */
+export function useTranslator(): Translator {
+  const { query } = useRouter();
+
+  if (!useClientOnly()) {
+    return () => "";
   }
 
-  return en[key];
+  return makeTranslator("zh" in query ? zh : en);
 }
-
-export const useTranslate = (phrase: STRINGS): string =>
-  useClientOnly() ? translate(phrase) : en[phrase];

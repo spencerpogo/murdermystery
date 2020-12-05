@@ -1,14 +1,14 @@
 import Head from "next/head";
 import { FC, ReactNode } from "react";
-
-import { STRINGS, useTranslate } from "../lib/translate";
+import { STRINGS, useTranslator } from "../lib/translate";
 
 export interface LayoutProps {
   children: ReactNode;
 }
 
 export const Layout: FC<LayoutProps> = ({ children }: LayoutProps) => {
-  const title = useTranslate(STRINGS.TITLE);
+  const t = useTranslator();
+  const title = t(STRINGS.TITLE);
 
   return (
     <>

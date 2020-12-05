@@ -10,7 +10,7 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
-import t, { S, STRINGS } from "lib/translate";
+import { S, STRINGS, useTranslator } from "lib/translate";
 import useGameSocket from "lib/useGameSocket";
 import useMessageHandler from "lib/useMessageHandler";
 import { FC, useState } from "react";
@@ -35,6 +35,8 @@ const GameClientInner: FC<GameClientInnerProps> = ({
   nameProp,
   onError,
 }: GameClientInnerProps) => {
+  const t = useTranslator();
+
   // State
   const {
     // Message Parser
@@ -218,6 +220,8 @@ export const GameClient: FC<GameClientProps> = ({
   id,
   nameProp,
 }: GameClientProps) => {
+  const t = useTranslator();
+
   const [error, setError] = useState<STRINGS | null>(null);
   // The onError function will set the error variable only if it is not already set. If
   //  it is called rapidly, the error variable will be out of date and it could clobber

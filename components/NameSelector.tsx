@@ -1,7 +1,6 @@
-import { STRINGS, useTranslate } from "lib/translate";
-import { ChangeEvent, FC, useState } from "react";
-
 import { Box, Button, Input, Stack } from "@chakra-ui/react";
+import { STRINGS, useTranslator } from "lib/translate";
+import { ChangeEvent, FC, useState } from "react";
 
 interface NameSelectorProps {
   onSubmit: (name: string) => void;
@@ -10,20 +9,21 @@ interface NameSelectorProps {
 export const NameSelector: FC<NameSelectorProps> = ({
   onSubmit,
 }: NameSelectorProps) => {
+  const t = useTranslator();
   const [name, setName] = useState("");
 
   return (
     <Box>
       <Stack>
         <Input
-          placeholder={useTranslate(STRINGS.ENTER_NAME)}
+          placeholder={t(STRINGS.ENTER_NAME)}
           onChange={(evt: ChangeEvent<HTMLInputElement>) =>
             setName(evt.target.value)
           }
           type="text"
         />
         <Button onClick={() => onSubmit(name)} colorScheme="blue">
-          {useTranslate(STRINGS.JOIN_GAME)}
+          {t(STRINGS.JOIN_GAME)}
         </Button>
       </Stack>
     </Box>

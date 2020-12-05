@@ -3,11 +3,11 @@ import Layout from "components/Layout";
 import NameSelector from "components/NameSelector";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
-
 import GameClient from "../components/GameClient";
-import t, { STRINGS } from "../lib/translate";
+import { STRINGS, useTranslator } from "../lib/translate";
 
 function useGameContent() {
+  const t = useTranslator();
   const { query } = useRouter();
   const { id } = query;
   const server = query.srv || "ws://localhost:8080";

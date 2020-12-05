@@ -1,7 +1,6 @@
-import t, { STRINGS } from "lib/translate";
-import { FC } from "react";
-
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { STRINGS, useTranslator } from "lib/translate";
+import { FC } from "react";
 
 export interface Choice {
   name?: string;
@@ -80,6 +79,7 @@ export const Vote: FC<VoteProps> = ({
   noVote,
   onVote,
 }: VoteProps) => {
+  const t = useTranslator();
   const voteGroups: [Choice?, Choice?][] = splitIntoChunks(candidates, 2);
 
   return (

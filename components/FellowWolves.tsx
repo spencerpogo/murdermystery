@@ -1,7 +1,6 @@
-import t, { S } from "lib/translate";
-import { FC, useEffect } from "react";
-
 import { Box, Heading, Stack } from "@chakra-ui/react";
+import { S, useTranslator } from "lib/translate";
+import { FC, useEffect } from "react";
 
 interface FellowWolvesProps {
   names: string[];
@@ -12,6 +11,8 @@ export const FellowWolves: FC<FellowWolvesProps> = ({
   names,
   onDone,
 }: FellowWolvesProps) => {
+  const t = useTranslator();
+
   useEffect(() => {
     // Call onDone after 5s
     const timeoutId = setTimeout(() => onDone(), 5000);

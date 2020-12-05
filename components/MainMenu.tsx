@@ -1,6 +1,3 @@
-import t, { STRINGS } from "lib/translate";
-import { FC } from "react";
-
 import {
   Box,
   Button,
@@ -14,10 +11,13 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { STRINGS, useTranslator } from "lib/translate";
+import { FC } from "react";
 
 export interface MainMenuProps {}
 
 export const MainMenu: FC<MainMenuProps> = () => {
+  const t = useTranslator();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (

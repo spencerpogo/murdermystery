@@ -1,8 +1,6 @@
-import { FC } from "react";
-
 import { Badge, Button, Flex, Heading, Text } from "@chakra-ui/react";
-
-import t, { STRINGS } from "../lib/translate";
+import { FC } from "react";
+import { STRINGS, useTranslator } from "../lib/translate";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 
 interface LobbyProps {
@@ -20,6 +18,8 @@ export const Lobby: FC<LobbyProps> = ({
   hostId,
   start,
 }: LobbyProps) => {
+  const t = useTranslator();
+
   const hostBadge = (
     <Badge variant="outline" ml={1}>
       {t(STRINGS.HOST)}
