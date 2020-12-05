@@ -5,26 +5,6 @@ import { FC } from "react";
 export interface Choice {
   name?: string;
   id?: number;
-  votes?: string[];
-}
-
-function VoterBox({ name }: { name: string }) {
-  return (
-    <Box
-      ml="2"
-      mr="2"
-      mb="1"
-      pt="1"
-      pr="1"
-      pb="1"
-      pl="1"
-      wordBreak="break-word"
-      border="1px solid white"
-      borderRadius="2px"
-    >
-      {name}
-    </Box>
-  );
 }
 
 function VotesDisplay({
@@ -36,7 +16,6 @@ function VotesDisplay({
 }) {
   const candidateName: string = candidate.name || "";
   const id: number = typeof candidate.id === "number" ? candidate.id : -1;
-  const voters: string[] = candidate.votes || [];
 
   // TODO: Maybe make this a little prettier?
   return (
@@ -44,11 +23,6 @@ function VotesDisplay({
       <Button colorScheme="gray" width="100%" onClick={() => onVote(id)}>
         {candidateName}
       </Button>
-      <Box mt="2">
-        {voters.map((voter) => (
-          <VoterBox key={voter} name={voter} />
-        ))}
-      </Box>
     </Box>
   );
 }
@@ -68,7 +42,6 @@ export interface VoteProps {
   msg: STRINGS;
   desc?: STRINGS;
   candidates: Choice[];
-  noVote: string[];
   onVote: (candidateID: number) => void;
 }
 
@@ -76,7 +49,6 @@ export const Vote: FC<VoteProps> = ({
   msg,
   desc,
   candidates,
-  noVote,
   onVote,
 }: VoteProps) => {
   const t = useTranslator();
@@ -105,17 +77,6 @@ export const Vote: FC<VoteProps> = ({
           </Flex>
         );
       })}
-
-      {noVote.length ? (
-        <>
-          <Heading size="md" mb="2">
-            {t(STRINGS.HAS_NOT_VOTED)}
-          </Heading>
-          {noVote.map((name) => (
-            <VoterBox key={name} name={name} />
-          ))}
-        </>
-      ) : null}
     </>
   );
 };

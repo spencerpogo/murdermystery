@@ -70,31 +70,6 @@ func (v *Vote) IsVoter(s *melody.Session) bool {
 	return false
 }
 
-// Assumes game is locked
-func (v *Vote) toPB(g *Game) *pb.VoteSync {
-	pbVotes := []*pb.VoteSync_Vote{}
-
-	for voter := range v.voters {
-		var voterID int32 = -1
-		c := g.clients[voter]
-		if c != nil {
-			voterID = c.ID
-		}
-
-		voteSess, ok := v.votes[voter]
-		var choiceID int32 = -1
-		if ok {
-			c := g.clients[voteSess]
-			if c != nil {
-				choiceID = c.ID
-			}
-		}
-		pbVotes = append(pbVotes, &pb.VoteSync_Vote{Id: voterID, Choice: choiceID})
-	}
-
-	return &pb.VoteSync{Votes: pbVotes}
-}
-
 func (g *Game) callVote(
 	voters, candidates []*melody.Session,
 	vtype pb.VoteRequest_Type,
@@ -142,8 +117,6 @@ func (g *Game) callVote(
 		err = s.WriteBinary(msg)
 		printerr(err)
 	}
-
-	g.syncVote()
 }
 
 func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVote) error {
@@ -172,27 +145,6 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 		// It was ended by the handler
 		return nil
 	}
-	g.syncVote()
 
 	return nil
-}
-
-// SyncVote syncs the vote choices with all clients. Assumes game is locked!
-func (g *Game) syncVote() {
-	if g.vote == nil {
-		return
-	}
-
-	pb := g.vote.toPB(g)
-	msg, err := protocol.Marshal(pb)
-	if err != nil {
-		return
-	}
-
-	for voter := range g.vote.voters {
-		if !voter.IsClosed() {
-			err = voter.WriteBinary(msg)
-			printerr(err)
-		}
-	}
 }

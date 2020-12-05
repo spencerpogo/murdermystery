@@ -68,14 +68,6 @@ message VoteRequest {
 
 message VoteOver {}
 
-message VoteSync {
-  message Vote {
-    int32 id = 1;
-    int32 choice = 2;
-  }
-  repeated Vote votes = 1;
-}
-
 message ProphetReveal {
   int32 id = 1;
   bool good = 2;

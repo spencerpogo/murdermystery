@@ -42,8 +42,6 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
   const [voteRequest, setVoteRequest] = useState<number[]>([]);
   // Current vote type
   const [voteType, setVoteType] = useState<protobuf.VoteRequest.Type>(0);
-  // Current vote status
-  const [voteInfo, setVoteInfo] = useState<protobuf.VoteSync.IVote[]>([]);
   // Prophet reveal screen
   const [
     prophetReveal,
@@ -119,7 +117,6 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
   function handleVoteOver() {
     // Clear vote data
     setVoteRequest([]);
-    setVoteInfo([]);
   }
 
   function handleProphetReveal(msg: protobuf.IProphetReveal) {
@@ -170,7 +167,6 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     fellowWolves,
     showFellowWolves,
     voteRequest,
-    voteInfo,
     voteType,
     prophetReveal,
     // State setters

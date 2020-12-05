@@ -53,7 +53,6 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     fellowWolves,
     showFellowWolves,
     voteRequest,
-    voteInfo,
     voteType,
     prophetReveal,
     // State setters
@@ -137,26 +136,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
         candidates.push({
           name,
           id: candidateID,
-          votes: voteInfo
-            .map((v) =>
-              v && v.choice === candidateID
-                ? (players[(v || {}).id || -1] || {}).name || ""
-                : ""
-            )
-            .filter((i) => i),
         });
-      }
-    });
-
-    // Process voteSync message of [{ id, choice }] into map of { [choice]: string[] }
-    const noVote: string[] = [];
-    voteInfo.forEach((vote) => {
-      if (vote.id && vote.id > 0) {
-        const voterName = IDToName(vote.id);
-        // -1 == no vote
-        if (vote.choice && vote.choice === -1) {
-          noVote.push(voterName);
-        }
       }
     });
 
@@ -169,7 +149,6 @@ const GameClientInner: FC<GameClientInnerProps> = ({
             : undefined
         }
         candidates={candidates}
-        noVote={noVote}
         onVote={(candidateID: number) =>
           send({ vote: { choice: candidateID } })
         }

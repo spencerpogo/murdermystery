@@ -250,7 +250,7 @@ func (g *Game) SessionsByRole(role pb.Character) ([]*melody.Session, []*melody.S
 // Handler assumes game is locked
 func (g *Game) wolfVoteHandler() func(v *Vote) {
 	return func(v *Vote) {
-		if g.vote != v || !v.HasConcensus() {
+		if g.vote != v {
 			return
 		}
 		log.Println("Wolf vote over")
