@@ -46,6 +46,8 @@ export enum STRINGS {
   IS_GOOD,
   IS_BAD,
   YOU_CANT_START,
+  VOTE_RESULTS,
+  N_VOTES,
 }
 
 export const S = STRINGS;

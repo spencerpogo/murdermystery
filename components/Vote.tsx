@@ -78,17 +78,33 @@ export interface VoteResultProps {
 }
 
 export const VoteResult: FC<VoteResultProps> = ({ votes }: VoteResultProps) => {
+  const t = useTranslator();
+
   return (
     <Box>
-      <Heading>This is a work in progress</Heading>
+      <Heading mb="2">{t(STRINGS.VOTE_RESULTS)}</Heading>
       {votes.map((c) => (
-        <Box key={c.id}>
-          <Heading>{c.name}</Heading>
-          <Box>
+        <Box key={c.id} mb="2">
+          <Heading size="lg" mb="1">
+            {c.name}
+          </Heading>
+          <Text as="b">{c.voters.length + t(STRINGS.N_VOTES)}</Text>
+          <Flex display="inline">
             {c.voters.map((v) => (
-              <Text key={v}>{v}</Text>
+              <Text
+                as="div"
+                key={v}
+                display="inline-block"
+                border="1px solid gray"
+                borderRadius="2px"
+                padding="1"
+                ml="1"
+                mb="1"
+              >
+                {v}
+              </Text>
             ))}
-          </Box>
+          </Flex>
         </Box>
       ))}
     </Box>

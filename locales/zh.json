@@ -38,5 +38,7 @@
   "REVEAL_FOUND": "使用你的预言能力，你发现",
   "IS_GOOD": "是好人",
   "IS_BAD": "是坏人",
-  "YOU_CANT_START": "您还不能开始游戏"
+  "YOU_CANT_START": "您还不能开始游戏",
+  "VOTE_RESULTS": "投票结果",
+  "N_VOTES": "票："
 }

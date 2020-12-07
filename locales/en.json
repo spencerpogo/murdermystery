@@ -38,5 +38,7 @@
   "REVEAL_FOUND": "Using your prophet ability, you find",
   "IS_GOOD": "is a good person",
   "IS_BAD": "is a bad person",
-  "YOU_CANT_START": "You can't start the game yet"
+  "YOU_CANT_START": "You can't start the game yet",
+  "VOTE_RESULTS": "Vote Results",
+  "N_VOTES": " votes:"
 }
