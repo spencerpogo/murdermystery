@@ -19,23 +19,12 @@ function VotesDisplay({
 
   // TODO: Maybe make this a little prettier?
   return (
-    <Box mr="2" width="50%">
+    <Box mr="2" mb="3" flex="0 0 48%">
       <Button colorScheme="gray" width="100%" onClick={() => onVote(id)}>
         {candidateName}
       </Button>
     </Box>
   );
-}
-
-// Splits an array into chunks of at most chunkSize
-function splitIntoChunks<T>(arr: T[], chunkSize: number): [T, T][] {
-  const res = [];
-  for (let i = 0; i < arr.length; i += 1) {
-    if (i % chunkSize === 0) {
-      res.push(arr.slice(i, i + chunkSize) as [T, T]);
-    }
-  }
-  return res;
 }
 
 export interface VoteProps {
@@ -52,31 +41,22 @@ export const Vote: FC<VoteProps> = ({
   onVote,
 }: VoteProps) => {
   const t = useTranslator();
-  const voteGroups: [Choice?, Choice?][] = splitIntoChunks(candidates, 2);
 
   return (
     <>
       <Heading>{t(msg)}</Heading>
       {desc ? <Text mt="2">{t(desc)}</Text> : null}
-      {voteGroups.map((candGroup) => {
-        return (
-          <Flex
-            mt="3"
-            minHeight="200px"
-            key={candGroup.map((c) => (c || {}).id).join(",")}
-          >
-            {candGroup.map((candidate: Choice) =>
-              candidate.name ? (
-                <VotesDisplay
-                  key={candidate.id}
-                  candidate={candidate}
-                  onVote={onVote}
-                />
-              ) : null
-            )}
-          </Flex>
-        );
-      })}
+      <Flex mt="3" flexWrap="wrap">
+        {candidates.map((candidate: Choice) =>
+          candidate.name ? (
+            <VotesDisplay
+              key={candidate.id}
+              candidate={candidate}
+              onVote={onVote}
+            />
+          ) : null
+        )}
+      </Flex>
     </>
   );
 };
