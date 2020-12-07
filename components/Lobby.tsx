@@ -42,7 +42,7 @@ export const Lobby: FC<LobbyProps> = ({
           if (!p || !p.name) return null;
           const pIsHost = p.id === hostId;
           return (
-            <li key={p.name + pIsHost.toString()}>
+            <li key={p.id || p.name + pIsHost.toString()}>
               <span>{p.name}</span>
               {pIsHost && hostBadge}
             </li>
