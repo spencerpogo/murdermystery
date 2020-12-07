@@ -66,3 +66,31 @@ Vote.defaultProps = {
 };
 
 export default Vote;
+
+export interface Candidate {
+  id: number;
+  name: string;
+  voters: string[];
+}
+
+export interface VoteResultProps {
+  votes: Candidate[];
+}
+
+export const VoteResult: FC<VoteResultProps> = ({ votes }: VoteResultProps) => {
+  return (
+    <Box>
+      <Heading>This is a work in progress</Heading>
+      {votes.map((c) => (
+        <Box key={c.id}>
+          <Heading>{c.name}</Heading>
+          <Box>
+            {c.voters.map((v) => (
+              <Text key={v}>{v}</Text>
+            ))}
+          </Box>
+        </Box>
+      ))}
+    </Box>
+  );
+};

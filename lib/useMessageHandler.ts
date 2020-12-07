@@ -40,6 +40,10 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
   const [showFellowWolves, setShowFellowWolves] = useState<boolean>(false);
   // Current vote to be shown to the user.
   const [voteRequest, setVoteRequest] = useState<number[]>([]);
+  // Result of a vote, reset to null after timeout
+  const [voteResult, setVoteResult] = useState<
+    protobuf.VoteResult.ICandidateResult[] | null
+  >(null);
   // Current vote type
   const [voteType, setVoteType] = useState<protobuf.VoteRequest.Type>(0);
   // Prophet reveal screen
@@ -114,9 +118,12 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     }
   }
 
-  function handleVoteOver() {
+  function handleVoteOver(msg: protobuf.IVoteOver) {
     // Clear vote data
     setVoteRequest([]);
+    if (msg.result && msg.result.candidates) {
+      setVoteResult(msg.result.candidates);
+    }
   }
 
   function handleProphetReveal(msg: protobuf.IProphetReveal) {
@@ -135,7 +142,7 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     if (msg.setCharacter) return handleSetCharacter(msg.setCharacter);
     if (msg.fellowWolves) return handleFellowWolves(msg.fellowWolves);
     if (msg.voteRequest) return handleVoteRequest(msg.voteRequest);
-    if (msg.voteOver) return handleVoteOver();
+    if (msg.voteOver) return handleVoteOver(msg.voteOver);
     if (msg.prophetReveal) return handleProphetReveal(msg.prophetReveal);
     throw new Error("Not implemented. ");
   };
@@ -167,6 +174,7 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     fellowWolves,
     showFellowWolves,
     voteRequest,
+    voteResult,
     voteType,
     prophetReveal,
     // State setters

@@ -20,7 +20,7 @@ import FellowWolves from "./FellowWolves";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
 import ProphetReveal from "./ProphetReveal";
-import Vote, { Choice } from "./Vote";
+import Vote, { Candidate, Choice, VoteResult } from "./Vote";
 
 interface GameClientInnerProps {
   server: string;
@@ -53,6 +53,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     fellowWolves,
     showFellowWolves,
     voteRequest,
+    voteResult,
     voteType,
     prophetReveal,
     // State setters
@@ -127,6 +128,19 @@ const GameClientInner: FC<GameClientInnerProps> = ({
         onDone={() => setShowFellowWolves(false)}
       />
     );
+  } else if (voteResult) {
+    const votes: Candidate[] = [];
+    voteResult.forEach((c) => {
+      const candidateName = IDToName(c.id);
+      if (candidateName && c.voters && c.voters.length) {
+        votes.push({
+          id: c.id || -1,
+          name: candidateName,
+          voters: IDsToNames(c.voters),
+        });
+      }
+    });
+    view = <VoteResult votes={votes} />;
   } else if (voteRequest.length) {
     // Process the id list (number[]) into [ [id, name] ]
     const candidates: Choice[] = [];
