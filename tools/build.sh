@@ -33,7 +33,8 @@ mkdir -p build/html
 npm run export -- -o build/html
 
 # Rewrite /game.html to be /game
-mv build/html/game.html build/html/game
+mkdir build/html/game
+mv build/html/game.html build/html/game/index.html
 
 # Run statik
 echo
