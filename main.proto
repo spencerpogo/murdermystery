@@ -66,7 +66,15 @@ message VoteRequest {
   Type type = 2;
 }
 
-message VoteOver {}
+message VoteResult {
+  message CandidateResult {
+    int32 id = 1;
+    repeated int32 voters = 2;
+  }
+  repeated CandidateResult candidates = 1;
+}
+
+message VoteOver { VoteResult result = 1; }
 
 message ProphetReveal {
   int32 id = 1;

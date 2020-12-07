@@ -18,13 +18,49 @@ type Vote struct {
 	votes map[*melody.Session]*melody.Session
 	// The function to call whenever a vote is cast
 	onChange func(*Vote)
+	// Whether to disclose the results once the vote is over
+	showResults bool
+}
+
+// _encodeResults encodes the vote into a VoteResult message.
+// Assumes game mutex is locked and is intended to be called by Vote.End()
+func (v *Vote) _encodeResults(g *Game) *pb.VoteResult {
+	candidates := make(map[int32][]int32)
+	for voter, cand := range v.votes {
+		// Need clients for IDs
+		voterClient, voterExists := g.clients[voter]
+		candClient, candExists := g.clients[cand]
+		// If both are valid
+		if voterExists && candExists {
+			// Add voter's ID to candiate's votes
+			votes, ok := candidates[candClient.ID]
+			if !ok {
+				votes = []int32{}
+			}
+			votes = append(votes, voterClient.ID)
+			candidates[candClient.ID] = votes
+		}
+	}
+
+	voteResult := []*pb.VoteResult_CandidateResult{}
+	for candID, voteIDs := range candidates {
+		voteResult = append(voteResult, &pb.VoteResult_CandidateResult{Id: candID, Voters: voteIDs})
+	}
+	return &pb.VoteResult{Candidates: voteResult}
 }
 
 // End ends the vote. Assumed game mutex is locked.
 func (v *Vote) End(g *Game) {
 	g.vote = nil
 
-	msg, err := protocol.Marshal(&pb.VoteOver{})
+	var result *pb.VoteResult
+	if v.showResults {
+		result = v._encodeResults(g)
+	} else {
+		result = nil
+	}
+
+	msg, err := protocol.Marshal(&pb.VoteOver{Result: result})
 	if err != nil {
 		return
 	}
@@ -73,7 +109,8 @@ func (v *Vote) IsVoter(s *melody.Session) bool {
 func (g *Game) callVote(
 	voters, candidates []*melody.Session,
 	vtype pb.VoteRequest_Type,
-	onChange func(*Vote)) {
+	onChange func(*Vote),
+	showResults bool) {
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -93,10 +130,11 @@ func (g *Game) callVote(
 	// We don't need to reference the vote type anywhere so not storing it, but can later
 	//  if needed
 	g.vote = &Vote{
-		voters:     votersMap,
-		candidates: candidatesMap,
-		votes:      make(map[*melody.Session]*melody.Session),
-		onChange:   onChange,
+		voters:      votersMap,
+		candidates:  candidatesMap,
+		votes:       make(map[*melody.Session]*melody.Session),
+		onChange:    onChange,
+		showResults: showResults,
 	}
 
 	// Get IDS

@@ -257,7 +257,7 @@ func (g *Game) wolfVoteHandler() func(v *Vote) {
 		g.vote.End(g)
 
 		prophet, notProphet := g.SessionsByRole(pb.Character_PROPHET)
-		go g.callVote(prophet, notProphet, pb.VoteRequest_PROPHET, g.prophetVoteHandler())
+		go g.callVote(prophet, notProphet, pb.VoteRequest_PROPHET, g.prophetVoteHandler(), false)
 	}
 }
 
