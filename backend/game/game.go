@@ -35,10 +35,6 @@ type Client struct {
 
 	// role of the client
 	role pb.Character
-
-	// Healer capabilities
-	hasHeal   bool
-	hasPoison bool
 }
 
 // Game represents a running game
@@ -69,6 +65,13 @@ type Game struct {
 
 	// The current vote taking place, nil if there is none
 	vote *Vote
+
+	// The player that will be killed unless they are healed
+	toBeKilled *melody.Session
+
+	// Healer capabilities
+	hasHeal   bool
+	hasPoison bool
 }
 
 // New constructs a new game
@@ -79,6 +82,8 @@ func New(destroyFn func()) *Game {
 		destroyFn:  destroyFn,
 		clients:    make(map[*melody.Session]*Client),
 		spectators: make(map[*melody.Session]bool),
+		hasHeal:    true,
+		hasPoison:  true,
 	}
 	// For debug
 	g.m.Upgrader.CheckOrigin = func(r *http.Request) bool { return true }
@@ -251,17 +256,28 @@ func (g *Game) SessionsByRole(role pb.Character) ([]*melody.Session, []*melody.S
 	return hasRole, doesntHaveRole
 }
 
+func (g *Game) kill(s *melody.Session) {
+	_, ok := g.clients[s]
+	if !ok {
+		log.Println("Tried to kill invalid client")
+		return
+	}
+	delete(g.clients, s)
+	g.spectators[s] = true
+}
+
 // Handler assumes game is locked
 func (g *Game) wolfVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
-	return func(v *Vote, voter, candidate *melody.Session) {
+	return func(v *Vote, voter, killed *melody.Session) {
 		if g.vote != v {
 			return
 		}
 		log.Println("Wolf vote over")
 		g.vote.End(g)
 
+		// The kill will actually happen after the healer vote
 		prophet, notProphet := g.SessionsByRole(pb.Character_PROPHET)
-		go g.callVote(prophet, notProphet, pb.VoteRequest_PROPHET, g.prophetVoteHandler(), false)
+		go g.callVote(prophet, notProphet, pb.VoteRequest_PROPHET, g.prophetVoteHandler(killed), false)
 	}
 }
 
@@ -286,7 +302,7 @@ func (g *Game) prophetReveal(prophet, choice *melody.Session) bool {
 }
 
 // Handler assumes game is locked
-func (g *Game) prophetVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
+func (g *Game) prophetVoteHandler(killed *melody.Session) func(*Vote, *melody.Session, *melody.Session) {
 	return func(v *Vote, voter, candidate *melody.Session) {
 		if g.vote != v {
 			return
@@ -299,44 +315,33 @@ func (g *Game) prophetVoteHandler() func(*Vote, *melody.Session, *melody.Session
 		// Doesn't really matter if this is at top or bottom, put at bottom just to be safe
 		g.vote.End(g)
 
-		// TODO: call next vote
+		g.callHealerHealVote()
 	}
 }
 
-func (g *Game) callHealerVote(isHeal bool, killed *melody.Session) {
-	healer, notHealer := g.SessionsByRole(pb.Character_HEALER)
-	var role pb.VoteRequest_Type
-	if isHeal {
-		role = pb.VoteRequest_HEALERHEAL
+func (g *Game) callHealerHealVote() {
+	if g.hasHeal {
+		healer, _ := g.SessionsByRole(pb.Character_HEALER)
+		g.callVote(healer, []*melody.Session{}, pb.VoteRequest_HEALERHEAL, func(v *Vote, t, c *melody.Session) {}, false)
 	} else {
-		role = pb.VoteRequest_HEALERPOISON
+		g.callHealerPoisonVote()
 	}
-	g.callVote(healer, notHealer, role, g.getHealerVoteHandler(isHeal, killed), false)
 }
 
-func (g *Game) getHealerVoteHandler(isHeal bool, killed *melody.Session) func(*Vote, *melody.Session, *melody.Session) {
-	return func(v *Vote, voter, candidate *melody.Session) {
-		if g.vote != nil {
-			return
-		}
-		if isHeal {
-			log.Println("Healer vote over")
-		} else {
-			log.Println("Posison vote over")
-		}
+func (g *Game) healerHealHandler(confirmed bool) {
+	if confirmed && g.hasHeal {
+		// They are using their heal
+		g.hasHeal = false
+	} else if g.toBeKilled != nil {
+		// They are not healing. Execute the kill
+		g.kill(g.toBeKilled)
+	}
+	g.toBeKilled = nil
+}
 
-		if isHeal {
-			// TODO
-		} else {
-			// TODO
-		}
-
-		g.vote.End(g)
-
-		if isHeal {
-			g.callHealerVote(false, killed)
-		} else {
-			// TODO
-		}
+func (g *Game) callHealerPoisonVote() {
+	if g.hasPoison {
+		//healer, notHealer := g.SessionsByRole(pb.Character_HEALER)
+		//g.callVote(healer, notHealer, pb.VoteRequest_HEALERHEAL, g.healerPoisonHandler(), false)
 	}
 }

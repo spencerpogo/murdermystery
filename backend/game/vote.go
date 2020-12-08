@@ -10,6 +10,8 @@ import (
 
 // Vote represents a vote taking place in the game
 type Vote struct {
+	// The type of vote
+	vType pb.VoteRequest_Type
 	// The clients who are allowed to vote
 	voters map[*melody.Session]bool
 	// The candidates who they can choose from
@@ -157,32 +159,31 @@ func (g *Game) callVote(
 	}
 }
 
-func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVote) error {
+func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVote) {
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
 	if msg.Choice == 0 || g.vote == nil || !g.vote.IsVoter(s) {
-		return nil
+		return
 	}
-	// Find corresponding session by ID
-	choiceSession, _ := g.FindByID(msg.Choice)
-	if choiceSession == nil {
-		return nil
-	}
-	if g.vote.votes[s] == choiceSession {
-		// The vote hasn't changed
-		return nil
-	}
-	// Store vote
-	g.vote.votes[s] = choiceSession
-	log.Println(g.vote.votes, g.vote.HasConcensus())
 
 	v := g.vote
-	v.onChange(v, s, choiceSession)
-	if g.vote != v {
-		// It was ended by the handler
-		return nil
-	}
+	if v.vType == pb.VoteRequest_HEALERHEAL {
+		g.healerHealHandler(msg.Choice == 2)
+	} else {
+		// Find corresponding session by ID
+		choiceSession, _ := g.FindByID(msg.Choice)
+		if choiceSession == nil {
+			return
+		}
+		if v.votes[s] == choiceSession {
+			// The vote hasn't changed
+			return
+		}
+		// Store vote
+		v.votes[s] = choiceSession
+		log.Println(v.votes, g.vote.HasConcensus())
 
-	return nil
+		v.onChange(v, s, choiceSession)
+	}
 }
