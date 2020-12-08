@@ -91,6 +91,8 @@ message SpectatorStatus {
   repeated Player players = 1;
 }
 
+message HealerKillReveal { int32 killed_id = 1; }
+
 // The Server message
 message ServerMessage {
   oneof data {
@@ -105,6 +107,7 @@ message ServerMessage {
     VoteOver vote_over = 9;
     ProphetReveal prophet_reveal = 11;
     SpectatorStatus spectator_status = 12;
+    HealerKillReveal healer_kill_reveal = 13;
   }
 }
 

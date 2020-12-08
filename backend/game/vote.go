@@ -110,7 +110,7 @@ func (v *Vote) IsVoter(s *melody.Session) bool {
 
 func (g *Game) callVote(
 	voters, candidates []*melody.Session,
-	vtype pb.VoteRequest_Type,
+	vType pb.VoteRequest_Type,
 	onChange func(*Vote, *melody.Session, *melody.Session),
 	showResults bool) {
 	g.lock.Lock()
@@ -132,6 +132,7 @@ func (g *Game) callVote(
 	// We don't need to reference the vote type anywhere so not storing it, but can later
 	//  if needed
 	g.vote = &Vote{
+		vType:       vType,
 		voters:      votersMap,
 		candidates:  candidatesMap,
 		votes:       make(map[*melody.Session]*melody.Session),
@@ -148,7 +149,7 @@ func (g *Game) callVote(
 		}
 	}
 
-	msg, err := protocol.Marshal(&pb.VoteRequest{Choice_IDs: ids, Type: vtype})
+	msg, err := protocol.Marshal(&pb.VoteRequest{Choice_IDs: ids, Type: vType})
 	if err != nil {
 		return
 	}
@@ -168,6 +169,7 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 	}
 
 	v := g.vote
+	log.Println(msg.Choice, v.vType, pb.VoteRequest_HEALERHEAL, v.vType == pb.VoteRequest_HEALERHEAL)
 	if v.vType == pb.VoteRequest_HEALERHEAL {
 		g.healerHealHandler(msg.Choice == 2)
 	} else {

@@ -310,7 +310,6 @@ func (g *Game) prophetVoteHandler(killed *melody.Session) func(*Vote, *melody.Se
 		log.Println("Prophet vote over")
 
 		g.prophetReveal(voter, candidate)
-		log.Println("Error: invalid choices in v.votes:", v)
 
 		// Doesn't really matter if this is at top or bottom, put at bottom just to be safe
 		g.vote.End(g)
@@ -321,14 +320,33 @@ func (g *Game) prophetVoteHandler(killed *melody.Session) func(*Vote, *melody.Se
 
 func (g *Game) callHealerHealVote() {
 	if g.hasHeal {
+		log.Println("Starting healer vote")
 		healer, _ := g.SessionsByRole(pb.Character_HEALER)
-		g.callVote(healer, []*melody.Session{}, pb.VoteRequest_HEALERHEAL, func(v *Vote, t, c *melody.Session) {}, false)
+		if len(healer) != 1 {
+			log.Printf("Error: Healer length not 1: %v", healer)
+			return
+		}
+
+		// Find ID of killed client and send it to healer
+		killedClient := g.clients[g.toBeKilled]
+		if killedClient != nil {
+			msg, err := protocol.Marshal(&pb.HealerKillReveal{KilledId: killedClient.ID})
+			if err != nil {
+				return
+			}
+			err = healer[0].WriteBinary(msg)
+			printerr(err)
+		}
+
+		log.Println("Calling healer vote")
+		go g.callVote(healer, []*melody.Session{}, pb.VoteRequest_HEALERHEAL, func(v *Vote, t, c *melody.Session) {}, false)
 	} else {
 		g.callHealerPoisonVote()
 	}
 }
 
 func (g *Game) healerHealHandler(confirmed bool) {
+	log.Println("hh", confirmed, g.hasHeal)
 	if confirmed && g.hasHeal {
 		// They are using their heal
 		g.hasHeal = false
@@ -337,6 +355,7 @@ func (g *Game) healerHealHandler(confirmed bool) {
 		g.kill(g.toBeKilled)
 	}
 	g.toBeKilled = nil
+	go g.callHealerPoisonVote()
 }
 
 func (g *Game) callHealerPoisonVote() {

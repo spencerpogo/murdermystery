@@ -3,6 +3,7 @@ const NodeWebSocket = require("ws");
 const {
   ServerMessage,
   ClientMessage,
+  VoteRequest,
 } = require("../pbjs/protobuf.js").murdermystery;
 
 const SERVER = process.env.BOT_SERVER || "ws://localhost:8080";
@@ -35,12 +36,28 @@ const handlers = [
       // Strategy: every client will randomly vote after a random amount of time.
       // If another vote is received, they will copy it instead of voting themself.
 
-      const voteReq = msg.voteRequest.choice_IDs;
+      const voteReq = msg.voteRequest;
       ctx.voteRequest = voteReq;
       const sendRandomVote = () => {
         // If the vote is still going on
         if (ctx.voteRequest === voteReq) {
-          const choice = voteReq[Math.floor(Math.random() * voteReq.length)];
+          const choice =
+            ctx.voteRequest.type === VoteRequest.Type.HEALERHEAL
+              ? 2 // 2 = yes, heal
+              : voteReq.choice_IDs[
+                  Math.floor(Math.random() * voteReq.choice_IDs.length)
+                ];
+          console.log(
+            ctx.name,
+            "got",
+            ctx.voteRequest,
+            "heal",
+            VoteRequest.Type.HEALERHEAL,
+            "isHeal",
+            ctx.voteRequest.type === VoteRequest.Type.HEALERHEAL,
+            "choice",
+            choice
+          );
           ctx.send({ vote: { choice } });
         }
       };
@@ -68,7 +85,7 @@ const handlers = [
 const runBot = (gid, i) => {
   const name = getName(i);
   const ws = new NodeWebSocket(`${SERVER}/game/${gid}`);
-  const ctx = { isHost: false };
+  const ctx = { isHost: false, name };
 
   const send = (pbMsg) => {
     console.log(`[${name}] ↑`, pbMsg);
