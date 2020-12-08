@@ -124,6 +124,39 @@ PROJ="/path/to/repo"
 CompileDaemon -directory=$PROJ/backend -build='go build -o $PROJ/build/backend' -command '$PROJ/build/backend' -color -log-prefix=false
 ```
 
+## Roadmap
+
+- Core functionality
+
+  - [x] Basic architecture
+  - [x] Setting Names
+  - [x] Handling Host
+  - [x] Starting game
+  - [x] Assigning characters
+  - [x] Implementing Votes
+  - [x] Prophet ability
+  - [x] Healer ability
+  - [ ] Kills
+  - [ ] Voting to kill
+  - [ ] Showing amount of each character left
+  - [ ] Spectating
+
+- Polish
+
+  - [ ] Pie indicator for timed components and button to skip
+  - [ ] Minigame for lobby / night screen
+  - [ ] Prophet screen animation
+  - [ ] Character visualization styling
+  - [ ] And more...
+
+- Preparing for production
+
+  - [ ] Remove unecessary logs
+  - [ ] Use environment effictively
+  - [ ] Server performance improvements
+  - [ ] Frontend performance improvements (such as `useMemo`)
+  - [ ] And more...
+
 ## Other Details
 
 ### Statik file and git
