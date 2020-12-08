@@ -19,6 +19,7 @@ import CharacterSpinner from "./CharacterSpinner";
 import FellowWolves from "./FellowWolves";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
+import NameBadge from "./NameBadge";
 import ProphetReveal from "./ProphetReveal";
 import Vote, { Candidate, Choice, VoteResult } from "./Vote";
 
@@ -56,6 +57,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     voteResult,
     voteType,
     prophetReveal,
+    healerKillReveal,
     // State setters
     setShowFellowWolves,
     setProphetReveal,
@@ -77,8 +79,26 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     const VOTE_TYPES: { [type: number]: STRINGS } = {
       [protobuf.VoteRequest.Type.KILL]: STRINGS.PICK_KILL,
       [protobuf.VoteRequest.Type.PROPHET]: STRINGS.PICK_REVEAL,
+      [protobuf.VoteRequest.Type.HEALERHEAL]: STRINGS.PLEASE_CONFIRM,
     };
     return VOTE_TYPES[val || -1] || STRINGS.PLEASE_VOTE;
+  }
+
+  function typeToDesc(
+    val: protobuf.VoteRequest.Type | null | undefined
+  ): JSX.Element | null {
+    if (val === protobuf.VoteRequest.Type.HEALERHEAL) {
+      return (
+        <>
+          <NameBadge text={IDToName(healerKillReveal) || "??"} />
+          <Text ml="1">{t(STRINGS.WAS_KILLED_CONFIRM_HEAL)}</Text>
+        </>
+      );
+    }
+    if (val === protobuf.VoteRequest.Type.HEALERPOISON) {
+      return <Text>{t(STRINGS.CONFIRM_POISON)}</Text>;
+    }
+    return null;
   }
 
   const IDToName = (id: number | null | undefined) =>
@@ -87,6 +107,28 @@ const GameClientInner: FC<GameClientInnerProps> = ({
   // Take a list of IDS and return a list of corresponding names
   const IDsToNames = (ids: number[]) =>
     ids.map((id) => (players[id] || {}).name || "").filter((n) => !!n);
+
+  // Process the id list (number[]) into [ [id, name] ]
+  const voteRequestToCandidates = (vr: protobuf.IVoteRequest): Choice[] => {
+    if (vr.type === protobuf.VoteRequest.Type.HEALERHEAL) {
+      // Special case: this is a yes/no vote
+      return [
+        { name: t(STRINGS.YES_TO_USING), id: 2 },
+        { name: t(STRINGS.NO_TO_USING), id: 1 },
+      ];
+    }
+    const candidates: Choice[] = [];
+    (vr.choice_IDs || []).forEach((candidateID) => {
+      const name: string = (players[candidateID] || {}).name || "";
+      if (name) {
+        candidates.push({
+          name,
+          id: candidateID,
+        });
+      }
+    });
+    return candidates;
+  };
 
   // UI
 
@@ -142,28 +184,12 @@ const GameClientInner: FC<GameClientInnerProps> = ({
       }
     });
     view = <VoteResult votes={votes} onDone={() => setVoteResult(null)} />;
-  } else if (voteRequest.length) {
-    // Process the id list (number[]) into [ [id, name] ]
-    const candidates: Choice[] = [];
-    voteRequest.forEach((candidateID) => {
-      const name: string = (players[candidateID] || {}).name || "";
-      if (name) {
-        candidates.push({
-          name,
-          id: candidateID,
-        });
-      }
-    });
-
+  } else if (voteRequest) {
     view = (
       <Vote
         msg={typeToMsg(voteType)}
-        desc={
-          voteType === protobuf.VoteRequest.Type.KILL
-            ? STRINGS.NEED_CONSENSUS
-            : undefined
-        }
-        candidates={candidates}
+        desc={typeToDesc(voteType)}
+        candidates={voteRequestToCandidates(voteRequest)}
         onVote={(candidateID: number) =>
           send({ vote: { choice: candidateID } })
         }

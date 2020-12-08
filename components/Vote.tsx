@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Heading, Text, useTimeout } from "@chakra-ui/react";
 import { STRINGS, useTranslator } from "lib/translate";
 import { FC } from "react";
+import NameBadge from "./NameBadge";
 
 export interface Choice {
   name?: string;
@@ -29,7 +30,7 @@ function VotesDisplay({
 
 export interface VoteProps {
   msg: STRINGS;
-  desc?: STRINGS;
+  desc?: JSX.Element | null;
   candidates: Choice[];
   onVote: (candidateID: number) => void;
 }
@@ -45,7 +46,7 @@ export const Vote: FC<VoteProps> = ({
   return (
     <>
       <Heading>{t(msg)}</Heading>
-      {desc ? <Text mt="2">{t(desc)}</Text> : null}
+      {desc ? <Box mt="2">{desc}</Box> : null}
       <Flex mt="3" flexWrap="wrap">
         {candidates.map((candidate: Choice) =>
           candidate.name ? (
@@ -97,18 +98,7 @@ export const VoteResult: FC<VoteResultProps> = ({
           <Text as="b">{c.voters.length + t(STRINGS.N_VOTES)}</Text>
           <Flex display="inline">
             {c.voters.map((v) => (
-              <Text
-                as="div"
-                key={v}
-                display="inline-block"
-                border="1px solid gray"
-                borderRadius="2px"
-                padding="1"
-                ml="1"
-                mb="1"
-              >
-                {v}
-              </Text>
+              <NameBadge key={v} text={v} />
             ))}
           </Flex>
         </Box>

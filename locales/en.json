@@ -40,5 +40,10 @@
   "IS_BAD": "is a bad person",
   "YOU_CANT_START": "You can't start the game yet",
   "VOTE_RESULTS": "Vote Results",
-  "N_VOTES": " votes:"
+  "N_VOTES": " votes:",
+  "PLEASE_CONFIRM": "Please confirm",
+  "WAS_KILLED_CONFIRM_HEAL": "was killed. Do you want to save them?",
+  "CONFIRM_POISON": "You have one poison. You can use it on someone or save it.",
+  "YES_TO_USING": "Yes",
+  "NO_TO_USING": "No"
 }

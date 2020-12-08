@@ -39,7 +39,9 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
   // Whether the fellow wolves screen still needs to be shown
   const [showFellowWolves, setShowFellowWolves] = useState<boolean>(false);
   // Current vote to be shown to the user.
-  const [voteRequest, setVoteRequest] = useState<number[]>([]);
+  const [voteRequest, setVoteRequest] = useState<protobuf.IVoteRequest | null>(
+    null
+  );
   // Result of a vote, reset to null after timeout
   const [voteResult, setVoteResult] = useState<
     protobuf.VoteResult.ICandidateResult[] | null
@@ -51,6 +53,8 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     prophetReveal,
     setProphetReveal,
   ] = useState<protobuf.IProphetReveal | null>(null);
+  // The kill revealed to the healer
+  const [healerKillReveal, setHealerKillReveal] = useState<number | null>(null);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -113,14 +117,17 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
 
   function handleVoteRequest(msg: protobuf.IVoteRequest) {
     if (msg.choice_IDs) {
-      setVoteRequest(msg.choice_IDs);
+      setVoteRequest(msg);
       setVoteType(msg.type || 0);
     }
   }
 
   function handleVoteOver(msg: protobuf.IVoteOver) {
     // Clear vote data
-    setVoteRequest([]);
+    setVoteRequest(null);
+    if (healerKillReveal != null) {
+      setHealerKillReveal(null);
+    }
     if (msg.result && msg.result.candidates) {
       setVoteResult(msg.result.candidates);
     }
@@ -128,6 +135,12 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
 
   function handleProphetReveal(msg: protobuf.IProphetReveal) {
     setProphetReveal(msg);
+  }
+
+  function handlerHealerKillReveal(msg: protobuf.IHealerKillReveal) {
+    if (msg.killedId) {
+      setHealerKillReveal(msg.killedId);
+    }
   }
 
   // Call the proper handler based on the ServerMessage.
@@ -144,6 +157,8 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     if (msg.voteRequest) return handleVoteRequest(msg.voteRequest);
     if (msg.voteOver) return handleVoteOver(msg.voteOver);
     if (msg.prophetReveal) return handleProphetReveal(msg.prophetReveal);
+    if (msg.healerKillReveal)
+      return handlerHealerKillReveal(msg.healerKillReveal);
     throw new Error("Not implemented. ");
   };
 
@@ -177,6 +192,7 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     voteResult,
     voteType,
     prophetReveal,
+    healerKillReveal,
     // State setters
     setShowFellowWolves,
     setProphetReveal,

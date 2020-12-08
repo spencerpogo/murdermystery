@@ -40,5 +40,10 @@
   "IS_BAD": "是坏人",
   "YOU_CANT_START": "您还不能开始游戏",
   "VOTE_RESULTS": "投票结果",
-  "N_VOTES": "票："
+  "N_VOTES": "票：",
+  "PLEASE_CONFIRM": "清决定",
+  "WAS_KILLED_CONFIRM_HEAL": "被杀死。你相救他们吗？",
+  "CONFIRM_POISON": "你有个毒药。你可以现在它或保存它。",
+  "YES_TO_USING": "要",
+  "NO_TO_USING": "不要"
 }
