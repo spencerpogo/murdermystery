@@ -252,8 +252,8 @@ func (g *Game) SessionsByRole(role pb.Character) ([]*melody.Session, []*melody.S
 }
 
 // Handler assumes game is locked
-func (g *Game) wolfVoteHandler() func(v *Vote) {
-	return func(v *Vote) {
+func (g *Game) wolfVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
+	return func(v *Vote, voter, candidate *melody.Session) {
 		if g.vote != v {
 			return
 		}
@@ -286,26 +286,16 @@ func (g *Game) prophetReveal(prophet, choice *melody.Session) bool {
 }
 
 // Handler assumes game is locked
-func (g *Game) prophetVoteHandler() func(v *Vote) {
-	return func(v *Vote) {
+func (g *Game) prophetVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
+	return func(v *Vote, voter, candidate *melody.Session) {
 		if g.vote != v {
 			return
 		}
 		log.Println("Prophet vote over")
 
-		var voter *melody.Session
-		var choice *melody.Session
-		for iterVoter, iterChoice := range v.votes {
-			voter = iterVoter
-			choice = iterChoice
-			break
-		}
+		g.prophetReveal(voter, candidate)
+		log.Println("Error: invalid choices in v.votes:", v)
 
-		if voter != nil && choice != nil {
-			g.prophetReveal(voter, choice)
-		} else {
-			log.Println("Error: invalid choices in v.votes:", v)
-		}
 		// Doesn't really matter if this is at top or bottom, put at bottom just to be safe
 		g.vote.End(g)
 
@@ -313,7 +303,7 @@ func (g *Game) prophetVoteHandler() func(v *Vote) {
 	}
 }
 
-func (g *Game) callHealerVote(isHeal bool) {
+func (g *Game) callHealerVote(isHeal bool, killed *melody.Session) {
 	healer, notHealer := g.SessionsByRole(pb.Character_HEALER)
 	var role pb.VoteRequest_Type
 	if isHeal {
@@ -321,11 +311,11 @@ func (g *Game) callHealerVote(isHeal bool) {
 	} else {
 		role = pb.VoteRequest_HEALERPOISON
 	}
-	g.callVote(healer, notHealer, role, g.getHealerVoteHandler(false), false)
+	g.callVote(healer, notHealer, role, g.getHealerVoteHandler(isHeal, killed), false)
 }
 
-func (g *Game) getHealerVoteHandler(isHeal bool) func(v *Vote) {
-	return func(v *Vote) {
+func (g *Game) getHealerVoteHandler(isHeal bool, killed *melody.Session) func(*Vote, *melody.Session, *melody.Session) {
+	return func(v *Vote, voter, candidate *melody.Session) {
 		if g.vote != nil {
 			return
 		}
@@ -335,27 +325,16 @@ func (g *Game) getHealerVoteHandler(isHeal bool) func(v *Vote) {
 			log.Println("Posison vote over")
 		}
 
-		var voter *melody.Session
-		var choice *melody.Session
-		for iterVoter, iterChoice := range v.votes {
-			voter = iterVoter
-			choice = iterChoice
-			break
+		if isHeal {
+			// TODO
+		} else {
+			// TODO
 		}
 
-		if voter != nil && choice != nil {
-			if isHeal {
-				// TODO
-			} else {
-				// TODO
-			}
-		} else {
-			log.Println("Error: invalid choices in v.votes:", v)
-		}
 		g.vote.End(g)
 
 		if isHeal {
-			g.callHealerVote(false)
+			g.callHealerVote(false, killed)
 		} else {
 			// TODO
 		}

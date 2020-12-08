@@ -17,7 +17,7 @@ type Vote struct {
 	// The votes received from voters. map[voter]candidate
 	votes map[*melody.Session]*melody.Session
 	// The function to call whenever a vote is cast
-	onChange func(*Vote)
+	onChange func(*Vote, *melody.Session, *melody.Session)
 	// Whether to disclose the results once the vote is over
 	showResults bool
 }
@@ -109,7 +109,7 @@ func (v *Vote) IsVoter(s *melody.Session) bool {
 func (g *Game) callVote(
 	voters, candidates []*melody.Session,
 	vtype pb.VoteRequest_Type,
-	onChange func(*Vote),
+	onChange func(*Vote, *melody.Session, *melody.Session),
 	showResults bool) {
 	g.lock.Lock()
 	defer g.lock.Unlock()
@@ -178,7 +178,7 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 	log.Println(g.vote.votes, g.vote.HasConcensus())
 
 	v := g.vote
-	v.onChange(v)
+	v.onChange(v, s, choiceSession)
 	if g.vote != v {
 		// It was ended by the handler
 		return nil
