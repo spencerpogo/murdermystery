@@ -169,22 +169,33 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 	}
 
 	v := g.vote
-	log.Println(msg.Choice, v.vType, pb.VoteRequest_HEALERHEAL, v.vType == pb.VoteRequest_HEALERHEAL)
+	// Healer Heal is a special case: they are picking yes/no, not a specific person, so
+	//  change their choice into a yes/no bool instead of a session and use a different
+	//  handler (because the normal handler's signature wouldn't work)
 	if v.vType == pb.VoteRequest_HEALERHEAL {
 		g.healerHealHandler(msg.Choice == 2)
 	} else {
-		// Find corresponding session by ID
-		choiceSession, _ := g.FindByID(msg.Choice)
-		if choiceSession == nil {
-			return
+		var choiceSession *melody.Session
+		if v.vType == pb.VoteRequest_HEALERPOISON && msg.Choice == -1 {
+			// Special case: This vote can be "skipped" by using -1 as the choice.
+			// Set choiceSession to nil and onChange will handle it
+			log.Println("healerpoison: settings choiceSession to nil")
+			choiceSession = nil
+		} else {
+			// Find corresponding session by ID
+			choiceSession, _ = g.FindByID(msg.Choice)
+			if choiceSession == nil {
+				return
+			}
+			if v.votes[s] == choiceSession {
+				// The vote hasn't changed, don't run onChange again
+				return
+			}
+
+			// Store vote
+			v.votes[s] = choiceSession
+			log.Println("votes:", v.votes, "hasConcensus:", g.vote.HasConcensus())
 		}
-		if v.votes[s] == choiceSession {
-			// The vote hasn't changed
-			return
-		}
-		// Store vote
-		v.votes[s] = choiceSession
-		log.Println(v.votes, g.vote.HasConcensus())
 
 		v.onChange(v, s, choiceSession)
 	}
