@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Text, useTimeout } from "@chakra-ui/react";
 import { STRINGS, useTranslator } from "lib/translate";
 import { FC } from "react";
 
@@ -75,10 +75,16 @@ export interface Candidate {
 
 export interface VoteResultProps {
   votes: Candidate[];
+  onDone: () => void;
 }
 
-export const VoteResult: FC<VoteResultProps> = ({ votes }: VoteResultProps) => {
+export const VoteResult: FC<VoteResultProps> = ({
+  votes,
+  onDone,
+}: VoteResultProps) => {
   const t = useTranslator();
+
+  useTimeout(onDone, 10000);
 
   return (
     <Box>

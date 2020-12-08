@@ -1,5 +1,5 @@
-import { Heading } from "@chakra-ui/react";
-import { FC, useEffect } from "react";
+import { Heading, useTimeout } from "@chakra-ui/react";
+import { FC } from "react";
 import { STRINGS, useTranslator } from "../lib/translate";
 
 export interface ProphetRevealProps {
@@ -15,10 +15,7 @@ export const ProphetReveal: FC<ProphetRevealProps> = ({
 }: ProphetRevealProps) => {
   const t = useTranslator();
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => onDone(), 5000);
-    return () => clearTimeout(timeoutId);
-  });
+  useTimeout(onDone, 5000);
 
   return (
     <>

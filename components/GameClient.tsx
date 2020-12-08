@@ -60,6 +60,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     setShowFellowWolves,
     setProphetReveal,
     setAlertContent,
+    setVoteResult,
   } = useMessageHandler(onError);
 
   const { isConnected, send } = useGameSocket(
@@ -140,7 +141,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
         });
       }
     });
-    view = <VoteResult votes={votes} />;
+    view = <VoteResult votes={votes} onDone={() => setVoteResult(null)} />;
   } else if (voteRequest.length) {
     // Process the id list (number[]) into [ [id, name] ]
     const candidates: Choice[] = [];

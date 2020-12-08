@@ -181,5 +181,6 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     setShowFellowWolves,
     setProphetReveal,
     setAlertContent,
+    setVoteResult,
   };
 }
