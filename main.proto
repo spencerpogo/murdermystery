@@ -61,6 +61,8 @@ message VoteRequest {
     UNKNOWN = 0;
     KILL = 1;
     PROPHET = 2;
+    HEALERHEAL = 3;
+    HEALERPOISON = 4;
   }
   repeated int32 choice_IDs = 1;
   Type type = 2;

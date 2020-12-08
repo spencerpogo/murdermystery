@@ -35,6 +35,10 @@ type Client struct {
 
 	// role of the client
 	role pb.Character
+
+	// Healer capabilities
+	hasHeal   bool
+	hasPoison bool
 }
 
 // Game represents a running game
@@ -306,5 +310,54 @@ func (g *Game) prophetVoteHandler() func(v *Vote) {
 		g.vote.End(g)
 
 		// TODO: call next vote
+	}
+}
+
+func (g *Game) callHealerVote(isHeal bool) {
+	healer, notHealer := g.SessionsByRole(pb.Character_HEALER)
+	var role pb.VoteRequest_Type
+	if isHeal {
+		role = pb.VoteRequest_HEALERHEAL
+	} else {
+		role = pb.VoteRequest_HEALERPOISON
+	}
+	g.callVote(healer, notHealer, role, g.getHealerVoteHandler(false), false)
+}
+
+func (g *Game) getHealerVoteHandler(isHeal bool) func(v *Vote) {
+	return func(v *Vote) {
+		if g.vote != nil {
+			return
+		}
+		if isHeal {
+			log.Println("Healer vote over")
+		} else {
+			log.Println("Posison vote over")
+		}
+
+		var voter *melody.Session
+		var choice *melody.Session
+		for iterVoter, iterChoice := range v.votes {
+			voter = iterVoter
+			choice = iterChoice
+			break
+		}
+
+		if voter != nil && choice != nil {
+			if isHeal {
+				// TODO
+			} else {
+				// TODO
+			}
+		} else {
+			log.Println("Error: invalid choices in v.votes:", v)
+		}
+		g.vote.End(g)
+
+		if isHeal {
+			g.callHealerVote(false)
+		} else {
+			// TODO
+		}
 	}
 }
