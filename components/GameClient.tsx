@@ -91,7 +91,9 @@ const GameClientInner: FC<GameClientInnerProps> = ({
       return (
         <>
           <NameBadge text={IDToName(healerKillReveal) || "??"} />
-          <Text ml="1">{t(STRINGS.WAS_KILLED_CONFIRM_HEAL)}</Text>
+          <Text ml="1" d="inline-block">
+            {t(STRINGS.WAS_KILLED_CONFIRM_HEAL)}
+          </Text>
         </>
       );
     }
@@ -127,6 +129,9 @@ const GameClientInner: FC<GameClientInnerProps> = ({
         });
       }
     });
+    if (vr.type === protobuf.VoteRequest.Type.HEALERPOISON) {
+      candidates.push({ id: -1, name: <Text as="b">{t(STRINGS.SKIP)}</Text> });
+    }
     return candidates;
   };
 

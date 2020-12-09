@@ -4,7 +4,7 @@ import { FC } from "react";
 import NameBadge from "./NameBadge";
 
 export interface Choice {
-  name?: string;
+  name?: string | JSX.Element;
   id?: number;
 }
 
@@ -15,7 +15,7 @@ function VotesDisplay({
   candidate: Choice;
   onVote: (cid: number) => void;
 }) {
-  const candidateName: string = candidate.name || "";
+  const candidateName: string | JSX.Element = candidate.name || "";
   const id: number = typeof candidate.id === "number" ? candidate.id : -1;
 
   // TODO: Maybe make this a little prettier?

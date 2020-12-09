@@ -45,5 +45,6 @@
   "WAS_KILLED_CONFIRM_HEAL": "was killed. Do you want to save them?",
   "CONFIRM_POISON": "You have one poison. You can use it on someone or save it.",
   "YES_TO_USING": "Yes",
-  "NO_TO_USING": "No"
+  "NO_TO_USING": "No",
+  "SKIP": "Skip"
 }
