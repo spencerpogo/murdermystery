@@ -27,18 +27,3 @@ button,
 textarea {
   -webkit-appearance: none;
 }
-
-input[type="text"] {
-  color: white;
-}
-
-button {
-  padding-left: 30px;
-  padding-right: 30px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  font-family: inherit;
-  font-size: inherit;
-  border: none;
-  border-radius: 6px;
-}
