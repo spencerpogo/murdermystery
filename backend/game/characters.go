@@ -91,14 +91,11 @@ func (g *Game) revealWolves() {
 
 	wolfSessions := []*melody.Session{}
 	wolfIDs := []int32{}
-	nonWolfSessions := []*melody.Session{}
 
 	for m, c := range g.clients {
 		if c.role == pb.Character_WEREWOLF {
 			wolfSessions = append(wolfSessions, m)
 			wolfIDs = append(wolfIDs, c.ID)
-		} else {
-			nonWolfSessions = append(nonWolfSessions, m)
 		}
 	}
 
