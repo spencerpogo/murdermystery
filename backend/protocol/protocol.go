@@ -35,6 +35,8 @@ func toServerMessage(m interface{ ProtoMessage() }) *pb.ServerMessage {
 		return &pb.ServerMessage{Data: &pb.ServerMessage_SpectatorStatus{SpectatorStatus: r}}
 	case *pb.HealerKillReveal:
 		return &pb.ServerMessage{Data: &pb.ServerMessage_HealerKillReveal{HealerKillReveal: r}}
+	case *pb.Killed:
+		return &pb.ServerMessage{Data: &pb.ServerMessage_Killed{Killed: r}}
 	default:
 		return nil
 	}

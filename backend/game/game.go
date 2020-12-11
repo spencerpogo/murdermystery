@@ -271,13 +271,27 @@ func (g *Game) getKilled() *melody.Session {
 }
 
 func (g *Game) kill(s *melody.Session) {
-	_, ok := g.clients[s]
+	c, ok := g.clients[s]
 	if !ok {
 		log.Println("Tried to kill invalid client")
 		return
 	}
+	log.Printf("Killing [%v] %s\n", c.ID, c.name)
+	msg, err := protocol.Marshal(&pb.Killed{})
+	if err != nil {
+		return
+	}
+	s.WriteBinary(msg)
+
 	delete(g.clients, s)
 	g.spectators[s] = true
+}
+
+func (g *Game) commitKills() {
+	log.Panicln("Commiting kills")
+	for s := range g.killed {
+		g.kill(s)
+	}
 }
 
 // Handler assumes game is locked
@@ -387,6 +401,7 @@ func (g *Game) healerPoisonHandler() func(*Vote, *melody.Session, *melody.Sessio
 		}
 		g.vote.End(g)
 		log.Println("After poison g.killed:", g.killed)
+		g.commitKills()
 		// TODO: Call next vote
 	}
 }
