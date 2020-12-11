@@ -289,7 +289,7 @@ func (g *Game) kill(s *melody.Session) {
 }
 
 func (g *Game) commitKills() {
-	log.Panicln("Commiting kills")
+	log.Println("Commiting kills")
 	for s := range g.killed {
 		g.kill(s)
 	}
