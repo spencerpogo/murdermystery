@@ -115,5 +115,5 @@ func (g *Game) revealWolves() {
 	}
 
 	// Allow game to be unlocked before calling
-	go g.callVote(wolfSessions, nonWolfSessions, pb.VoteRequest_KILL, g.wolfVoteHandler(), true)
+	go g.callWolfVote()
 }

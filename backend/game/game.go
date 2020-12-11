@@ -281,7 +281,8 @@ func (g *Game) kill(s *melody.Session) {
 	if err != nil {
 		return
 	}
-	s.WriteBinary(msg)
+	err = s.WriteBinary(msg)
+	printerr(err)
 
 	delete(g.clients, s)
 	g.spectators[s] = true
@@ -292,6 +293,17 @@ func (g *Game) commitKills() {
 	for s := range g.killed {
 		g.kill(s)
 	}
+	g.resetKills()
+}
+
+func (g *Game) resetKills() {
+	g.killed = make(map[*melody.Session]bool)
+}
+
+func (g *Game) callWolfVote() {
+	wolfSessions, nonWolfSessions := g.SessionsByRole(pb.Character_WEREWOLF)
+
+	g.callVote(wolfSessions, nonWolfSessions, pb.VoteRequest_KILL, g.wolfVoteHandler(), true)
 }
 
 // Handler assumes game is locked
@@ -299,7 +311,7 @@ func (g *Game) wolfVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
 	return func(v *Vote, voter, killed *melody.Session) {
 		log.Println("Wolf vote over")
 		g.killed[killed] = true
-		g.vote.End(g)
+		g.vote.End(g, nil)
 
 		// The kill will actually happen after the healer vote
 		prophet, notProphet := g.SessionsByRole(pb.Character_PROPHET)
@@ -338,7 +350,7 @@ func (g *Game) prophetVoteHandler(killed *melody.Session) func(*Vote, *melody.Se
 		g.prophetReveal(voter, candidate)
 
 		// Doesn't really matter if this is at top or bottom, put at bottom just to be safe
-		g.vote.End(g)
+		g.vote.End(g, nil)
 
 		g.callHealerHealVote()
 	}
@@ -377,9 +389,9 @@ func (g *Game) healerHealHandler(confirmed bool) {
 		// They are using their heal
 		g.hasHeal = false
 		// Empty g.killed
-		g.killed = make(map[*melody.Session]bool)
+		g.resetKills()
 	}
-	g.vote.End(g)
+	g.vote.End(g, nil)
 	go g.callHealerPoisonVote()
 }
 
@@ -388,7 +400,7 @@ func (g *Game) callHealerPoisonVote() {
 		healer, notHealer := g.SessionsByRole(pb.Character_HEALER)
 		g.callVote(healer, notHealer, pb.VoteRequest_HEALERPOISON, g.healerPoisonHandler(), false)
 	}
-	// TODO: Call next vote
+	go g.callJuryVote()
 }
 
 func (g *Game) healerPoisonHandler() func(*Vote, *melody.Session, *melody.Session) {
@@ -399,9 +411,48 @@ func (g *Game) healerPoisonHandler() func(*Vote, *melody.Session, *melody.Sessio
 			g.hasPoison = false
 			g.killed[candidate] = true
 		}
-		g.vote.End(g)
+		g.vote.End(g, nil)
 		log.Println("After poison g.killed:", g.killed)
 		g.commitKills()
-		// TODO: Call next vote
+		go g.callJuryVote()
+	}
+}
+
+func (g *Game) callJuryVote() {
+	clients := make([]*melody.Session, len(g.clients))
+	i := 0
+	for c := range g.clients {
+		clients[i] = c
+		i++
+	}
+	g.callVote(clients, clients, pb.VoteRequest_JURY, g.juryVoteHandler(), true)
+}
+
+func (g *Game) juryVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
+	return func(v *Vote, voter, candidate *melody.Session) {
+		if !v.AllVotesIn() {
+			return
+		}
+
+		status, winner := v.GetResult()
+		if status != pb.VoteResultType_TIE && winner == nil {
+			// something went wrong
+			log.Println("No vote winner! Tally:", v.Tally())
+			status = pb.VoteResultType_NOWINNER
+		}
+		var winnerID int32
+		if winner != nil {
+			client := g.clients[winner]
+			if client != nil {
+				winnerID = client.ID
+				g.killed[winner] = true
+			}
+		}
+
+		// Send VoteOver
+		v.End(g, &pb.JuryVoteResult{Status: status, Winner: winnerID})
+		g.commitKills()
+
+		// TODO: Check for game over and then g.callWolfVote()
 	}
 }

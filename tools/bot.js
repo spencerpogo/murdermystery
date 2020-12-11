@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const NodeWebSocket = require("ws");
+const util = require("util");
 const {
   ServerMessage,
   ClientMessage,
@@ -96,7 +97,10 @@ const runBot = (gid, i) => {
   ws.on("message", (buffer) => {
     const msg = ServerMessage.decode(buffer);
     // msg.players gets collapsed so log it top level
-    console.log(`[${name}] ↓`, msg.players ? msg.players : msg);
+    console.log(
+      `[${name}] ↓`,
+      util.inspect(msg, { showHidden: false, depth: null })
+    );
 
     handlers.forEach((callback) => callback(msg, ctx));
   });

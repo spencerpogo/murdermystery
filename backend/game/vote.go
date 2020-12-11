@@ -2,6 +2,7 @@ package game
 
 import (
 	"log"
+	"sort"
 
 	"github.com/Scoder12/murdermystery/backend/protocol"
 	"github.com/Scoder12/murdermystery/backend/protocol/pb"
@@ -26,7 +27,7 @@ type Vote struct {
 
 // _encodeResults encodes the vote into a VoteResult message.
 // Assumes game mutex is locked and is intended to be called by Vote.End()
-func (v *Vote) _encodeResults(g *Game) *pb.VoteResult {
+func (v *Vote) _encodeResults(g *Game, jury *pb.JuryVoteResult) *pb.VoteResult {
 	candidates := make(map[int32][]int32)
 	for voter, cand := range v.votes {
 		// Need clients for IDs
@@ -48,16 +49,16 @@ func (v *Vote) _encodeResults(g *Game) *pb.VoteResult {
 	for candID, voteIDs := range candidates {
 		voteResult = append(voteResult, &pb.VoteResult_CandidateResult{Id: candID, Voters: voteIDs})
 	}
-	return &pb.VoteResult{Candidates: voteResult}
+	return &pb.VoteResult{Candidates: voteResult, Jury: jury}
 }
 
 // End ends the vote. Assumed game mutex is locked.
-func (v *Vote) End(g *Game) {
+func (v *Vote) End(g *Game, jury *pb.JuryVoteResult) {
 	g.vote = nil
 
 	var result *pb.VoteResult
 	if v.showResults {
-		result = v._encodeResults(g)
+		result = v._encodeResults(g, jury)
 	} else {
 		result = nil
 	}
@@ -98,6 +99,62 @@ func (v *Vote) HasConcensus() bool {
 	return choice != nil
 }
 
+// AllVotesIn returns whether all voters have voted
+func (v *Vote) AllVotesIn() bool {
+	for voter := range v.voters {
+		_, hasVoted := v.votes[voter]
+		if !hasVoted {
+			return false
+		}
+	}
+	return true
+}
+
+// Tally returns a map of candidates to the number of votes they got
+func (v *Vote) Tally() map[*melody.Session]int {
+	scores := make(map[*melody.Session]int)
+
+	for _, choice := range v.votes {
+		s, ok := scores[choice]
+		if !ok {
+			s = 0
+		}
+		s++
+		scores[choice] = s
+	}
+	return scores
+}
+
+// GetResult gets the result of the vote and the winner if any
+func (v *Vote) GetResult() (pb.VoteResultType, *melody.Session) {
+	// Setup data
+	tally := v.Tally()
+	scores := make([]int, len(tally))
+	i := 0
+	for _, s := range tally {
+		scores[i] = s
+		i++
+	}
+	sort.Ints(scores)
+	scoreLen := len(scores)
+
+	winningScore := scores[scoreLen-1]
+	if winningScore == scores[scoreLen-2] {
+		// Tie
+		return pb.VoteResultType_TIE, nil
+	}
+	// Find winner
+	var winner *melody.Session
+	for choice, score := range tally {
+		if score == winningScore {
+			winner = choice
+			break
+		}
+	}
+
+	return pb.VoteResultType_WIN, winner
+}
+
 // IsVoter checks whether a session is in v.voters
 func (v *Vote) IsVoter(s *melody.Session) bool {
 	for i := range v.voters {
@@ -117,7 +174,7 @@ func (g *Game) callVote(
 	defer g.lock.Unlock()
 
 	if g.vote != nil {
-		g.vote.End(g)
+		g.vote.End(g, nil)
 	}
 
 	votersMap := make(map[*melody.Session]bool)
@@ -187,8 +244,9 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 			if choiceSession == nil {
 				return
 			}
-			if v.votes[s] == choiceSession {
-				// The vote hasn't changed, don't run onChange again
+			_, hasVoted := v.votes[s]
+			if hasVoted {
+				// You cannot change your vote after voting
 				return
 			}
 
