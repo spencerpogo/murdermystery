@@ -1,6 +1,7 @@
-import { Heading, useTimeout } from "@chakra-ui/react";
+import { Flex, Heading, useTimeout } from "@chakra-ui/react";
 import { FC } from "react";
 import { STRINGS, useTranslator } from "../lib/translate";
+import NameBadge from "./NameBadge";
 
 export interface ProphetRevealProps {
   name: string;
@@ -22,9 +23,9 @@ export const ProphetReveal: FC<ProphetRevealProps> = ({
       <Heading size="lg" textAlign="center" mb="5">
         {t(STRINGS.REVEAL_FOUND)}
       </Heading>
-      <Heading size="md" textAlign="center" fontWeight="inherit">
-        {name}
-      </Heading>
+      <Flex justify="center">
+        <NameBadge text={name} />
+      </Flex>
       <Heading size="lg" textAlign="center" mt="5" fontWeight="inherit">
         {t(good ? STRINGS.IS_GOOD : STRINGS.IS_BAD)}
       </Heading>
