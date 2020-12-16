@@ -419,11 +419,22 @@ func (g *Game) healerPoisonHandler() func(*Vote, *melody.Session, *melody.Sessio
 }
 
 func (g *Game) callJuryVote() {
+	// TODO: Get actual killed ID
+	killReveal, err := protocol.Marshal(&pb.KillReveal{KilledId: -1})
+	if err != nil {
+		return
+	}
+	// A list of all clients
 	clients := make([]*melody.Session, len(g.clients))
 	i := 0
 	for c := range g.clients {
-		clients[i] = c
-		i++
+		if c != nil {
+			clients[i] = c
+			i++
+			// Send KillReveal
+			err = c.WriteBinary(killReveal)
+			printerr(err)
+		}
 	}
 	g.callVote(clients, clients, pb.VoteRequest_JURY, g.juryVoteHandler(), true)
 }
