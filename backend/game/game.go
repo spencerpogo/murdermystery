@@ -369,7 +369,9 @@ func (g *Game) callHealerHealVote() {
 		killedSession := g.getKilled()
 		killedClient := g.clients[killedSession]
 		if killedClient != nil {
-			msg, err := protocol.Marshal(&pb.KillReveal{KilledId: killedClient.ID})
+			killedIDs := make([]int32, 1)
+			killedIDs[0] = killedClient.ID
+			msg, err := protocol.Marshal(&pb.KillReveal{Killed_IDs: killedIDs})
 			if err != nil {
 				return
 			}
@@ -387,6 +389,7 @@ func (g *Game) callHealerHealVote() {
 func (g *Game) healerHealHandler(confirmed bool) {
 	if confirmed && g.hasHeal {
 		// They are using their heal
+		log.Println("Heal used")
 		g.hasHeal = false
 		// Empty g.killed
 		g.resetKills()
@@ -413,20 +416,30 @@ func (g *Game) healerPoisonHandler() func(*Vote, *melody.Session, *melody.Sessio
 		}
 		g.vote.End(g, nil)
 		log.Println("After poison g.killed:", g.killed)
-		g.commitKills()
 		go g.callJuryVote()
 	}
 }
 
 func (g *Game) callJuryVote() {
-	// TODO: Get actual killed ID
-	killReveal, err := protocol.Marshal(&pb.KillReveal{KilledId: -1})
+	// Make list of all killed IDs
+	killedIDs := make([]int32, len(g.killed))
+	i := 0
+	log.Println("Prejury killed:", g.killed)
+	for s := range g.killed {
+		c := g.clients[s]
+		if c != nil {
+			killedIDs[i] = c.ID
+			i++
+		}
+	}
+	// Marshal killReveal
+	killReveal, err := protocol.Marshal(&pb.KillReveal{Killed_IDs: killedIDs})
 	if err != nil {
 		return
 	}
-	// A list of all clients
+	// Make a list of all client sessions, sending killreveal message to each
 	clients := make([]*melody.Session, len(g.clients))
-	i := 0
+	i = 0
 	for c := range g.clients {
 		if c != nil {
 			clients[i] = c

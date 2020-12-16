@@ -59,7 +59,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     voteResult,
     voteType,
     prophetReveal,
-    healerKillReveal,
+    killReveal,
     // State setters
     setShowFellowWolves,
     setProphetReveal,
@@ -96,7 +96,9 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     if (val === protobuf.VoteRequest.Type.HEALERHEAL) {
       return (
         <>
-          <NameBadge text={IDToName(healerKillReveal) || "??"} />
+          {(killReveal || [-1]).map((id) => (
+            <NameBadge key={id} text={IDToName(id) || "??"} />
+          ))}
           <Text ml="1" d="inline-block">
             {t(STRINGS.WAS_KILLED_CONFIRM_HEAL)}
           </Text>

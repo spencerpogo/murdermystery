@@ -44,7 +44,7 @@ const handlers = [
         if (ctx.voteRequest === voteReq) {
           const choice =
             ctx.voteRequest.type === VoteRequest.Type.HEALERHEAL
-              ? 2 // 2 = yes, heal
+              ? 1 // 1 = don't heal, 2 = yes, heal
               : voteReq.choice_IDs[
                   Math.floor(Math.random() * voteReq.choice_IDs.length)
                 ];

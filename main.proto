@@ -80,7 +80,7 @@ message SpectatorStatus {
   repeated Player players = 1;
 }
 
-message KillReveal { int32 killed_id = 1; }
+message KillReveal { repeated int32 killed_IDs = 1; }
 
 message Killed {}
 

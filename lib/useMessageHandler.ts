@@ -54,7 +54,7 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     setProphetReveal,
   ] = useState<protobuf.IProphetReveal | null>(null);
   // The kill revealed to the healer
-  const [healerKillReveal, setHealerKillReveal] = useState<number | null>(null);
+  const [killReveal, setKillReveal] = useState<number[] | null>(null);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -125,8 +125,8 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
   function handleVoteOver(msg: protobuf.IVoteOver) {
     // Clear vote data
     setVoteRequest(null);
-    if (healerKillReveal != null) {
-      setHealerKillReveal(null);
+    if (killReveal != null) {
+      setKillReveal(null);
     }
     if (msg.result && msg.result.candidates) {
       setVoteResult(msg.result.candidates);
@@ -137,9 +137,9 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     setProphetReveal(msg);
   }
 
-  function handlerHealerKillReveal(msg: protobuf.IHealerKillReveal) {
-    if (msg.killedId) {
-      setHealerKillReveal(msg.killedId);
+  function handlerHealerKillReveal(msg: protobuf.IKillReveal) {
+    if (msg.killed_IDs) {
+      setKillReveal(msg.killed_IDs);
     }
   }
 
@@ -157,8 +157,7 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     if (msg.voteRequest) return handleVoteRequest(msg.voteRequest);
     if (msg.voteOver) return handleVoteOver(msg.voteOver);
     if (msg.prophetReveal) return handleProphetReveal(msg.prophetReveal);
-    if (msg.healerKillReveal)
-      return handlerHealerKillReveal(msg.healerKillReveal);
+    if (msg.killReveal) return handlerHealerKillReveal(msg.killReveal);
     throw new Error("Not implemented. ");
   };
 
@@ -192,7 +191,7 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     voteResult,
     voteType,
     prophetReveal,
-    healerKillReveal,
+    killReveal,
     // State setters
     setShowFellowWolves,
     setProphetReveal,
