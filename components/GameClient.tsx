@@ -23,6 +23,8 @@ import NameBadge from "./NameBadge";
 import ProphetReveal from "./ProphetReveal";
 import Vote, { Candidate, Choice, VoteResult } from "./Vote";
 
+const VoteType = protobuf.VoteRequest.Type; // shorthand
+
 interface GameClientInnerProps {
   server: string;
   gameId: string;
@@ -76,12 +78,16 @@ const GameClientInner: FC<GameClientInnerProps> = ({
 
   function typeToMsg(val: protobuf.VoteRequest.Type | null | undefined) {
     // Decode the vote type
-    const VOTE_TYPES: { [type: number]: STRINGS } = {
-      [protobuf.VoteRequest.Type.KILL]: STRINGS.PICK_KILL,
-      [protobuf.VoteRequest.Type.PROPHET]: STRINGS.PICK_REVEAL,
-      [protobuf.VoteRequest.Type.HEALERHEAL]: STRINGS.PLEASE_CONFIRM,
-    };
-    return VOTE_TYPES[val || -1] || STRINGS.PLEASE_VOTE;
+    switch (val) {
+      case VoteType.KILL:
+        return STRINGS.PICK_KILL;
+      case VoteType.PROPHET:
+        return STRINGS.PICK_REVEAL;
+      case VoteType.HEALERHEAL:
+        return STRINGS.PLEASE_CONFIRM;
+      default:
+        return STRINGS.PLEASE_VOTE;
+    }
   }
 
   function typeToDesc(
