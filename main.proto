@@ -80,7 +80,7 @@ message SpectatorStatus {
   repeated Player players = 1;
 }
 
-message HealerKillReveal { int32 killed_id = 1; }
+message KillReveal { int32 killed_id = 1; }
 
 message Killed {}
 
@@ -98,7 +98,7 @@ message ServerMessage {
     VoteOver vote_over = 9;
     ProphetReveal prophet_reveal = 11;
     SpectatorStatus spectator_status = 12;
-    HealerKillReveal healer_kill_reveal = 13;
+    KillReveal kill_reveal = 13;
     Killed killed = 14;
   }
 }

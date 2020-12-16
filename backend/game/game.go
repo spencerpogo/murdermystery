@@ -369,7 +369,7 @@ func (g *Game) callHealerHealVote() {
 		killedSession := g.getKilled()
 		killedClient := g.clients[killedSession]
 		if killedClient != nil {
-			msg, err := protocol.Marshal(&pb.HealerKillReveal{KilledId: killedClient.ID})
+			msg, err := protocol.Marshal(&pb.KillReveal{KilledId: killedClient.ID})
 			if err != nil {
 				return
 			}
