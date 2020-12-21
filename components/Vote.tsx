@@ -1,7 +1,8 @@
-import { Box, Button, Flex, Heading, Text, useTimeout } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { STRINGS, useTranslator } from "lib/translate";
 import { FC } from "react";
 import NameBadge from "./NameBadge";
+import { RightFloatSkippableDelay } from "./SkippableDelay";
 
 export interface Choice {
   name?: string | JSX.Element;
@@ -85,24 +86,25 @@ export const VoteResult: FC<VoteResultProps> = ({
 }: VoteResultProps) => {
   const t = useTranslator();
 
-  useTimeout(onDone, 10000);
-
   return (
-    <Box>
-      <Heading mb="2">{t(STRINGS.VOTE_RESULTS)}</Heading>
-      {votes.map((c) => (
-        <Box key={c.id} mb="2">
-          <Heading size="lg" mb="1">
-            {c.name}
-          </Heading>
-          <Text as="b">{c.voters.length + t(STRINGS.N_VOTES)}</Text>
-          <Flex display="inline">
-            {c.voters.map((v) => (
-              <NameBadge key={v} text={v} />
-            ))}
-          </Flex>
-        </Box>
-      ))}
-    </Box>
+    <>
+      <Box>
+        <Heading mb="2">{t(STRINGS.VOTE_RESULTS)}</Heading>
+        {votes.map((c) => (
+          <Box key={c.id} mb="2">
+            <Heading size="lg" mb="1">
+              {c.name}
+            </Heading>
+            <Text as="b">{c.voters.length + t(STRINGS.N_VOTES)}</Text>
+            <Flex display="inline">
+              {c.voters.map((v) => (
+                <NameBadge key={v} text={v} />
+              ))}
+            </Flex>
+          </Box>
+        ))}
+      </Box>
+      <RightFloatSkippableDelay duration={10} onDone={onDone} />
+    </>
   );
 };

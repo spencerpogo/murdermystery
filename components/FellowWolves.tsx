@@ -1,6 +1,7 @@
-import { Box, Heading, Stack, useTimeout } from "@chakra-ui/react";
+import { Box, Heading, Stack } from "@chakra-ui/react";
 import { S, useTranslator } from "lib/translate";
 import { FC } from "react";
+import { RightFloatSkippableDelay } from "./SkippableDelay";
 
 interface FellowWolvesProps {
   names: string[];
@@ -13,8 +14,6 @@ export const FellowWolves: FC<FellowWolvesProps> = ({
 }: FellowWolvesProps) => {
   const t = useTranslator();
 
-  useTimeout(onDone, 5000);
-
   return (
     <>
       <Heading textAlign="center">{t(S.FELLOW_WOLVES)}</Heading>
@@ -26,6 +25,7 @@ export const FellowWolves: FC<FellowWolvesProps> = ({
           </Box>
         ))}
       </Stack>
+      <RightFloatSkippableDelay duration={5} onDone={onDone} />
     </>
   );
 };
