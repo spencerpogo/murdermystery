@@ -54,6 +54,7 @@ export enum STRINGS {
   YES_TO_USING,
   NO_TO_USING,
   SKIP,
+  OK,
 }
 
 export const S = STRINGS;

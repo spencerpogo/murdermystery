@@ -1,4 +1,5 @@
 import { Button, useTimeout } from "@chakra-ui/react";
+import { STRINGS, useTranslator } from "lib/translate";
 import { FC } from "react";
 import LinearProgressCircle from "./LinearProgressCircle";
 
@@ -13,6 +14,8 @@ const SkippableDelay: FC<SkippableDelayProps> = ({
   onDone = () => undefined,
   circleColor = "gray.300",
 }: SkippableDelayProps) => {
+  const t = useTranslator();
+
   useTimeout(() => {
     onDone();
     console.log("called");
@@ -21,7 +24,7 @@ const SkippableDelay: FC<SkippableDelayProps> = ({
   return (
     <Button onClick={onDone}>
       <LinearProgressCircle duration={duration} size={40} color={circleColor} />
-      <>{`Skip (${duration})`}</>
+      <>{t(STRINGS.OK)}</>
     </Button>
   );
 };

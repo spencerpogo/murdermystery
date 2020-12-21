@@ -46,5 +46,6 @@
   "CONFIRM_POISON": "You have one poison. You can use it on someone or save it.",
   "YES_TO_USING": "Yes",
   "NO_TO_USING": "No",
-  "SKIP": "Skip"
+  "SKIP": "Skip",
+  "OK": "OK"
 }

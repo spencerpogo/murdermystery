@@ -46,5 +46,6 @@
   "CONFIRM_POISON": "你有个毒药。你可以现在它或保存它。",
   "YES_TO_USING": "要",
   "NO_TO_USING": "不要",
-  "SKIP": "跳过使用"
+  "SKIP": "跳过使用",
+  "OK": "好的"
 }
