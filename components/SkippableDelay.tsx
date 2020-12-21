@@ -1,4 +1,4 @@
-import { Button, useTimeout } from "@chakra-ui/react";
+import { Button, Flex, useTimeout } from "@chakra-ui/react";
 import { STRINGS, useTranslator } from "lib/translate";
 import { FC } from "react";
 import LinearProgressCircle from "./LinearProgressCircle";
@@ -30,3 +30,14 @@ const SkippableDelay: FC<SkippableDelayProps> = ({
 };
 
 export default SkippableDelay;
+
+export const RightFloatSkippableDelay: FC<SkippableDelayProps> = (
+  props: SkippableDelayProps
+) => {
+  return (
+    <Flex justifyContent="flex-end">
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+      <SkippableDelay {...props} />
+    </Flex>
+  );
+};
