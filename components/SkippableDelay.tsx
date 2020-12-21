@@ -22,7 +22,7 @@ const SkippableDelay: FC<SkippableDelayProps> = ({
   }, duration * 1000);
 
   return (
-    <Button onClick={onDone}>
+    <Button colorScheme="blue" onClick={onDone}>
       <LinearProgressCircle duration={duration} size={40} color={circleColor} />
       <>{t(STRINGS.OK)}</>
     </Button>
