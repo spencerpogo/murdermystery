@@ -1,9 +1,6 @@
 /* eslint-disable react/require-default-props */
-import { chakra } from "@chakra-ui/system";
-import { motion } from "framer-motion";
+import { chakra, keyframes } from "@chakra-ui/system";
 import { FC } from "react";
-
-const MotionCircle = motion.custom(chakra.circle);
 
 export interface LinearProgressCircleProps {
   size: number;
@@ -24,10 +21,18 @@ const LinearProgressCircle: FC<LinearProgressCircleProps> = ({
 
   // to set a specific percent, use strokeDashOffset =
   // circumference - (percent / 100) * circumference
+  const increase = keyframes({
+    "0%": {
+      strokeDashoffset: circumference,
+    },
+    "100%": {
+      strokeDashoffset: 0,
+    },
+  });
 
   return (
-    <chakra.svg width={size} height={size}>
-      <MotionCircle
+    <chakra.svg width={`${size}px`} height={`${size}px`}>
+      <chakra.circle
         fill="transparent"
         strokeWidth={thickness}
         stroke={color || "white"}
@@ -37,8 +42,7 @@ const LinearProgressCircle: FC<LinearProgressCircleProps> = ({
         strokeDasharray={`${circumference} ${circumference}`}
         transform="rotate(-90deg)"
         transformOrigin="50% 50%"
-        animate={{ strokeDashoffset: [circumference, 0] }}
-        transition={{ duration }}
+        animation={`${increase} ${duration}s linear`}
       />
     </chakra.svg>
   );
