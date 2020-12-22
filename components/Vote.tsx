@@ -19,10 +19,9 @@ function VotesDisplay({
   const candidateName: string | JSX.Element = candidate.name || "";
   const id: number = typeof candidate.id === "number" ? candidate.id : -1;
 
-  // TODO: Maybe make this a little prettier?
   return (
     <Box mr="2" mb="3" flex="0 0 48%">
-      <Button colorScheme="gray" width="100%" onClick={() => onVote(id)}>
+      <Button colorScheme="blue" width="100%" onClick={() => onVote(id)}>
         {candidateName}
       </Button>
     </Box>
