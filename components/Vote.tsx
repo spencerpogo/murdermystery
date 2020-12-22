@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { STRINGS, useTranslator } from "lib/translate";
-import { FC } from "react";
+import { FC, useState } from "react";
 import NameBadge from "./NameBadge";
 import { RightFloatSkippableDelay } from "./SkippableDelay";
 
@@ -43,6 +43,11 @@ export const Vote: FC<VoteProps> = ({
   onVote,
 }: VoteProps) => {
   const t = useTranslator();
+  const [didVote, setDidVote] = useState<boolean>(false);
+
+  if (didVote) {
+    return <Text>{t(STRINGS.WAITING_FOR_VOTE)}</Text>;
+  }
 
   return (
     <>
@@ -54,7 +59,10 @@ export const Vote: FC<VoteProps> = ({
             <VotesDisplay
               key={candidate.id}
               candidate={candidate}
-              onVote={onVote}
+              onVote={(cid) => {
+                onVote(cid);
+                setDidVote(true);
+              }}
             />
           ) : null
         )}

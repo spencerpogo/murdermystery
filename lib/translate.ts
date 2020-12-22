@@ -56,6 +56,7 @@ export enum STRINGS {
   SKIP_USING,
   OK,
   SKIP,
+  WAITING_FOR_VOTE,
 }
 
 export const S = STRINGS;

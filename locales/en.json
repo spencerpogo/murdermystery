@@ -48,5 +48,6 @@
   "NO_TO_USING": "No",
   "SKIP_USING": "Skip",
   "OK": "OK",
-  "SKIP": "Skip"
+  "SKIP": "Skip",
+  "WAITING_FOR_VOTE": "Waiting for vote to finish"
 }
