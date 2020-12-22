@@ -47,5 +47,6 @@
   "YES_TO_USING": "Yes",
   "NO_TO_USING": "No",
   "SKIP_USING": "Skip",
-  "OK": "OK"
+  "OK": "OK",
+  "SKIP": "Skip"
 }
