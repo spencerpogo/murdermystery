@@ -9,6 +9,10 @@ const MyApp = ({ Component, pageProps }: AppProps): JSX.Element => {
       theme={extendTheme({
         useSystemColorMode: false,
         initialColorMode: "dark",
+        config: {
+          initialColorMode: "dark",
+          useSystemColorMode: false,
+        },
       })}
     >
       <Component {...pageProps} />
