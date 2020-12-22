@@ -53,7 +53,7 @@ export enum STRINGS {
   CONFIRM_POISON,
   YES_TO_USING,
   NO_TO_USING,
-  SKIP,
+  SKIP_USING,
   OK,
 }
 

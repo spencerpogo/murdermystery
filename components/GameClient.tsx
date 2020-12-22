@@ -138,7 +138,10 @@ const GameClientInner: FC<GameClientInnerProps> = ({
       }
     });
     if (vr.type === protobuf.VoteRequest.Type.HEALERPOISON) {
-      candidates.push({ id: -1, name: <Text as="b">{t(STRINGS.SKIP)}</Text> });
+      candidates.push({
+        id: -1,
+        name: <Text as="b">{t(STRINGS.SKIP_USING)}</Text>,
+      });
     }
     return candidates;
   };
