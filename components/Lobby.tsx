@@ -33,7 +33,7 @@ export const Lobby: FC<LobbyProps> = ({
       </Heading>
       <Flex mb={3} align="center" justify="space-between">
         <Text as="i">{t(STRINGS.SHARE_TO_INVITE)}</Text>
-        <Button>{t(STRINGS.COPY)}</Button>
+        <Button colorScheme="blue">{t(STRINGS.COPY)}</Button>
       </Flex>
       {/* Polish: style this a bit more, don't use <ul> */}
       <ul>
