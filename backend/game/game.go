@@ -394,6 +394,7 @@ func (g *Game) healerHealHandler(confirmed bool) {
 		// Empty g.killed
 		g.resetKills()
 	}
+	log.Println("Heal response received, ending vote")
 	g.vote.End(g, nil)
 	go g.callHealerPoisonVote()
 }
@@ -402,8 +403,9 @@ func (g *Game) callHealerPoisonVote() {
 	if g.hasPoison {
 		healer, notHealer := g.SessionsByRole(pb.Character_HEALER)
 		g.callVote(healer, notHealer, pb.VoteRequest_HEALERPOISON, g.healerPoisonHandler(), false)
+	} else {
+		g.callJuryVote()
 	}
-	go g.callJuryVote()
 }
 
 func (g *Game) healerPoisonHandler() func(*Vote, *melody.Session, *melody.Session) {
