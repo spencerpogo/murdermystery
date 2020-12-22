@@ -1,6 +1,6 @@
-import { Box, Flex, Heading, Image, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading, Image, Text, useTimeout } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { S, Translator, useTranslator } from "lib/translate";
+import { S, STRINGS, Translator, useTranslator } from "lib/translate";
 import { murdermystery as protobuf } from "pbjs/protobuf";
 import {
   Children,
@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
+import SkippableDelay, { RightFloatSkippableDelay } from "./SkippableDelay";
 
 const { Character } = protobuf;
 
@@ -32,13 +33,16 @@ const WIDTH = 226;
 const HEIGHT = 330;
 const REPS = 10;
 
-const getImgSrc = (name: string) => `/${name}.webp`;
+const getImgSrc = (name: STRINGS) =>
+  `/${(typeof name === "string" ? name : STRINGS[name])
+    .toString()
+    .toLowerCase()}.webp`;
 
 const getImgs = (t: Translator) => {
   // A single round of images
-  let names: string[] = [];
+  let names: STRINGS[] = [];
   for (let round = 0; round < REPS; round += 1) {
-    names = names.concat(NAMES);
+    names = names.concat(NAME_STRINGS);
   }
 
   return Children.map(names, (name, i: number) => (
@@ -78,64 +82,61 @@ const getSpinnerPos = (
     ? lineContainerRef.current.getBoundingClientRect().width / 2
     : 0;
 
-// eslint-disable-next-line no-shadow
-enum Stage {
-  WAIT = 1,
-  SPIN = 2,
-  SHOW = 3,
+export interface CharacterResultProps {
+  name: STRINGS;
 }
 
-export interface CharacterSpinnerProps {
-  character: protobuf.Character;
-  onFinish: () => void;
-}
-
-export const CharacterSpinner: FC<CharacterSpinnerProps> = ({
-  character,
-  onFinish,
-}: CharacterSpinnerProps) => {
+export const CharacterResult: FC<CharacterResultProps> = ({
+  name,
+}: CharacterResultProps) => {
   const t = useTranslator();
+
+  return (
+    <>
+      <Flex width="full" justify="center">
+        <Text color="gray">{t(S.YOU_ARE)}</Text>
+      </Flex>
+      <Flex width="full" justify="center">
+        <Heading>{t(name)}</Heading>
+      </Flex>
+      <Flex width="full" justify="center">
+        <Image src={getImgSrc(name)} height="xl" />
+      </Flex>
+    </>
+  );
+};
+
+export interface CharacterDisplayProps {
+  character: protobuf.Character;
+}
+
+export const CharacterDisplay: FC<CharacterDisplayProps> = ({
+  character,
+}: CharacterDisplayProps) => {
+  const t = useTranslator();
+
   // get a list of JSX that is all images repeated REPS times
   const allImgs: ReactNode[] = getImgs(t);
 
   const cardInd = CHARACTER_INDEXES.indexOf(character);
   if (cardInd === -1) throw new Error(`Invalid character: ${character}`);
 
-  const name = NAMES[cardInd];
-  const nameString = NAME_STRINGS[cardInd];
-
-  const [stage, setStage] = useState<Stage>(Stage.WAIT);
+  const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [shouldAnimate, setShouldAnimate] = useState<boolean>(true);
 
   // We will only be setting this once, but it depends on Math.random(), and it can't
   //  be different every render, so store it in state
-  const [transformAmt, setTransformAmt] = useState<number | null>(null);
-  if (transformAmt == null) {
-    setTransformAmt(getTransformAmt(cardInd));
+  const transformAmtRef = useRef<number>(-1);
+  if (transformAmtRef.current === -1) {
+    transformAmtRef.current = getTransformAmt(cardInd);
   }
+  const transformAmt = transformAmtRef.current;
 
   // The Box with the images. We need it to get the size of it
   const lineContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // After 2s, start spinning, then 11s after that, switch to done
-  useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout>;
-    if (stage === Stage.WAIT) {
-      timeoutId = setTimeout(() => {
-        setStage(Stage.SPIN);
-      }, 2000);
-    } else if (stage === Stage.SPIN) {
-      timeoutId = setTimeout(() => {
-        setStage(Stage.SHOW);
-      }, 11000);
-    } else if (stage === Stage.SHOW) {
-      timeoutId = setTimeout(() => {
-        onFinish();
-      }, 5000);
-    }
-
-    return () => clearTimeout(timeoutId);
-  }, [stage, onFinish]);
+  // Start spinning after 2s
+  useTimeout(() => setIsSpinning(true), 2000);
 
   const onResize = () => {
     // if the window resizes, the line which represents which card they'll get will
@@ -159,56 +160,73 @@ export const CharacterSpinner: FC<CharacterSpinnerProps> = ({
   // Guard for null tranformAmt to make typescript happy, in reality it is always set
   const finalTransform = (transformAmt || 0) - getSpinnerPos(lineContainerRef);
 
-  if (stage === Stage.WAIT || stage === Stage.SPIN) {
-    return (
-      <>
-        <style jsx global>
-          {"body{overflow-x: hidden;}"}
-        </style>
-        <MotionBox
-          animate={stage === Stage.SPIN ? { x: -finalTransform } : undefined}
-          transition={
-            stage === Stage.SPIN && shouldAnimate
-              ? { duration: 9.5, ease: [0.31, 0.9985, 0.31, 0.9985] }
-              : undefined
-          }
-        >
-          <Box whiteSpace="nowrap" pos="absolute" pt="4px">
-            {allImgs}
-          </Box>
-        </MotionBox>
-
-        {/* Line */}
-        <Box ref={lineContainerRef} pos="relative" height={`${HEIGHT + 21}px`}>
-          <Box
-            bg="gold"
-            pos="absolute"
-            left="calc(50% - 1px)"
-            w="3px"
-            height="100%"
-            top="-5px"
-          />
+  return (
+    <>
+      <style jsx global>
+        {"body{overflow-x:hidden;}"}
+      </style>
+      <MotionBox
+        animate={isSpinning ? { x: -finalTransform } : undefined}
+        transition={
+          isSpinning && shouldAnimate
+            ? { duration: 9.5, ease: [0.31, 0.9985, 0.31, 0.9985] }
+            : undefined
+        }
+      >
+        <Box whiteSpace="nowrap" pos="absolute" pt="4px">
+          {allImgs}
         </Box>
-      </>
-    );
-  }
-  if (stage === Stage.SHOW) {
+      </MotionBox>
+
+      {/* Line */}
+      <Box ref={lineContainerRef} pos="relative" height={`${HEIGHT + 21}px`}>
+        <Box
+          bg="gold"
+          pos="absolute"
+          left="calc(50% - 1px)"
+          w="3px"
+          height="100%"
+          top="-5px"
+        />
+      </Box>
+    </>
+  );
+};
+
+export interface CharacterSpinnerProps {
+  character: protobuf.Character;
+  onDone: () => void;
+}
+
+export const CharacterSpinner: FC<CharacterSpinnerProps> = ({
+  character,
+  onDone,
+}: CharacterSpinnerProps) => {
+  const cardInd = CHARACTER_INDEXES.indexOf(character);
+  if (cardInd === -1) throw new Error(`Invalid character: ${character}`);
+  const [spinDone, setSpinDone] = useState<boolean>(false);
+
+  if (!spinDone) {
     return (
       <>
-        <Flex width="full" justify="center">
-          <Text color="gray">{t(S.YOU_ARE)}</Text>
-        </Flex>
-        <Flex width="full" justify="center">
-          <Heading>{t(nameString)}</Heading>
-        </Flex>
-        <Flex width="full" justify="center">
-          <Image src={getImgSrc(name)} height="xl" />
-        </Flex>
+        <CharacterDisplay character={character} />
+        <RightFloatSkippableDelay
+          duration={11}
+          onDone={() => setSpinDone(true)}
+        />
       </>
     );
   }
-  // Should never happen
-  return null;
+
+  const name = NAME_STRINGS[cardInd];
+  return (
+    <>
+      <CharacterResult name={name} />
+      <Flex justifyContent="flex-end">
+        <SkippableDelay duration={3} onDone={onDone} />
+      </Flex>
+    </>
+  );
 };
 
 export default CharacterSpinner;

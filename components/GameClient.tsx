@@ -174,7 +174,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     view = (
       <CharacterSpinner
         character={character || ""}
-        onFinish={() => setSpinDone(true)}
+        onDone={() => setSpinDone(true)}
       />
     );
   } else if (showFellowWolves) {
