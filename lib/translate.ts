@@ -57,6 +57,7 @@ export enum STRINGS {
   OK,
   SKIP,
   WAITING_FOR_VOTE,
+  PICK_WEREWOLF,
 }
 
 export const S = STRINGS;

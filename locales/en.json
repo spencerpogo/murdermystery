@@ -49,5 +49,6 @@
   "SKIP_USING": "Skip",
   "OK": "OK",
   "SKIP": "Skip",
-  "WAITING_FOR_VOTE": "Waiting for vote to finish"
+  "WAITING_FOR_VOTE": "Waiting for vote to finish",
+  "PICK_WEREWOLF": "Who is the killer?"
 }

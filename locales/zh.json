@@ -27,7 +27,7 @@
   "HEALER": "女巫",
   "PROPHET": "预言家",
   "HUNTER": "猎人",
-  "FELLOW_WOLVES": "别的浪人",
+  "FELLOW_WOLVES": "别的狼人",
   "VOTES": "票数",
   "HAS_NOT_VOTED": "还没有投票",
   "PLEASE_VOTE": "请投票",
@@ -49,5 +49,6 @@
   "SKIP_USING": "跳过使用",
   "OK": "好的",
   "SKIP": "跳过",
-  "WAITING_FOR_VOTE": "等待投票完成"
+  "WAITING_FOR_VOTE": "等待投票完成",
+  "PICK_WEREWOLF": "谁是狼人？"
 }

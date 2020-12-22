@@ -76,7 +76,9 @@ const GameClientInner: FC<GameClientInnerProps> = ({
 
   // Utitility functions
 
-  function typeToMsg(val: protobuf.VoteRequest.Type | null | undefined) {
+  function typeToMsg(
+    val: protobuf.VoteRequest.Type | null | undefined
+  ): STRINGS {
     // Decode the vote type
     switch (val) {
       case VoteType.KILL:
@@ -84,7 +86,10 @@ const GameClientInner: FC<GameClientInnerProps> = ({
       case VoteType.PROPHET:
         return STRINGS.PICK_REVEAL;
       case VoteType.HEALERHEAL:
+      case VoteType.HEALERPOISON:
         return STRINGS.PLEASE_CONFIRM;
+      case VoteType.JURY:
+        return STRINGS.PICK_WEREWOLF;
       default:
         return STRINGS.PLEASE_VOTE;
     }
