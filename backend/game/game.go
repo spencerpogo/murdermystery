@@ -301,9 +301,12 @@ func (g *Game) resetKills() {
 }
 
 func (g *Game) callWolfVote() {
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
 	wolfSessions, nonWolfSessions := g.SessionsByRole(pb.Character_WEREWOLF)
 
-	g.callVote(wolfSessions, nonWolfSessions, pb.VoteRequest_KILL, g.wolfVoteHandler(), true)
+	go g.callVote(wolfSessions, nonWolfSessions, pb.VoteRequest_KILL, g.wolfVoteHandler(), true)
 }
 
 // Handler assumes game is locked
@@ -352,11 +355,14 @@ func (g *Game) prophetVoteHandler(killed *melody.Session) func(*Vote, *melody.Se
 		// Doesn't really matter if this is at top or bottom, put at bottom just to be safe
 		g.vote.End(g, nil)
 
-		g.callHealerHealVote()
+		go g.callHealerHealVote()
 	}
 }
 
 func (g *Game) callHealerHealVote() {
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
 	if g.hasHeal {
 		log.Println("Starting healer vote")
 		healer, _ := g.SessionsByRole(pb.Character_HEALER)
@@ -382,7 +388,7 @@ func (g *Game) callHealerHealVote() {
 		log.Println("Calling healer vote, g.killed:", g.killed)
 		go g.callVote(healer, []*melody.Session{}, pb.VoteRequest_HEALERHEAL, func(v *Vote, t, c *melody.Session) {}, false)
 	} else {
-		g.callHealerPoisonVote()
+		go g.callHealerPoisonVote()
 	}
 }
 
@@ -400,11 +406,14 @@ func (g *Game) healerHealHandler(confirmed bool) {
 }
 
 func (g *Game) callHealerPoisonVote() {
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
 	if g.hasPoison {
 		healer, notHealer := g.SessionsByRole(pb.Character_HEALER)
-		g.callVote(healer, notHealer, pb.VoteRequest_HEALERPOISON, g.healerPoisonHandler(), false)
+		go g.callVote(healer, notHealer, pb.VoteRequest_HEALERPOISON, g.healerPoisonHandler(), false)
 	} else {
-		g.callJuryVote()
+		go g.callJuryVote()
 	}
 }
 
@@ -423,6 +432,9 @@ func (g *Game) healerPoisonHandler() func(*Vote, *melody.Session, *melody.Sessio
 }
 
 func (g *Game) callJuryVote() {
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
 	// Make list of all killed IDs
 	killedIDs := make([]int32, len(g.killed))
 	i := 0
@@ -451,7 +463,7 @@ func (g *Game) callJuryVote() {
 			printerr(err)
 		}
 	}
-	g.callVote(clients, clients, pb.VoteRequest_JURY, g.juryVoteHandler(), true)
+	go g.callVote(clients, clients, pb.VoteRequest_JURY, g.juryVoteHandler(), true)
 }
 
 func (g *Game) juryVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
