@@ -1,7 +1,7 @@
 module.exports = {
   "*.{js,jsx,ts,tsx}": [
     "prettier --write",
-    () => "npm run eslint --cache --fix",
+    "npx eslint --cache --fix",
     () => "npx tsc --noemit",
   ],
   "*.{md,yml,json}": "prettier --write",
