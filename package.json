@@ -21,7 +21,7 @@
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
     "framer-motion": "^2.9.5",
-    "next": "^10.0.3",
+    "next": "^10.0.4",
     "protobufjs": "^6.10.2",
     "react": "16.14.0",
     "react-dom": "16.14.0"
