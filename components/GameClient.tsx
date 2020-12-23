@@ -2,6 +2,7 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
+  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -98,22 +99,44 @@ const GameClientInner: FC<GameClientInnerProps> = ({
   function typeToDesc(
     val: protobuf.VoteRequest.Type | null | undefined
   ): JSX.Element | null {
-    if (val === protobuf.VoteRequest.Type.HEALERHEAL) {
-      return (
-        <>
-          {(killReveal || [-1]).map((id) => (
-            <NameBadge key={id} text={IDToName(id) || "??"} />
-          ))}
-          <Text ml="1" d="inline-block">
-            {t(STRINGS.WAS_KILLED_CONFIRM_HEAL)}
-          </Text>
-        </>
-      );
+    switch (val) {
+      case protobuf.VoteRequest.Type.HEALERHEAL:
+        return (
+          <>
+            <HStack>
+              {(killReveal || [-1]).map((id) => (
+                <NameBadge key={id} text={IDToName(id) || "??"} />
+              ))}
+            </HStack>
+            <Text ml="1" d="inline-block">
+              {t(STRINGS.WAS_KILLED_CONFIRM_HEAL)}
+            </Text>
+          </>
+        );
+      case protobuf.VoteRequest.Type.HEALERPOISON:
+        return <Text>{t(STRINGS.CONFIRM_POISON)}</Text>;
+      case protobuf.VoteRequest.Type.JURY:
+        return (
+          <>
+            <Text fontSize="xl" mb="2">
+              {t(STRINGS.KILLS_DURING_NIGHT)}
+            </Text>
+            {killReveal && killReveal.length ? (
+              <HStack>
+                {(killReveal || []).map((id) => (
+                  <NameBadge key={id} text={IDToName(id) || "?"} />
+                ))}
+              </HStack>
+            ) : (
+              <Text as="i" size="lg">
+                {t(STRINGS.NONE)}
+              </Text>
+            )}
+          </>
+        );
+      default:
+        return null;
     }
-    if (val === protobuf.VoteRequest.Type.HEALERPOISON) {
-      return <Text>{t(STRINGS.CONFIRM_POISON)}</Text>;
-    }
-    return null;
   }
 
   const IDToName = (id: number | null | undefined) =>

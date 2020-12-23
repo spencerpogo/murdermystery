@@ -50,5 +50,7 @@
   "OK": "OK",
   "SKIP": "Skip",
   "WAITING_FOR_VOTE": "Waiting for vote to finish",
-  "PICK_WEREWOLF": "Who is the killer?"
+  "PICK_WEREWOLF": "Who is the killer?",
+  "KILLS_DURING_NIGHT": "People killed during the night:",
+  "NONE": "None"
 }

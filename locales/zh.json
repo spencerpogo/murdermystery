@@ -50,5 +50,7 @@
   "OK": "好的",
   "SKIP": "跳过",
   "WAITING_FOR_VOTE": "等待投票完成",
-  "PICK_WEREWOLF": "谁是狼人？"
+  "PICK_WEREWOLF": "谁是狼人？",
+  "KILLS_DURING_NIGHT": "在晚上被杀死的人：",
+  "NONE": "没有"
 }
