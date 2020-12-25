@@ -16,11 +16,11 @@
     "go-vet": "cd backend && go vet ."
   },
   "dependencies": {
-    "@chakra-ui/react": "^1.0.3",
+    "@chakra-ui/react": "^1.0.4",
     "@chakra-ui/system": "^1.1.0",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
-    "framer-motion": "^2.9.5",
+    "framer-motion": "^3.0.0",
     "next": "^10.0.4",
     "protobufjs": "^6.10.2",
     "react": "16.14.0",
