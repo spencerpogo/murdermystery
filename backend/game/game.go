@@ -465,6 +465,9 @@ func (g *Game) callJuryVote() {
 	if err != nil {
 		return
 	}
+	// Now that the kills are revealed, commit them so that dead people can't be voted for
+	g.commitKills()
+
 	// Make a list of all client sessions, sending killreveal message to each
 	clients := make([]*melody.Session, len(g.clients))
 	i = 0
