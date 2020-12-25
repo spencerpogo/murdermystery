@@ -14,7 +14,10 @@ export interface AlertContent {
 // Typing this function's return would be too complicated, plus it only returns once
 //  and the type can be inferred.
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export default function useMessageHandler(onError: (msg: STRINGS) => void) {
+export default function useMessageHandler(
+  onError: (msg: STRINGS) => void,
+  onGameOver: () => void
+) {
   // Our player ID
   // Set to -2 so it is different from spectator ID of -1, otherwise we will never
   //  re-render as a spectator
@@ -55,6 +58,7 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
   ] = useState<protobuf.IProphetReveal | null>(null);
   // The kill revealed to the healer
   const [killReveal, setKillReveal] = useState<number[] | null>(null);
+  const [gameOver, setGameOver] = useState<protobuf.IGameOver | null>(null);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -143,6 +147,11 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     }
   }
 
+  function handleGameOver(msg: protobuf.IGameOver) {
+    setGameOver(msg);
+    onGameOver();
+  }
+
   // Call the proper handler based on the ServerMessage.
   // Protobuf guarantees only one of these cases will be true due to `oneof`, so this
   //  is the best way to call the correct handler.
@@ -158,6 +167,7 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     if (msg.voteOver) return handleVoteOver(msg.voteOver);
     if (msg.prophetReveal) return handleProphetReveal(msg.prophetReveal);
     if (msg.killReveal) return handlerHealerKillReveal(msg.killReveal);
+    if (msg.gameOver) return handleGameOver(msg.gameOver);
     throw new Error("Not implemented. ");
   };
 
@@ -192,6 +202,7 @@ export default function useMessageHandler(onError: (msg: STRINGS) => void) {
     voteType,
     prophetReveal,
     killReveal,
+    gameOver,
     // State setters
     setShowFellowWolves,
     setProphetReveal,

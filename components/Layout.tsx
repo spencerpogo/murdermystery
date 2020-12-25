@@ -16,7 +16,7 @@ export const Layout: FC<LayoutProps> = ({ children }: LayoutProps) => {
         <title>{title}</title>
       </Head>
 
-      {children}
+      <main>{children}</main>
     </>
   );
 };

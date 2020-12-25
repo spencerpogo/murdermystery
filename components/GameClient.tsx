@@ -31,6 +31,7 @@ interface GameClientInnerProps {
   gameId: string;
   nameProp: string;
   onError: (e: STRINGS) => void;
+  onGameOver: () => void;
 }
 
 const GameClientInner: FC<GameClientInnerProps> = ({
@@ -38,6 +39,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
   gameId,
   nameProp,
   onError,
+  onGameOver,
 }: GameClientInnerProps) => {
   const t = useTranslator();
 
@@ -61,12 +63,13 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     voteType,
     prophetReveal,
     killReveal,
+    gameOver,
     // State setters
     setShowFellowWolves,
     setProphetReveal,
     setAlertContent,
     setVoteResult,
-  } = useMessageHandler(onError);
+  } = useMessageHandler(onError, onGameOver);
 
   const { isConnected, send } = useGameSocket(
     `${server}/game/${gameId}`,
@@ -188,9 +191,11 @@ const GameClientInner: FC<GameClientInnerProps> = ({
   // If we are here the game is all ready.
 
   let view; // The main component we will render
-  if (playerID === -1) {
+  if (gameOver) {
+    view = null;
+  } else if (playerID === -1) {
     // We are a spectator
-    return <p>You are a spectator. Waiting for server to update us...</p>;
+    view = <p>You are a spectator. Waiting for server to update us...</p>;
   }
   if (!character) {
     view = (
@@ -286,13 +291,14 @@ export const GameClient: FC<GameClientProps> = ({
 }: GameClientProps) => {
   const t = useTranslator();
 
+  const [gameOver, setGameOver] = useState<boolean>(false);
   const [error, setError] = useState<STRINGS | null>(null);
   // The onError function will set the error variable only if it is not already set. If
   //  it is called rapidly, the error variable will be out of date and it could clobber
   //  the error. The canSet variable allow it to ensure it only sets once per render.
   let canSet = true;
 
-  if (error) {
+  if (!gameOver && error) {
     return (
       <Alert status="error">
         <AlertIcon />
@@ -311,6 +317,7 @@ export const GameClient: FC<GameClientProps> = ({
           setError(err);
         }
       }}
+      onGameOver={() => setGameOver(true)}
     />
   );
 };

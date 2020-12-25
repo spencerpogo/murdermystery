@@ -1,6 +1,12 @@
 import { Box, Flex, Heading, Image, Text, useTimeout } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { S, STRINGS, Translator, useTranslator } from "lib/translate";
+import {
+  characterToImg,
+  characterToString,
+  CHARACTER_INDEXES,
+  NAME_STRINGS,
+} from "lib/CharacterImg";
+import { S, Translator, useTranslator } from "lib/translate";
 import { murdermystery as protobuf } from "pbjs/protobuf";
 import {
   Children,
@@ -13,42 +19,23 @@ import {
 } from "react";
 import SkippableDelay, { RightFloatSkippableDelay } from "./SkippableDelay";
 
-const { Character } = protobuf;
-
 const MotionBox = motion.custom(Box);
 
-// CHARACTER_INDEXES has protobuf character enum values in the same positions as the
-//  corresponding value in the NAMES array
-const CHARACTER_INDEXES = [
-  Character.CITIZEN,
-  Character.WEREWOLF,
-  Character.HEALER,
-  Character.PROPHET,
-  Character.HUNTER,
-];
-
-const NAMES = ["citizen", "werewolf", "healer", "prophet", "hunter"];
-const NAME_STRINGS = [S.CITIZEN, S.WEREWOLF, S.HEALER, S.PROPHET, S.HUNTER];
 const WIDTH = 226;
 const HEIGHT = 330;
 const REPS = 10;
 
-const getImgSrc = (name: STRINGS) =>
-  `/${(typeof name === "string" ? name : STRINGS[name])
-    .toString()
-    .toLowerCase()}.webp`;
-
 const getImgs = (t: Translator) => {
   // A single round of images
-  let names: STRINGS[] = [];
+  let names: protobuf.Character[] = [];
   for (let round = 0; round < REPS; round += 1) {
-    names = names.concat(NAME_STRINGS);
+    names = names.concat(CHARACTER_INDEXES);
   }
 
   return Children.map(names, (name, i: number) => (
     <Box d="inline-block">
       <Image
-        src={getImgSrc(name)}
+        src={characterToImg(name)}
         alt={t(NAME_STRINGS[i])}
         width={`${WIDTH}px`}
         height={`${HEIGHT}px`}
@@ -65,7 +52,7 @@ const getImgs = (t: Translator) => {
  */
 const getTransformAmt = (cardInd: number) => {
   // always go at least across all cards 6 times, and account for spinner position
-  const minDist = WIDTH * NAMES.length * 7;
+  const minDist = WIDTH * CHARACTER_INDEXES.length * 7;
 
   // A random px amount between 5 and 9 percent of card_width
   const rand = Math.random() * (WIDTH * 0.09) + WIDTH * 0.05;
@@ -83,7 +70,7 @@ const getSpinnerPos = (
     : 0;
 
 export interface CharacterResultProps {
-  name: STRINGS;
+  name: protobuf.Character;
 }
 
 export const CharacterResult: FC<CharacterResultProps> = ({
@@ -97,10 +84,10 @@ export const CharacterResult: FC<CharacterResultProps> = ({
         <Text color="gray">{t(S.YOU_ARE)}</Text>
       </Flex>
       <Flex width="full" justify="center">
-        <Heading>{t(name)}</Heading>
+        <Heading>{t(characterToString(name))}</Heading>
       </Flex>
       <Flex width="full" justify="center">
-        <Image src={getImgSrc(name)} height="xl" />
+        <Image src={characterToImg(name)} height="xl" />
       </Flex>
     </>
   );
@@ -218,10 +205,9 @@ export const CharacterSpinner: FC<CharacterSpinnerProps> = ({
     );
   }
 
-  const name = NAME_STRINGS[cardInd];
   return (
     <>
-      <CharacterResult name={name} />
+      <CharacterResult name={character} />
       <Flex justifyContent="flex-end" mt="2">
         <SkippableDelay duration={3} onDone={onDone} />
       </Flex>
