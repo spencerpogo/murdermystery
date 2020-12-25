@@ -116,7 +116,22 @@ func (g *Game) HandleRequest(w http.ResponseWriter, r *http.Request) error {
 }
 
 // End ends the game
-func (g *Game) End(reason pb.Error_EType) {
+func (g *Game) End() {
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
+	if !g.started {
+		return
+	}
+	g.started = false
+
+	err := g.m.Close()
+	printerr(err)
+	g.destroyFn()
+}
+
+// EndWithError sends a pb.Error message then ends the game
+func (g *Game) EndWithError(reason pb.Error_EType) {
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -133,9 +148,7 @@ func (g *Game) End(reason pb.Error_EType) {
 	printerr(err)
 	time.Sleep(200 * time.Millisecond)
 
-	err = g.m.Close()
-	printerr(err)
-	g.destroyFn()
+	go g.End()
 }
 
 // Returns whether the host is valid. Assumes game is locked!
@@ -551,8 +564,8 @@ func (g *Game) handleGameOver(reason pb.GameOver_Reason) {
 
 	err = g.m.BroadcastBinary(msg)
 	printerr(err)
+	time.Sleep(200 * time.Millisecond)
 
 	// End the game
-	// TODO: Don't require an error type in g.End
-	// g.End()
+	g.End()
 }

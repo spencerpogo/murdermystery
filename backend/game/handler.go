@@ -73,7 +73,7 @@ func (g *Game) handleDisconnect(s *melody.Session) {
 	if g.started {
 		log.Println("Stopping game")
 		// Call in a goroutine so deferred game unlock can run
-		go g.End(pb.Error_DISCONNECT)
+		go g.EndWithError(pb.Error_DISCONNECT)
 		return
 	}
 
