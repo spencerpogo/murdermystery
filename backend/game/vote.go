@@ -139,10 +139,13 @@ func (v *Vote) GetResult() (pb.VoteResultType, *melody.Session) {
 	scoreLen := len(scores)
 
 	winningScore := scores[scoreLen-1]
-	if winningScore == scores[scoreLen-2] {
-		// Tie
-		return pb.VoteResultType_TIE, nil
+	if scoreLen >= 2 {
+		if winningScore == scores[scoreLen-2] {
+			// Tie
+			return pb.VoteResultType_TIE, nil
+		}
 	}
+
 	// Find winner
 	var winner *melody.Session
 	for choice, score := range tally {
