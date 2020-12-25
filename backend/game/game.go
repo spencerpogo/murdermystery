@@ -491,6 +491,68 @@ func (g *Game) juryVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
 		v.End(g, &pb.JuryVoteResult{Status: status, Winner: winnerID})
 		g.commitKills()
 
-		// TODO: Check for game over and then g.callWolfVote()
+		gameOverReason := g.checkForGameOver()
+		if gameOverReason != pb.GameOver_NONE {
+			// The game is over. Send game over message and end it.
+			g.handleGameOver(gameOverReason)
+		}
 	}
+}
+
+// checkForGameOver checks whether the game is over. Assumes game is locked.
+func (g *Game) checkForGameOver() pb.GameOver_Reason {
+	// There are two ways in which the werewolves can win. If they kill all special roles
+	//  or if they kill all citizens.
+	// If all wolves die, then the wolves lose.
+
+	// Check if any wolves are alive.
+	wolves, _ := g.SessionsByRole(pb.Character_WEREWOLF)
+	if len(wolves) == 0 {
+		log.Println("No wolves, citizens win")
+		return pb.GameOver_CITIZEN_WIN
+	}
+	// Check if any citizens are alive
+	citizens, specialAndWolves := g.SessionsByRole(pb.Character_CITIZEN)
+	if len(citizens) == 0 {
+		log.Println("No citizens, werewolves win")
+		return pb.GameOver_WEREWOLF_WIN
+	}
+	// Check if any special roles are alive
+	for _, s := range specialAndWolves {
+		c := g.clients[s]
+		if c != nil {
+			// If they are not a citizen and not a werewolf, they are special
+			if c.role != pb.Character_WEREWOLF {
+				// and they are alive so the game is still going
+				log.Println("Found special, game still going")
+				return pb.GameOver_NONE
+			}
+		}
+	}
+	// If we got here, there were no special people in the non-citizen list, so the
+	//  werewolves won.
+	log.Println("No specials, werewolves win")
+	return pb.GameOver_WEREWOLF_WIN
+}
+
+func (g *Game) handleGameOver(reason pb.GameOver_Reason) {
+	// Reveal all player characters
+	players := make([]*pb.GameOver_Player, len(g.clients))
+	i := 0
+	for _, c := range g.clients {
+		players[i] = &pb.GameOver_Player{Id: c.ID, Character: c.role}
+		i++
+	}
+	// Marshal gameover msg
+	msg, err := protocol.Marshal(&pb.GameOver{Reason: reason, Players: players})
+	if err != nil {
+		return
+	}
+
+	err = g.m.BroadcastBinary(msg)
+	printerr(err)
+
+	// End the game
+	// TODO: Don't require an error type in g.End
+	// g.End()
 }

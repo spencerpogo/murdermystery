@@ -84,6 +84,17 @@ message KillReveal { repeated int32 killed_IDs = 1; }
 
 message Killed {}
 
+message GameOver {
+  enum Reason { NONE = 0; WEREWOLF_WIN = 1; CITIZEN_WIN = 2; }
+  message Player {
+    int32 id = 1;
+    Character character = 2;
+  }
+
+  Reason reason = 1;
+  repeated Player players = 2;
+}
+
 // The Server message
 message ServerMessage {
   oneof data {
