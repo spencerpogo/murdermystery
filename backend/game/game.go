@@ -125,6 +125,7 @@ func (g *Game) End() {
 	}
 	g.started = false
 
+	log.Println("Game ending")
 	err := g.m.Close()
 	printerr(err)
 	g.destroyFn()
@@ -508,6 +509,9 @@ func (g *Game) juryVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
 		if gameOverReason != pb.GameOver_NONE {
 			// The game is over. Send game over message and end it.
 			g.handleGameOver(gameOverReason)
+		} else {
+			// The game is not over. Start a new night with the first vote!
+			go g.callWolfVote()
 		}
 	}
 }

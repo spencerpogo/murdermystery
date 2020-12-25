@@ -37,6 +37,8 @@ func toServerMessage(m interface{ ProtoMessage() }) *pb.ServerMessage {
 		return &pb.ServerMessage{Data: &pb.ServerMessage_KillReveal{KillReveal: r}}
 	case *pb.Killed:
 		return &pb.ServerMessage{Data: &pb.ServerMessage_Killed{Killed: r}}
+	case *pb.GameOver:
+		return &pb.ServerMessage{Data: &pb.ServerMessage_GameOver{GameOver: r}}
 	default:
 		return nil
 	}

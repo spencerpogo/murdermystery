@@ -111,6 +111,7 @@ message ServerMessage {
     SpectatorStatus spectator_status = 12;
     KillReveal kill_reveal = 13;
     Killed killed = 14;
+    GameOver game_over = 15;
   }
 }
 
