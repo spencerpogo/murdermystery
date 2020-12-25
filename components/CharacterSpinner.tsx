@@ -222,7 +222,7 @@ export const CharacterSpinner: FC<CharacterSpinnerProps> = ({
   return (
     <>
       <CharacterResult name={name} />
-      <Flex justifyContent="flex-end">
+      <Flex justifyContent="flex-end" mt="2">
         <SkippableDelay duration={3} onDone={onDone} />
       </Flex>
     </>
