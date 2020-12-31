@@ -8,6 +8,14 @@ import (
 	"gopkg.in/olahol/melody.v1"
 )
 
+func (g *Game) callProphetVote() {
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
+	prophet, notProphet := g.SessionsByRole(pb.Character_PROPHET)
+	go g.callVote(prophet, notProphet, pb.VoteRequest_PROPHET, g.prophetVoteHandler(), false)
+}
+
 // prohetReveal reveals whether choice is good or bad to prophet. Returns true on
 //  sucess, false otherwise. Assumes game is locked.
 func (g *Game) prophetReveal(prophet, choice *melody.Session) bool {
@@ -29,7 +37,7 @@ func (g *Game) prophetReveal(prophet, choice *melody.Session) bool {
 }
 
 // Handler assumes game is locked
-func (g *Game) prophetVoteHandler(killed *melody.Session) func(*Vote, *melody.Session, *melody.Session) {
+func (g *Game) prophetVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
 	return func(v *Vote, voter, candidate *melody.Session) {
 		if g.vote != v {
 			return

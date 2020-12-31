@@ -25,7 +25,6 @@ func (g *Game) wolfVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
 		g.vote.End(g, nil)
 
 		// The kill will actually happen after the healer vote
-		prophet, notProphet := g.SessionsByRole(pb.Character_PROPHET)
-		go g.callVote(prophet, notProphet, pb.VoteRequest_PROPHET, g.prophetVoteHandler(killed), false)
+		go g.callProphetVote()
 	}
 }
