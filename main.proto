@@ -72,14 +72,6 @@ message ProphetReveal {
   bool good = 2;
 }
 
-message SpectatorStatus {
-  message Player {
-    Character character = 1;
-    string name = 2;
-  }
-  repeated Player players = 1;
-}
-
 message KillReveal { repeated int32 killed_IDs = 1; }
 
 enum KillReason { UNKNOWN = 0; WOLVES = 1; VOTED = 2; HEALERPOISON = 3; }
@@ -97,6 +89,52 @@ message GameOver {
   repeated Player players = 2;
 }
 
+message SpectatorAssignedCharacter {
+  int32 id = 1;
+  Character character = 2;
+}
+
+message SpectatorProphetReveal {
+  int32 prophet_id = 1;
+  int32 choice_id = 2;
+  bool good = 3;
+}
+
+message SpectatorHealerHeal {
+  int32 healer = 1;
+  repeated int32 healed = 2;
+}
+
+// Don't need SpectatorHealerPoison because that is a KillReason handled by
+// SpecatatorKill.
+
+message SpectatorKill {
+  KillReason reason = 1;
+  int32 killed = 2;
+}
+
+message SpectatorVoteRequest {
+  repeated int32 candidates = 1;
+  VoteRequest vote_request = 2;
+}
+
+message SpectatorVoteOver { VoteOver vote_over = 3; }
+
+// No SpectatorGameOver, GameOver is broadcast to everyone
+
+message SpectatorUpdate {
+  oneof evt {
+    SpectatorAssignedCharacter set_char = 1;
+    SpectatorProphetReveal prophet_reveal = 2;
+    SpectatorHealerHeal healer_heal = 3;
+    SpectatorKill kill = 4;
+    SpectatorVoteRequest vote_request = 5;
+    SpectatorVoteOver vote_over = 6;
+  }
+}
+
+message BulkSpectatorUpdate { repeated SpectatorUpdate update = 1; }
+
 // The Server message
 message ServerMessage {
   oneof data {
@@ -110,10 +148,11 @@ message ServerMessage {
     VoteRequest vote_request = 8;
     VoteOver vote_over = 9;
     ProphetReveal prophet_reveal = 11;
-    SpectatorStatus spectator_status = 12;
+    SpectatorUpdate spectator_update = 12;
     KillReveal kill_reveal = 13;
     Killed killed = 14;
     GameOver game_over = 15;
+    BulkSpectatorUpdate bulk_spectator_update = 16;
   }
 }
 

@@ -72,19 +72,23 @@ type Game struct {
 	// Healer capabilities
 	hasHeal   bool
 	hasPoison bool
+
+	// Spectator events
+	spectatorMsgs []*pb.SpectatorUpdate
 }
 
 // New constructs a new game
 func New(destroyFn func()) *Game {
 	g := &Game{
-		m:          melody.New(),
-		nextID:     1,
-		destroyFn:  destroyFn,
-		clients:    make(map[*melody.Session]*Client),
-		spectators: make(map[*melody.Session]bool),
-		killed:     make(map[*melody.Session]pb.KillReason),
-		hasHeal:    true,
-		hasPoison:  true,
+		m:             melody.New(),
+		nextID:        1,
+		destroyFn:     destroyFn,
+		clients:       make(map[*melody.Session]*Client),
+		spectators:    make(map[*melody.Session]bool),
+		killed:        make(map[*melody.Session]pb.KillReason),
+		hasHeal:       true,
+		hasPoison:     true,
+		spectatorMsgs: make([]*pb.SpectatorUpdate, 0),
 	}
 	// For debug
 	g.m.Upgrader.CheckOrigin = func(r *http.Request) bool { return true }
@@ -214,7 +218,7 @@ func (g *Game) syncPlayers() {
 
 // updateSpectators updates the connected spectators to the current game state
 func (g *Game) updateSpectators() {
-	players := []*pb.SpectatorStatus_Player{}
+	/*players := []*pb.SpectatorStatus_Player{}
 	for _, c := range g.clients {
 		if c != nil {
 			players = append(players, &pb.SpectatorStatus_Player{Character: c.role, Name: c.name})
@@ -229,7 +233,7 @@ func (g *Game) updateSpectators() {
 	for s := range g.spectators {
 		err = s.WriteBinary(msg)
 		printerr(err)
-	}
+	}*/
 }
 
 // A helper function to get the ID of a client
