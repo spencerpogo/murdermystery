@@ -82,6 +82,8 @@ message SpectatorStatus {
 
 message KillReveal { repeated int32 killed_IDs = 1; }
 
+enum KillReason { UNKNOWN = 0; WOLVES = 1; VOTED = 2; HEALERPOISON = 3; }
+
 message Killed {}
 
 message GameOver {

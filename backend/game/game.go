@@ -284,6 +284,12 @@ func (g *Game) getKilled() *melody.Session {
 	return r
 }
 
+// stageKill sets a value in g.killed.
+func (g *Game) stageKill(s *melody.Session, reason pb.KillReason) {
+	log.Println("Adding to killed:", s, "Reason:", reason)
+	g.killed[s] = true
+}
+
 func (g *Game) kill(s *melody.Session) {
 	c, ok := g.clients[s]
 	if !ok {
@@ -328,7 +334,7 @@ func (g *Game) wolfVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
 	return func(v *Vote, voter, killed *melody.Session) {
 		log.Println("Wolf vote over")
 		log.Println(killed, "killed by wolves")
-		g.killed[killed] = true
+		g.stageKill(killed, pb.KillReason_WOLVES)
 		g.vote.End(g, nil)
 
 		// The kill will actually happen after the healer vote
@@ -438,7 +444,7 @@ func (g *Game) healerPoisonHandler() func(*Vote, *melody.Session, *melody.Sessio
 		if g.hasPoison && candidate != nil {
 			log.Println("Poison used on", candidate)
 			g.hasPoison = false
-			g.killed[candidate] = true
+			g.stageKill(candidate, pb.KillReason_HEALERPOISON)
 		}
 		g.vote.End(g, nil)
 		log.Println("After poison g.killed:", g.killed)
@@ -501,7 +507,7 @@ func (g *Game) juryVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
 			client := g.clients[winner]
 			if client != nil {
 				winnerID = client.ID
-				g.killed[winner] = true
+				g.stageKill(winner, pb.KillReason_VOTED)
 			}
 		}
 
