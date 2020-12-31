@@ -52,5 +52,8 @@
   "WAITING_FOR_VOTE": "等待投票完成",
   "PICK_WEREWOLF": "谁是狼人？",
   "KILLS_DURING_NIGHT": "在晚上被杀死的人：",
-  "NONE": "没有"
+  "NONE": "没有",
+  "CITIZENS_WIN": "村民赢",
+  "WEREWOLVES_WIN": "狼人赢",
+  "GAME_OVER": "游戏结束"
 }

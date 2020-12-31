@@ -52,5 +52,8 @@
   "WAITING_FOR_VOTE": "Waiting for vote to finish",
   "PICK_WEREWOLF": "Who is the killer?",
   "KILLS_DURING_NIGHT": "People killed during the night:",
-  "NONE": "None"
+  "NONE": "None",
+  "CITIZENS_WIN": "Citizens Win",
+  "WEREWOLVES_WIN": "Werewolves Win",
+  "GAME_OVER": "Game Over"
 }

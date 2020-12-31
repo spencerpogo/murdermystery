@@ -18,6 +18,7 @@ import { FC, useState } from "react";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import CharacterSpinner from "./CharacterSpinner";
 import FellowWolves from "./FellowWolves";
+import GameOver from "./GameOver";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
 import NameBadge from "./NameBadge";
@@ -63,7 +64,8 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     voteType,
     prophetReveal,
     killReveal,
-    gameOver,
+    gameIsOver,
+    gameOverRef,
     // State setters
     setShowFellowWolves,
     setProphetReveal,
@@ -191,8 +193,18 @@ const GameClientInner: FC<GameClientInnerProps> = ({
   // If we are here the game is all ready.
 
   let view; // The main component we will render
-  if (gameOver) {
-    view = null;
+  if (gameIsOver) {
+    const gameOver: protobuf.IGameOver = gameOverRef.current || {};
+    view = (
+      <GameOver
+        winReason={gameOver.reason || protobuf.GameOver.Reason.NONE}
+        players={(gameOver.players || []).map((p) => ({
+          id: p.id || -1,
+          name: IDToName(p.id),
+          role: p.character || protobuf.Character.NONE,
+        }))}
+      />
+    );
   } else if (playerID === -1) {
     // We are a spectator
     view = <p>You are a spectator. Waiting for server to update us...</p>;

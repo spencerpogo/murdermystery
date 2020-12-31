@@ -1,5 +1,5 @@
 import { murdermystery as protobuf } from "pbjs/protobuf";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { STRINGS } from "./translate";
 
 export interface PlayerIDMap {
@@ -58,7 +58,8 @@ export default function useMessageHandler(
   ] = useState<protobuf.IProphetReveal | null>(null);
   // The kill revealed to the healer
   const [killReveal, setKillReveal] = useState<number[] | null>(null);
-  const [gameOver, setGameOver] = useState<protobuf.IGameOver | null>(null);
+  const [gameIsOver, setGameIsOver] = useState<boolean>(false);
+  const gameOverRef = useRef<protobuf.IGameOver | null>(null);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -148,7 +149,8 @@ export default function useMessageHandler(
   }
 
   function handleGameOver(msg: protobuf.IGameOver) {
-    setGameOver(msg);
+    gameOverRef.current = msg;
+    setGameIsOver(true);
     onGameOver();
   }
 
@@ -202,7 +204,8 @@ export default function useMessageHandler(
     voteType,
     prophetReveal,
     killReveal,
-    gameOver,
+    gameIsOver,
+    gameOverRef,
     // State setters
     setShowFellowWolves,
     setProphetReveal,

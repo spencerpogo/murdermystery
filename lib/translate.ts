@@ -60,6 +60,9 @@ export enum STRINGS {
   PICK_WEREWOLF,
   KILLS_DURING_NIGHT,
   NONE,
+  CITIZENS_WIN,
+  WEREWOLVES_WIN,
+  GAME_OVER,
 }
 
 export const S = STRINGS;

@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, HStack, Image } from "@chakra-ui/react";
 import { characterToImg, characterToString } from "lib/CharacterImg";
-import { useTranslator } from "lib/translate";
+import { STRINGS, useTranslator } from "lib/translate";
 import { murdermystery as protobuf } from "pbjs/protobuf";
 import { FC } from "react";
 import NameBadge from "./NameBadge";
@@ -9,11 +9,6 @@ export interface Player {
   id: number;
   name: string;
   role: protobuf.Character;
-}
-
-export interface GameOverProps {
-  winReason: protobuf.GameOver.Reason;
-  players: Player[];
 }
 
 const C = protobuf.Character;
@@ -59,10 +54,28 @@ export const PlayerGroup: FC<PlayerGroupProps> = ({
   );
 };
 
+function winReasonToString(r: protobuf.GameOver.Reason): STRINGS {
+  switch (r) {
+    case protobuf.GameOver.Reason.CITIZEN_WIN:
+      return STRINGS.CITIZENS_WIN;
+    case protobuf.GameOver.Reason.WEREWOLF_WIN:
+      return STRINGS.WEREWOLVES_WIN;
+    default:
+      return STRINGS.GAME_OVER;
+  }
+}
+
+export interface GameOverProps {
+  winReason: protobuf.GameOver.Reason;
+  players: Player[];
+}
+
 export const GameOver: FC<GameOverProps> = ({
   winReason,
   players,
 }: GameOverProps) => {
+  const t = useTranslator();
+
   const wolves: Player[] = [];
   const citizens: Player[] = [];
   const special: Player[] = [];
@@ -80,30 +93,36 @@ export const GameOver: FC<GameOverProps> = ({
 
   players.forEach((p) => getList(p.role).push(p));
 
-  const heading = <Heading>Citizens win</Heading>;
   const werewolfGroup = <PlayerGroup role={C.WEREWOLF} players={wolves} />;
   const citizenGroup = <PlayerGroup role={C.CITIZEN} players={citizens} />;
   const specialGroup = special.map((p: Player) => (
     <PlayerGroup key={p.id} role={p.role} players={[p]} />
   ));
 
+  let view;
   if (winReason === R.WEREWOLF_WIN) {
-    return (
+    view = (
       <>
-        {heading}
         {werewolfGroup}
         {citizenGroup}
         {specialGroup}
       </>
     );
+  } else {
+    view = (
+      <>
+        {citizenGroup}
+        {specialGroup}
+        {werewolfGroup}
+      </>
+    );
   }
+
   return (
-    <>
-      {heading}
-      {citizenGroup}
-      {specialGroup}
-      {werewolfGroup}
-    </>
+    <Box>
+      <Heading>{t(winReasonToString(winReason))}</Heading>
+      {view}
+    </Box>
   );
 };
 
