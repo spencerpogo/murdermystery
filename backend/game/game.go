@@ -67,7 +67,7 @@ type Game struct {
 	vote *Vote
 
 	// The players that were killed during the night
-	killed map[*melody.Session]bool
+	killed map[*melody.Session]pb.KillReason
 
 	// Healer capabilities
 	hasHeal   bool
@@ -82,7 +82,7 @@ func New(destroyFn func()) *Game {
 		destroyFn:  destroyFn,
 		clients:    make(map[*melody.Session]*Client),
 		spectators: make(map[*melody.Session]bool),
-		killed:     make(map[*melody.Session]bool),
+		killed:     make(map[*melody.Session]pb.KillReason),
 		hasHeal:    true,
 		hasPoison:  true,
 	}
@@ -286,8 +286,8 @@ func (g *Game) getKilled() *melody.Session {
 
 // stageKill sets a value in g.killed.
 func (g *Game) stageKill(s *melody.Session, reason pb.KillReason) {
-	log.Println("Adding to killed:", s, "Reason:", reason)
-	g.killed[s] = true
+	log.Println("Killed", s, "Reason:", reason)
+	g.killed[s] = reason
 }
 
 func (g *Game) kill(s *melody.Session) {
@@ -297,15 +297,19 @@ func (g *Game) kill(s *melody.Session) {
 		return
 	}
 	log.Printf("Killing [%v] %s\n", c.ID, c.name)
-	msg, err := protocol.Marshal(&pb.Killed{})
+	reason, ok := g.killed[s]
+	if !ok {
+		reason = pb.KillReason_UNKNOWN
+	}
+	msg, err := protocol.Marshal(&pb.Killed{Reason: reason})
 	if err != nil {
 		return
 	}
 	err = s.WriteBinary(msg)
 	printerr(err)
 
-	delete(g.clients, s)
 	g.spectators[s] = true
+	delete(g.clients, s)
 }
 
 func (g *Game) commitKills() {
@@ -317,7 +321,7 @@ func (g *Game) commitKills() {
 }
 
 func (g *Game) resetKills() {
-	g.killed = make(map[*melody.Session]bool)
+	g.killed = make(map[*melody.Session]pb.KillReason)
 }
 
 func (g *Game) callWolfVote() {
