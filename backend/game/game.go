@@ -327,6 +327,7 @@ func (g *Game) callWolfVote() {
 func (g *Game) wolfVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
 	return func(v *Vote, voter, killed *melody.Session) {
 		log.Println("Wolf vote over")
+		log.Println(killed, "killed by wolves")
 		g.killed[killed] = true
 		g.vote.End(g, nil)
 
@@ -435,7 +436,7 @@ func (g *Game) healerPoisonHandler() func(*Vote, *melody.Session, *melody.Sessio
 	return func(v *Vote, voter, candidate *melody.Session) {
 		log.Println("Healer Poison vote over")
 		if g.hasPoison && candidate != nil {
-			log.Println("Poison used")
+			log.Println("Poison used on", candidate)
 			g.hasPoison = false
 			g.killed[candidate] = true
 		}
@@ -571,7 +572,7 @@ func (g *Game) handleGameOver(reason pb.GameOver_Reason) {
 
 	err = g.m.BroadcastBinary(msg)
 	printerr(err)
-	time.Sleep(200 * time.Millisecond)
+	time.Sleep(2000 * time.Millisecond)
 
 	// End the game
 	g.End()

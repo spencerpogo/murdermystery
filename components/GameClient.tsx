@@ -2,6 +2,7 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
+  Flex,
   HStack,
   Modal,
   ModalBody,
@@ -107,7 +108,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     switch (val) {
       case protobuf.VoteRequest.Type.HEALERHEAL:
         return (
-          <>
+          <Flex align="center">
             <HStack>
               {(killReveal || [-1]).map((id) => (
                 <NameBadge key={id} text={IDToName(id) || "??"} />
@@ -116,7 +117,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
             <Text ml="1" d="inline-block">
               {t(STRINGS.WAS_KILLED_CONFIRM_HEAL)}
             </Text>
-          </>
+          </Flex>
         );
       case protobuf.VoteRequest.Type.HEALERPOISON:
         return <Text>{t(STRINGS.CONFIRM_POISON)}</Text>;
