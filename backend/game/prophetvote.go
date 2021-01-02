@@ -13,7 +13,13 @@ func (g *Game) callProphetVote() {
 	defer g.lock.Unlock()
 
 	prophet, notProphet := g.SessionsByRole(pb.Character_PROPHET)
-	go g.callVote(prophet, notProphet, pb.VoteRequest_PROPHET, g.prophetVoteHandler(), false)
+	if len(prophet) > 0 {
+		// call prophet vote
+		go g.callVote(prophet, notProphet, pb.VoteRequest_PROPHET, g.prophetVoteHandler(), false)
+	} else {
+		// skip prophet vote
+		go g.callHealerHealVote()
+	}
 }
 
 // prohetReveal reveals whether choice is good or bad to prophet. Returns true on

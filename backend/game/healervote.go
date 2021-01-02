@@ -14,9 +14,13 @@ func (g *Game) callHealerHealVote() {
 
 	if g.hasHeal {
 		log.Println("Starting healer vote")
-		healer, _ := g.SessionsByRole(pb.Character_HEALER)
-		if len(healer) != 1 {
-			log.Printf("Error: Healer length not 1: %v", healer)
+		healers, _ := g.SessionsByRole(pb.Character_HEALER)
+		if len(healers) < 1 {
+			// Healer is dead, skip this vote.
+			go g.callJuryVote()
+		}
+		if len(healers) > 1 {
+			log.Printf("Error: Healers length >1: %v", healers)
 			return
 		}
 
@@ -30,12 +34,12 @@ func (g *Game) callHealerHealVote() {
 			if err != nil {
 				return
 			}
-			err = healer[0].WriteBinary(msg)
+			err = healers[0].WriteBinary(msg)
 			printerr(err)
 		}
 
 		log.Println("Calling healer vote, g.killed:", g.killed)
-		go g.callVote(healer, []*melody.Session{}, pb.VoteRequest_HEALERHEAL, func(v *Vote, t, c *melody.Session) {}, false)
+		go g.callVote(healers, []*melody.Session{}, pb.VoteRequest_HEALERHEAL, func(v *Vote, t, c *melody.Session) {}, false)
 	} else {
 		go g.callHealerPoisonVote()
 	}
