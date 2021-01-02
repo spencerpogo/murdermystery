@@ -51,7 +51,7 @@ type Game struct {
 	// A lock to prevent data races, must be used when reading/writing game attributes
 	lock sync.Mutex
 
-	// The clients in this server and their associated info
+	// All alive players
 	clients map[*melody.Session]*Client
 
 	// The spectators in this server
@@ -384,4 +384,21 @@ func (g *Game) handleGameOver(reason pb.GameOver_Reason) {
 
 	// End the game
 	g.End()
+}
+
+func (g *Game) sendPlayerStatus() {
+	alive := make([]int32, len(g.clients))
+	i := 0
+	for _, c := range g.clients {
+		alive[i] = c.ID
+		i++
+	}
+	msg, err := protocol.Marshal(&pb.PlayerStatus{Alive: alive})
+	if err != nil {
+		return
+	}
+	for s := range g.clients {
+		err = s.WriteBinary(msg)
+		printerr(err)
+	}
 }

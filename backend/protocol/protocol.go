@@ -42,6 +42,8 @@ func ToServerMessage(m interface{ ProtoMessage() }) *pb.ServerMessage {
 		return &pb.ServerMessage{Data: &pb.ServerMessage_GameOver{GameOver: r}}
 	case *pb.BulkSpectatorUpdate:
 		return &pb.ServerMessage{Data: &pb.ServerMessage_BulkSpectatorUpdate{BulkSpectatorUpdate: r}}
+	case *pb.PlayerStatus:
+		return &pb.ServerMessage{Data: &pb.ServerMessage_PlayerStatus{PlayerStatus: r}}
 	default:
 		return nil
 	}

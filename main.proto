@@ -135,6 +135,8 @@ message SpectatorUpdate {
 
 message BulkSpectatorUpdate { repeated SpectatorUpdate update = 1; }
 
+message PlayerStatus { repeated int32 alive = 1; }
+
 // The Server message
 message ServerMessage {
   oneof data {
@@ -153,6 +155,7 @@ message ServerMessage {
     Killed killed = 14;
     GameOver game_over = 15;
     BulkSpectatorUpdate bulk_spectator_update = 16;
+    PlayerStatus player_status = 17;
   }
 }
 

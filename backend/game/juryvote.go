@@ -70,6 +70,8 @@ func (g *Game) juryVoteHandler() func(*Vote, *melody.Session, *melody.Session) {
 		// Send VoteOver
 		v.End(g, &pb.JuryVoteResult{Status: status, Winner: winnerID})
 		g.commitKills()
+		// Show players who is alive and dead
+		g.sendPlayerStatus()
 
 		gameOverReason := g.checkForGameOver()
 		if gameOverReason != pb.GameOver_NONE {
