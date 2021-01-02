@@ -151,9 +151,9 @@ func (g *Game) EndWithError(reason pb.Error_EType) {
 	}
 	err = g.m.BroadcastBinary(msg)
 	printerr(err)
-	time.Sleep(200 * time.Millisecond)
-
-	go g.End()
+	time.AfterFunc(200*time.Millisecond, func() {
+		g.End()
+	})
 }
 
 // Returns whether the host is valid. Assumes game is locked!
@@ -380,10 +380,13 @@ func (g *Game) handleGameOver(reason pb.GameOver_Reason) {
 
 	err = g.m.BroadcastBinary(msg)
 	printerr(err)
-	time.Sleep(2000 * time.Millisecond)
 
-	// End the game
-	g.End()
+	// Allow time for messages to be sent before closing all connections
+	time.AfterFunc(2000*time.Millisecond, func() {
+		// End the game
+		log.Println("Ending game")
+		g.End()
+	})
 }
 
 func (g *Game) sendPlayerStatus() {
