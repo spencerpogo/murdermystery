@@ -54,6 +54,9 @@ type Game struct {
 	// All alive players
 	clients map[*melody.Session]*Client
 
+	// All players. Only available after game starts.
+	players map[*melody.Session]*Client
+
 	// The spectators in this server
 	spectators map[*melody.Session]bool
 
@@ -84,6 +87,7 @@ func New(destroyFn func()) *Game {
 		nextID:        1,
 		destroyFn:     destroyFn,
 		clients:       make(map[*melody.Session]*Client),
+		players:       make(map[*melody.Session]*Client),
 		spectators:    make(map[*melody.Session]bool),
 		killed:        make(map[*melody.Session]pb.KillReason),
 		hasHeal:       true,

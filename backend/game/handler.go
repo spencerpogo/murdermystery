@@ -131,5 +131,13 @@ func (g *Game) handleMsg(s *melody.Session, data []byte) {
 
 func (g *Game) handleStart() {
 	g.AssignCharacters()
+
+	g.lock.Lock()
+	// Populate g.players
+	for s, c := range g.clients {
+		g.players[s] = c
+	}
+	g.lock.Unlock()
+
 	g.revealWolves()
 }
