@@ -246,7 +246,7 @@ func (g *Game) addSpectator(s *melody.Session) {
 	}
 	err = s.WriteBinary(msg)
 
-	// Add spectators list
+	// Add the client to the spectators list
 	g.spectators[s] = true
 }
 
@@ -308,6 +308,7 @@ func (g *Game) stageKill(s *melody.Session, reason pb.KillReason) {
 	g.killed[s] = reason
 }
 
+// kill kills a player. Assumes game is locked.
 func (g *Game) kill(s *melody.Session) {
 	c, ok := g.clients[s]
 	if !ok {
@@ -326,10 +327,11 @@ func (g *Game) kill(s *melody.Session) {
 	err = s.WriteBinary(msg)
 	printerr(err)
 
-	g.spectators[s] = true
 	delete(g.clients, s)
+	g.addSpectator(s)
 }
 
+// commitKills kills all staged kills in g.killed. Assumes game is locked.
 func (g *Game) commitKills() {
 	log.Println("Commiting kills")
 	for s := range g.killed {

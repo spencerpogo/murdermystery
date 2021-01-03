@@ -5,7 +5,10 @@ option go_package = ".;pb";
 
 // Server Messages
 message Handshake {
-  enum Status { UNKNOWN = 0; OK = 1; SPECTATOR = 2; }
+  enum Status {
+    UNKNOWN = 0;
+    OK = 1;
+  }
   Status status = 1;
   int32 id = 2;
 }
@@ -23,17 +26,29 @@ message Players {
 }
 
 message Error {
-  enum E_type { UNKNOWN = 0; DISCONNECT = 1; BADNAME = 2; }
+  enum E_type {
+    UNKNOWN = 0;
+    DISCONNECT = 1;
+    BADNAME = 2;
+  }
   E_type msg = 1;
 }
 
 message Alert {
-  enum Msg { UNKNOWN = 0; NEEDMOREPLAYERS = 1; }
+  enum Msg {
+    UNKNOWN = 0;
+    NEEDMOREPLAYERS = 1;
+  }
   Msg msg = 1;
 }
 
 enum Character {
-  NONE = 0; CITIZEN = 1; WEREWOLF = 2; HEALER = 3; PROPHET = 4; HUNTER = 5;
+  NONE = 0;
+  CITIZEN = 1;
+  WEREWOLF = 2;
+  HEALER = 3;
+  PROPHET = 4;
+  HUNTER = 5;
 }
 
 message SetCharacter { Character character = 1; }
@@ -42,14 +57,22 @@ message FellowWolves { repeated int32 ids = 1; }
 
 message VoteRequest {
   enum Type {
-    UNKNOWN = 0; KILL = 1; PROPHET = 2; HEALERHEAL = 3; HEALERPOISON = 4;
+    UNKNOWN = 0;
+    KILL = 1;
+    PROPHET = 2;
+    HEALERHEAL = 3;
+    HEALERPOISON = 4;
     JURY = 5;
   }
   repeated int32 choice_IDs = 1;
   Type type = 2;
 }
 
-enum VoteResultType { NOWINNER = 0; WIN = 1; TIE = 2; }
+enum VoteResultType {
+  NOWINNER = 0;
+  WIN = 1;
+  TIE = 2;
+}
 
 message JuryVoteResult {
   VoteResultType status = 1;
@@ -74,12 +97,21 @@ message ProphetReveal {
 
 message KillReveal { repeated int32 killed_IDs = 1; }
 
-enum KillReason { UNKNOWN = 0; WOLVES = 1; VOTED = 2; HEALERPOISON = 3; }
+enum KillReason {
+  UNKNOWN = 0;
+  WOLVES = 1;
+  VOTED = 2;
+  HEALERPOISON = 3;
+}
 
 message Killed { KillReason reason = 1; }
 
 message GameOver {
-  enum Reason { NONE = 0; WEREWOLF_WIN = 1; CITIZEN_WIN = 2; }
+  enum Reason {
+    NONE = 0;
+    WEREWOLF_WIN = 1;
+    CITIZEN_WIN = 2;
+  }
   message Player {
     int32 id = 1;
     Character character = 2;

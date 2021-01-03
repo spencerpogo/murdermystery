@@ -18,14 +18,7 @@ func (g *Game) handleJoin(s *melody.Session) {
 	log.Println("Lock aquired")
 
 	if g.started {
-		// Make them a spectator. TODO: call g.addSpectator when it is implmented
-		g.spectators[s] = true
-		msg, err := protocol.Marshal(&pb.Handshake{Status: pb.Handshake_SPECTATOR, Id: -1})
-		if err != nil {
-			return
-		}
-		err = s.WriteBinary(msg)
-		printerr(err)
+		go g.addSpectator(s)
 		return
 	}
 
