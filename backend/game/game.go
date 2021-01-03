@@ -220,26 +220,6 @@ func (g *Game) syncPlayers() {
 	printerr(err)
 }
 
-// updateSpectators updates the connected spectators to the current game state
-func (g *Game) updateSpectators() {
-	/*players := []*pb.SpectatorStatus_Player{}
-	for _, c := range g.clients {
-		if c != nil {
-			players = append(players, &pb.SpectatorStatus_Player{Character: c.role, Name: c.name})
-		}
-	}
-
-	msg, err := protocol.Marshal(&pb.SpectatorStatus{Players: players})
-	if err != nil {
-		return
-	}
-
-	for s := range g.spectators {
-		err = s.WriteBinary(msg)
-		printerr(err)
-	}*/
-}
-
 // A helper function to get the ID of a client
 // lock hub before calling!
 func (g *Game) getID(s *melody.Session) int32 {
