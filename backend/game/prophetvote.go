@@ -25,11 +25,13 @@ func (g *Game) callProphetVote() {
 // prohetReveal reveals whether choice is good or bad to prophet. Returns true on
 //  sucess, false otherwise. Assumes game is locked.
 func (g *Game) prophetReveal(prophet, choice *melody.Session) bool {
-	// Fetch client for choice
+	// Get clients
+	prophetClient := g.clients[prophet]
 	choiceClient := g.clients[choice]
-	if choiceClient == nil {
+	if choiceClient == nil || prophet == nil {
 		return false
 	}
+
 	// They are good if they are anything but werewolf
 	good := choiceClient.role != pb.Character_WEREWOLF
 	// Send voter the result
@@ -39,6 +41,14 @@ func (g *Game) prophetReveal(prophet, choice *melody.Session) bool {
 	}
 	err = prophet.WriteBinary(msg)
 	printerr(err)
+	// Log this to spectators
+	g.dispatchSpectatorUpdate(protocol.ToSpectatorUpdate(
+		&pb.SpectatorProphetReveal{
+			ProphetId: prophetClient.ID,
+			ChoiceId:  choiceClient.ID,
+			Good:      good,
+		}))
+
 	return true
 }
 
