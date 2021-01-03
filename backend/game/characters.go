@@ -94,14 +94,18 @@ func (g *Game) AssignCharacters() {
 
 		role := roles[i]
 		c.role = role
+		// Tell the client which role they have
 		msg, err := protocol.Marshal(&pb.SetCharacter{Character: role})
 		if err != nil {
 			return
 		}
 		err = m.WriteBinary(msg)
-		if err != nil {
-			log.Println(err)
-		}
+		printerr(err)
+
+		// Tell spectators what character this player has
+		g.dispatchSpectatorUpdate(protocol.ToSpectatorUpdate(
+			&pb.SpectatorAssignedCharacter{Id: c.ID, Character: role}))
+
 		i++
 	}
 }
