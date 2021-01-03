@@ -220,6 +220,20 @@ func (g *Game) syncPlayers() {
 	printerr(err)
 }
 
+func (g *Game) dispatchSpectatorUpdate(ev *pb.SpectatorUpdate) {
+	g.spectatorMsgs = append(g.spectatorMsgs, ev)
+
+	// Send the event to all spectators
+	msg, err := protocol.Marshal(ev)
+	if err != nil {
+		return
+	}
+	for s := range g.spectators {
+		err = s.WriteBinary(msg)
+		printerr(err)
+	}
+}
+
 // A helper function to get the ID of a client
 // lock hub before calling!
 func (g *Game) getID(s *melody.Session) int32 {
