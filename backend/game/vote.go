@@ -201,15 +201,29 @@ func (g *Game) callVote(
 	}
 
 	// Get IDS
-	ids := []int32{}
+	voterIDs := make([]int32, len(voters))
+	i := 0
 	for _, s := range candidates {
 		c := g.clients[s]
 		if c != nil {
-			ids = append(ids, c.ID)
+			voterIDs[i] = c.ID
+			i++
 		}
 	}
 
-	msg, err := protocol.Marshal(&pb.VoteRequest{Choice_IDs: ids, Type: vType})
+	candidateIDs := make([]int32, len(candidates))
+	i = 0
+	for _, s := range candidates {
+		c := g.clients[s]
+		if c != nil {
+			candidateIDs[i] = c.ID
+			i++
+		}
+	}
+
+	// Send the vote request to the voters
+	req := &pb.VoteRequest{Choice_IDs: candidateIDs, Type: vType}
+	msg, err := protocol.Marshal(req)
 	if err != nil {
 		return
 	}
@@ -218,6 +232,12 @@ func (g *Game) callVote(
 		err = s.WriteBinary(msg)
 		printerr(err)
 	}
+
+	// Dispatch this as a spectator event
+	g.dispatchSpectatorUpdate(protocol.ToSpectatorUpdate(&pb.SpectatorVoteRequest{
+		Voters:      voterIDs,
+		VoteRequest: req,
+	}))
 }
 
 func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVote) {
