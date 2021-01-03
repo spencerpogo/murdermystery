@@ -23,6 +23,7 @@ import GameOver from "./GameOver";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
 import NameBadge from "./NameBadge";
+import PlayerStatus from "./PlayerStatus";
 import ProphetReveal from "./ProphetReveal";
 import Vote, { Candidate, Choice, VoteResult } from "./Vote";
 
@@ -67,11 +68,13 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     killReveal,
     gameIsOver,
     gameOverRef,
+    alive,
     // State setters
     setShowFellowWolves,
     setProphetReveal,
     setAlertContent,
     setVoteResult,
+    setAlive,
   } = useMessageHandler(onError, onGameOver);
 
   const { isConnected, send } = useGameSocket(
@@ -183,15 +186,9 @@ const GameClientInner: FC<GameClientInnerProps> = ({
   // UI
 
   // The order of these checks is important.
-  // Use the websocket readyState as the single source of truth for whether the
-  //  connection is open.
-  if (!isConnected()) {
-    return <Loader />;
-  }
+
   // Don't care if connection is open but handshake is incomplete, in that case render
   //  an empty lobby instead
-
-  // If we are here the game is all ready.
 
   let view; // The main component we will render
   if (gameIsOver) {
@@ -206,11 +203,38 @@ const GameClientInner: FC<GameClientInnerProps> = ({
         }))}
       />
     );
+  } else if (!isConnected()) {
+    // If the game is over, we don't care if the server is disconnected, so only
+    //  check this after checking for gameover.
+    // Use the websocket readyState as the single source of truth for whether the
+    //  connection is open.
+    return <Loader />;
+  } else if (alive && alive.length) {
+    const aliveNames: string[] = [];
+    const deadNames: string[] = [];
+
+    Object.keys(players).forEach((id) => {
+      const { name } = players[id];
+      if (name) {
+        if (alive.includes(Number(id))) {
+          aliveNames.push(name);
+        } else {
+          deadNames.push(name);
+        }
+      }
+    });
+
+    view = (
+      <PlayerStatus
+        aliveNames={aliveNames}
+        deadNames={deadNames}
+        onDone={() => setAlive(null)}
+      />
+    );
   } else if (playerID === -1) {
     // We are a spectator
     view = <p>You are a spectator. Waiting for server to update us...</p>;
-  }
-  if (!character) {
+  } else if (!character) {
     view = (
       <Lobby
         players={players}

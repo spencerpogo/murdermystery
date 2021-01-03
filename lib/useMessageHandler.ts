@@ -60,6 +60,7 @@ export default function useMessageHandler(
   const [killReveal, setKillReveal] = useState<number[] | null>(null);
   const [gameIsOver, setGameIsOver] = useState<boolean>(false);
   const gameOverRef = useRef<protobuf.IGameOver | null>(null);
+  const [alive, setAlive] = useState<number[] | null>(null);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -154,6 +155,10 @@ export default function useMessageHandler(
     onGameOver();
   }
 
+  function handlePlayerStatus(msg: protobuf.IPlayerStatus) {
+    setAlive(msg.alive || []);
+  }
+
   // Call the proper handler based on the ServerMessage.
   // Protobuf guarantees only one of these cases will be true due to `oneof`, so this
   //  is the best way to call the correct handler.
@@ -170,6 +175,7 @@ export default function useMessageHandler(
     if (msg.prophetReveal) return handleProphetReveal(msg.prophetReveal);
     if (msg.killReveal) return handlerHealerKillReveal(msg.killReveal);
     if (msg.gameOver) return handleGameOver(msg.gameOver);
+    if (msg.playerStatus) return handlePlayerStatus(msg.playerStatus);
     throw new Error("Not implemented. ");
   };
 
@@ -206,10 +212,12 @@ export default function useMessageHandler(
     killReveal,
     gameIsOver,
     gameOverRef,
+    alive,
     // State setters
     setShowFellowWolves,
     setProphetReveal,
     setAlertContent,
     setVoteResult,
+    setAlive,
   };
 }

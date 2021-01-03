@@ -55,5 +55,7 @@
   "NONE": "None",
   "CITIZENS_WIN": "Citizens Win",
   "WEREWOLVES_WIN": "Werewolves Win",
-  "GAME_OVER": "Game Over"
+  "GAME_OVER": "Game Over",
+  "ALIVE": "Alive",
+  "DEAD": "Dead"
 }

@@ -63,6 +63,8 @@ export enum STRINGS {
   CITIZENS_WIN,
   WEREWOLVES_WIN,
   GAME_OVER,
+  ALIVE,
+  DEAD,
 }
 
 export const S = STRINGS;
