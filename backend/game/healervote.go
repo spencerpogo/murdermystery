@@ -45,12 +45,30 @@ func (g *Game) callHealerHealVote() {
 	}
 }
 
-func (g *Game) healerHealHandler(confirmed bool) {
+func (g *Game) healerHealHandler(healer *Client, confirmed bool) {
 	if confirmed && g.hasHeal {
 		// They are using their heal
 		log.Println("Heal used")
 		g.hasHeal = false
-		// Empty g.killed
+
+		// All the clients who were healed
+		healedIDs := make([]int32, len(g.killed))
+		i := 0
+		for s := range g.killed {
+			c := g.clients[s]
+			if c != nil {
+				healedIDs[i] = c.ID
+				i++
+			}
+		}
+
+		// Dispatch this to spectators
+		g.dispatchSpectatorUpdate(protocol.ToSpectatorUpdate(&pb.SpectatorHealerHeal{
+			Healer: healer.ID,
+			Healed: healedIDs,
+		}))
+
+		// Perform the heal by emptying g.killed
 		g.resetKills()
 	}
 	log.Println("Heal response received, ending vote")

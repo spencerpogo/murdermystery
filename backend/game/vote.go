@@ -233,7 +233,7 @@ func (g *Game) handleVoteMessage(s *melody.Session, c *Client, msg *pb.ClientVot
 	//  change their choice into a yes/no bool instead of a session and use a different
 	//  handler (because the normal handler's signature wouldn't work)
 	if v.vType == pb.VoteRequest_HEALERHEAL {
-		g.healerHealHandler(msg.Choice == 2)
+		g.healerHealHandler(c, msg.Choice == 2)
 	} else {
 		var choiceSession *melody.Session
 		if v.vType == pb.VoteRequest_HEALERPOISON && msg.Choice == -1 {
