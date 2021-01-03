@@ -86,7 +86,7 @@ func (g *Game) AssignCharacters() {
 	for m, c := range g.clients {
 		// Would like to generate roles lazily in this loop,
 		//  but would be hard to make it both random and assign the correct amount.
-		// No one is allowed to join/leave so the role array method works fine
+		// No one is allowed to join/leave while the game is locked so the role array method works fine
 
 		if m.IsClosed() || len(c.name) == 0 {
 			continue
