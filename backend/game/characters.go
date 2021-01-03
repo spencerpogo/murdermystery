@@ -1,10 +1,11 @@
 package game
 
 import (
+	cryptorand "crypto/rand"
+	"encoding/binary"
 	"log"
 	"math"
 	"math/rand"
-	"time"
 
 	"github.com/Scoder12/murdermystery/backend/protocol/pb"
 
@@ -21,6 +22,26 @@ var CharacterMap = map[int]string{
 	4: "Prophet",
 	5: "Hunter",
 }
+
+// CryptoRandSource is an implementation of math/rand.Source that is backed by crypto/rand.
+//  All credit to https://stackoverflow.com/a/35208651/9196137
+type CryptoRandSource struct{}
+
+// NewCryptoRandSource makes a new CryptoRandSource.
+func NewCryptoRandSource() CryptoRandSource {
+	return CryptoRandSource{}
+}
+
+// Int63 generates a uniformly-distributed random int64 value in the range [0, 1<<63).
+func (CryptoRandSource) Int63() int64 {
+	var b [8]byte
+	cryptorand.Read(b[:])
+	// mask off sign bit to ensure positive number
+	return int64(binary.LittleEndian.Uint64(b[:]) & (1<<63 - 1))
+}
+
+// Seed sets the seed for the souce. No-op since crypto/rand does not use this.
+func (CryptoRandSource) Seed(_ int64) {}
 
 func genCharacterArray(numPlayers int) []pb.Character {
 	// There is one healer and one prophet always
@@ -58,8 +79,8 @@ func (g *Game) AssignCharacters() {
 	}
 	roles := genCharacterArray(numPlayers)
 	// shuffle
-	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(roles), func(i, j int) { roles[i], roles[j] = roles[j], roles[i] })
+	r := rand.New(NewCryptoRandSource())
+	r.Shuffle(len(roles), func(i, j int) { roles[i], roles[j] = roles[j], roles[i] })
 
 	var i int = 0
 	for m, c := range g.clients {
