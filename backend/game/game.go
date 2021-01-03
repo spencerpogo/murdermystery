@@ -382,7 +382,7 @@ func (g *Game) handleGameOver(reason pb.GameOver_Reason) {
 	printerr(err)
 
 	// Allow time for messages to be sent before closing all connections
-	time.AfterFunc(2000*time.Millisecond, func() {
+	time.AfterFunc(200*time.Millisecond, func() {
 		// End the game
 		log.Println("Ending game")
 		g.End()
