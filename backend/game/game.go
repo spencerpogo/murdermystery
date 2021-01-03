@@ -320,6 +320,7 @@ func (g *Game) kill(s *melody.Session) {
 	if !ok {
 		reason = pb.KillReason_UNKNOWN
 	}
+	// Tell the client they have been killed
 	msg, err := protocol.Marshal(&pb.Killed{Reason: reason})
 	if err != nil {
 		return
@@ -327,7 +328,15 @@ func (g *Game) kill(s *melody.Session) {
 	err = s.WriteBinary(msg)
 	printerr(err)
 
+	// Log this to spectators
+	g.dispatchSpectatorUpdate(protocol.ToSpectatorUpdate(&pb.SpectatorKill{
+		Killed: c.ID,
+		Reason: reason,
+	}))
+
+	// Remove them from players
 	delete(g.clients, s)
+	// Make them a spectator
 	g.addSpectator(s)
 }
 
