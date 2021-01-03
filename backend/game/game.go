@@ -220,6 +220,8 @@ func (g *Game) syncPlayers() {
 	printerr(err)
 }
 
+// dispatchSpectatorUpdate sends a spectator update to all spectators. Assumes game is
+//  locked.
 func (g *Game) dispatchSpectatorUpdate(ev *pb.SpectatorUpdate) {
 	g.spectatorMsgs = append(g.spectatorMsgs, ev)
 
@@ -232,6 +234,20 @@ func (g *Game) dispatchSpectatorUpdate(ev *pb.SpectatorUpdate) {
 		err = s.WriteBinary(msg)
 		printerr(err)
 	}
+}
+
+func (g *Game) addSpectator(s *melody.Session) {
+	g.lock.Lock()
+	defer g.lock.Unlock()
+
+	msg, err := protocol.Marshal(&pb.BulkSpectatorUpdate{Update: g.spectatorMsgs})
+	if err != nil {
+		return
+	}
+	err = s.WriteBinary(msg)
+
+	// Add spectators list
+	g.spectators[s] = true
 }
 
 // A helper function to get the ID of a client
