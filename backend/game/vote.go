@@ -63,7 +63,9 @@ func (v *Vote) End(g *Game, jury *pb.JuryVoteResult) {
 		result = nil
 	}
 
-	msg, err := protocol.Marshal(&pb.VoteOver{Result: result})
+	// Send VoteOver to the voters
+	voteOver := &pb.VoteOver{Result: result}
+	msg, err := protocol.Marshal(voteOver)
 	if err != nil {
 		return
 	}
@@ -74,6 +76,11 @@ func (v *Vote) End(g *Game, jury *pb.JuryVoteResult) {
 			printerr(err)
 		}
 	}
+
+	// Dispatch it to spectators
+	g.dispatchSpectatorUpdate(protocol.ToSpectatorUpdate(&pb.SpectatorVoteOver{
+		VoteOver: voteOver,
+	}))
 }
 
 // HasConcensus return whether all votes are the same
