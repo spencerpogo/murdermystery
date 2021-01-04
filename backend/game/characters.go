@@ -82,6 +82,9 @@ func (g *Game) AssignCharacters() {
 	}
 	roles := genCharacterArray(numPlayers)
 	// shuffle
+	// GoSec does not know that we are using crypto/rand with this source and thinks
+	//  this is a vulnerability, so it can be safely ignored.
+	// #nosec: G404
 	r := rand.New(NewCryptoRandSource())
 	r.Shuffle(len(roles), func(i, j int) { roles[i], roles[j] = roles[j], roles[i] })
 
