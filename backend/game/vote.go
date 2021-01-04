@@ -210,7 +210,7 @@ func (g *Game) callVote(
 	// Get IDS
 	voterIDs := make([]int32, len(voters))
 	i := 0
-	for _, s := range candidates {
+	for _, s := range voters {
 		c := g.clients[s]
 		if c != nil {
 			voterIDs[i] = c.ID
