@@ -18,7 +18,7 @@ export const UpdateText: FC<UpdateTextProps> = ({
 
   if (update.setChar)
     return (
-      <Flex align="center" mb="2">
+      <>
         <Text>{t(STRINGS.ASSIGNED_CHARACTER)}</Text>
         <NameBadge text={IDToName(update.setChar.id)} />
         <Image
@@ -28,7 +28,7 @@ export const UpdateText: FC<UpdateTextProps> = ({
           )}
           height="2.5em"
         />
-      </Flex>
+      </>
     );
   return null;
 };
@@ -51,7 +51,9 @@ export const UpdatesLog: FC<UpdatesLogProps> = ({
         .map((u, i) => (
           // These updates are constant and will never change order.
           // eslint-disable-next-line react/no-array-index-key
-          <UpdateText key={i} update={u} IDToName={IDToName} />
+          <Flex align="center" mb="2" key={i}>
+            <UpdateText update={u} IDToName={IDToName} />
+          </Flex>
         ))
         .reverse()}
     </Box>
