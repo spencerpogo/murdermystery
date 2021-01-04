@@ -136,14 +136,14 @@ CompileDaemon -directory=$PROJ/backend -build='go build -o $PROJ/build/backend' 
   - [x] Implementing Votes
   - [x] Prophet ability
   - [x] Healer ability
-  - [ ] Kills
-  - [ ] Voting to kill
-  - [ ] Showing amount of each character left
+  - [x] Kills
+  - [x] Voting to kill
+  - [x] Showing amount of each character left
   - [ ] Spectating
 
 - Polish
 
-  - [ ] Pie indicator for timed components and button to skip
+  - [x] Pie indicator for timed components and button to skip
   - [ ] Minigame for lobby / night screen
   - [ ] Prophet screen animation
   - [ ] Character visualization styling
