@@ -105,10 +105,7 @@ export default function useMessageHandler(
   }
 
   function handleHandshake(msg: protobuf.IHandshake) {
-    if (
-      msg.status !== protobuf.Handshake.Status.OK &&
-      msg.status !== protobuf.Handshake.Status.SPECTATOR
-    ) {
+    if (msg.status !== protobuf.Handshake.Status.OK) {
       onError(STRINGS.ERROR);
     }
     if (msg.id) {
