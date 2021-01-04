@@ -1,4 +1,4 @@
-import { Flex, Image, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading, Image, Text } from "@chakra-ui/react";
 import { characterToImg } from "lib/CharacterImg";
 import { STRINGS, useTranslator } from "lib/translate";
 import { FC } from "react";
@@ -42,14 +42,19 @@ export const UpdatesLog: FC<UpdatesLogProps> = ({
   updates,
   IDToName,
 }: UpdatesLogProps) => {
+  const t = useTranslator();
+
   return (
-    <>
-      {updates.map((u, i) => (
-        // These updates are constant and will never change order.
-        // eslint-disable-next-line react/no-array-index-key
-        <UpdateText key={i} update={u} IDToName={IDToName} />
-      ))}
-    </>
+    <Box>
+      <Heading mb="2">{t(STRINGS.ARE_SPECTATOR)}</Heading>
+      {updates
+        .map((u, i) => (
+          // These updates are constant and will never change order.
+          // eslint-disable-next-line react/no-array-index-key
+          <UpdateText key={i} update={u} IDToName={IDToName} />
+        ))
+        .reverse()}
+    </Box>
   );
 };
 

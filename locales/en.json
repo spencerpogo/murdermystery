@@ -58,5 +58,6 @@
   "GAME_OVER": "Game Over",
   "ALIVE": "Alive",
   "DEAD": "Dead",
-  "ASSIGNED_CHARACTER": "Assigned character:"
+  "ASSIGNED_CHARACTER": "Assigned character:",
+  "ARE_SPECTATOR": "You are a spectator"
 }
