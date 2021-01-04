@@ -35,7 +35,10 @@ func NewCryptoRandSource() CryptoRandSource {
 // Int63 generates a uniformly-distributed random int64 value in the range [0, 1<<63).
 func (CryptoRandSource) Int63() int64 {
 	var b [8]byte
-	cryptorand.Read(b[:])
+	_, err := cryptorand.Read(b[:])
+	if err != nil {
+		panic(err)
+	}
 	// mask off sign bit to ensure positive number
 	return int64(binary.LittleEndian.Uint64(b[:]) & (1<<63 - 1))
 }
