@@ -249,6 +249,7 @@ func (g *Game) addSpectator(s *melody.Session) {
 		return
 	}
 	err = s.WriteBinary(msg)
+	printerr(err)
 
 	// Add the client to the spectators list
 	g.spectators[s] = true
