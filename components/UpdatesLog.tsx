@@ -1,4 +1,4 @@
-import { Box, Image, Text } from "@chakra-ui/react";
+import { Flex, Image, Text } from "@chakra-ui/react";
 import { characterToImg } from "lib/CharacterImg";
 import { STRINGS, useTranslator } from "lib/translate";
 import { FC } from "react";
@@ -18,16 +18,17 @@ export const UpdateText: FC<UpdateTextProps> = ({
 
   if (update.setChar)
     return (
-      <Box>
+      <Flex align="center" mb="2">
         <Text>{t(STRINGS.ASSIGNED_CHARACTER)}</Text>
         <NameBadge text={IDToName(update.setChar.id)} />
         <Image
+          ml="2"
           src={characterToImg(
             update.setChar.character || protobuf.Character.NONE
           )}
-          height="1.5em"
+          height="2.5em"
         />
-      </Box>
+      </Flex>
     );
   return null;
 };
