@@ -1,7 +1,7 @@
 import { Box, Image, Text } from "@chakra-ui/react";
 import { characterToImg } from "lib/CharacterImg";
 import { STRINGS, useTranslator } from "lib/translate";
-import { Children, FC } from "react";
+import { FC } from "react";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import NameBadge from "./NameBadge";
 
@@ -43,8 +43,10 @@ export const UpdatesLog: FC<UpdatesLogProps> = ({
 }: UpdatesLogProps) => {
   return (
     <>
-      {Children.map(updates, (i) => (
-        <UpdateText update={i} IDToName={IDToName} />
+      {updates.map((u, i) => (
+        // These updates are constant and will never change order.
+        // eslint-disable-next-line react/no-array-index-key
+        <UpdateText key={i} update={u} IDToName={IDToName} />
       ))}
     </>
   );
