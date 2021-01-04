@@ -61,6 +61,9 @@ export default function useMessageHandler(
   const [gameIsOver, setGameIsOver] = useState<boolean>(false);
   const gameOverRef = useRef<protobuf.IGameOver | null>(null);
   const [alive, setAlive] = useState<number[] | null>(null);
+  const [spectatorUpdates, setSpectatorUpdates] = useState<
+    protobuf.ISpectatorUpdate[] | null
+  >(null);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -156,6 +159,14 @@ export default function useMessageHandler(
     setAlive(msg.alive || []);
   }
 
+  function handleSpectatorUpdate(msg: protobuf.ISpectatorUpdate) {
+    setSpectatorUpdates((spectatorUpdates || []).concat([msg]));
+  }
+
+  function handleBulkSpectatorUpdate(msg: protobuf.IBulkSpectatorUpdate) {
+    setSpectatorUpdates((spectatorUpdates || []).concat(msg.update || []));
+  }
+
   // Call the proper handler based on the ServerMessage.
   // Protobuf guarantees only one of these cases will be true due to `oneof`, so this
   //  is the best way to call the correct handler.
@@ -173,6 +184,9 @@ export default function useMessageHandler(
     if (msg.killReveal) return handlerHealerKillReveal(msg.killReveal);
     if (msg.gameOver) return handleGameOver(msg.gameOver);
     if (msg.playerStatus) return handlePlayerStatus(msg.playerStatus);
+    if (msg.spectatorUpdate) return handleSpectatorUpdate(msg.spectatorUpdate);
+    if (msg.bulkSpectatorUpdate)
+      return handleBulkSpectatorUpdate(msg.bulkSpectatorUpdate);
     throw new Error("Not implemented. ");
   };
 
@@ -210,6 +224,7 @@ export default function useMessageHandler(
     gameIsOver,
     gameOverRef,
     alive,
+    spectatorUpdates,
     // State setters
     setShowFellowWolves,
     setProphetReveal,

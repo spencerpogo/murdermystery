@@ -69,6 +69,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     gameIsOver,
     gameOverRef,
     alive,
+    spectatorUpdates,
     // State setters
     setShowFellowWolves,
     setProphetReveal,
@@ -231,8 +232,10 @@ const GameClientInner: FC<GameClientInnerProps> = ({
         onDone={() => setAlive(null)}
       />
     );
+  } else if (spectatorUpdates) {
+    view = <p>Not implemented</p>;
   } else if (playerID === -1) {
-    // We are a spectator
+    // We are a spectator, and we are waiting for updates.
     view = <Loader />;
   } else if (!character) {
     view = (
