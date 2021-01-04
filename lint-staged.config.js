@@ -1,5 +1,5 @@
 module.exports = {
-  "*.{js,jsx,ts,tsx}": [
+  "{*.{js,jsx,ts,tsx},main.proto}": [
     "prettier --write",
     "npx eslint --cache --fix",
     () => "npx tsc --noemit",

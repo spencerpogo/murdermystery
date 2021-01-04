@@ -233,7 +233,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     );
   } else if (playerID === -1) {
     // We are a spectator
-    view = <p>You are a spectator. Waiting for server to update us...</p>;
+    view = <Loader />;
   } else if (!character) {
     view = (
       <Lobby
