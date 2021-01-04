@@ -195,8 +195,7 @@ func (g *Game) updateHost() {
 	}
 }
 
-// syncPlayers syncs player names between the server and all clients
-func (g *Game) syncPlayers() {
+func (g *Game) getPlayersMsg() *pb.Players {
 	players := []*pb.Players_Player{}
 	// Save hostID
 	var hostID int32 = -1
@@ -207,12 +206,17 @@ func (g *Game) syncPlayers() {
 
 	for _, c := range g.clients {
 		if c == nil || len(c.name) == 0 {
-			return
+			continue
 		}
 		players = append(players, &pb.Players_Player{Name: c.name, Id: c.ID})
 	}
 
-	msg, err := protocol.Marshal(&pb.Players{Players: players, HostId: hostID})
+	return &pb.Players{Players: players, HostId: hostID}
+}
+
+// syncPlayers syncs player names between the server and all clients
+func (g *Game) syncPlayers() {
+	msg, err := protocol.Marshal(g.getPlayersMsg())
 	if err != nil {
 		return
 	}
