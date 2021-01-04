@@ -65,6 +65,7 @@ export enum STRINGS {
   GAME_OVER,
   ALIVE,
   DEAD,
+  ASSIGNED_CHARACTER,
 }
 
 export const S = STRINGS;

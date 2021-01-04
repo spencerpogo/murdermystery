@@ -57,5 +57,6 @@
   "WEREWOLVES_WIN": "Werewolves Win",
   "GAME_OVER": "Game Over",
   "ALIVE": "Alive",
-  "DEAD": "Dead"
+  "DEAD": "Dead",
+  "ASSIGNED_CHARACTER": "Assigned character:"
 }

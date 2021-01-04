@@ -57,5 +57,6 @@
   "WEREWOLVES_WIN": "狼人赢",
   "GAME_OVER": "游戏结束",
   "ALIVE": "还活着",
-  "DEAD": "死的"
+  "DEAD": "死的",
+  "ASSIGNED_CHARACTER": "分配了角色："
 }

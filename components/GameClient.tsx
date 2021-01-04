@@ -25,6 +25,7 @@ import Lobby from "./Lobby";
 import NameBadge from "./NameBadge";
 import PlayerStatus from "./PlayerStatus";
 import ProphetReveal from "./ProphetReveal";
+import UpdatesLog from "./UpdatesLog";
 import Vote, { Candidate, Choice, VoteResult } from "./Vote";
 
 const VoteType = protobuf.VoteRequest.Type; // shorthand
@@ -233,7 +234,7 @@ const GameClientInner: FC<GameClientInnerProps> = ({
       />
     );
   } else if (spectatorUpdates) {
-    view = <p>Not implemented</p>;
+    view = <UpdatesLog updates={spectatorUpdates} IDToName={IDToName} />;
   } else if (playerID === -1) {
     // We are a spectator, and we are waiting for updates.
     view = <Loader />;
