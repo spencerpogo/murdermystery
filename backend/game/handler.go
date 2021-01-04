@@ -18,6 +18,13 @@ func (g *Game) handleJoin(s *melody.Session) {
 	log.Println("Lock aquired")
 
 	if g.started {
+		msg, err := protocol.Marshal(g.getPlayersMsg())
+		if err != nil {
+			return
+		}
+		err = s.WriteBinary(msg)
+		printerr(err)
+
 		go g.addSpectator(s)
 		return
 	}
