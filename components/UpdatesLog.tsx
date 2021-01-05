@@ -30,6 +30,17 @@ export const UpdateText: FC<UpdateTextProps> = ({
         />
       </>
     );
+  if (update.prophetReveal)
+    return (
+      <>
+        <NameBadge text={IDToName(update.prophetReveal.prophetId)} />
+        <Text>{t(STRINGS.USED_PROPHET)}</Text>
+        <NameBadge text={IDToName(update.prophetReveal.choiceId)} />
+        <Text>
+          {t(update.prophetReveal.good ? STRINGS.IS_GOOD : STRINGS.IS_BAD)}
+        </Text>
+      </>
+    );
   return null;
 };
 

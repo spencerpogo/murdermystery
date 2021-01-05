@@ -59,5 +59,6 @@
   "ALIVE": "Alive",
   "DEAD": "Dead",
   "ASSIGNED_CHARACTER": "Assigned character:",
-  "ARE_SPECTATOR": "You are a spectator"
+  "ARE_SPECTATOR": "You are a spectator",
+  "USED_PROPHET": "Used their prophet ability to find:"
 }
