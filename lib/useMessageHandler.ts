@@ -160,11 +160,13 @@ export default function useMessageHandler(
   }
 
   function handleSpectatorUpdate(msg: protobuf.ISpectatorUpdate) {
-    setSpectatorUpdates((spectatorUpdates || []).concat([msg]));
+    setSpectatorUpdates((prevUpdates) => (prevUpdates || []).concat([msg]));
   }
 
   function handleBulkSpectatorUpdate(msg: protobuf.IBulkSpectatorUpdate) {
-    setSpectatorUpdates((spectatorUpdates || []).concat(msg.update || []));
+    setSpectatorUpdates((prevUpdates) =>
+      (prevUpdates || []).concat(msg.update || [])
+    );
   }
 
   // Call the proper handler based on the ServerMessage.
