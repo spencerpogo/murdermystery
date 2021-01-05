@@ -61,5 +61,9 @@
   "ASSIGNED_CHARACTER": "Assigned character:",
   "ARE_SPECTATOR": "You are a spectator",
   "USED_PROPHET": "used their prophet ability to find:",
-  "USED_HEAL": "healed"
+  "USED_HEAL": "healed",
+  "WAS_KILLED": "was killed",
+  "VOTED_OUT": "was voted out",
+  "KILLED_BY_HEALER": "was poisoned by the healer",
+  "KILLED_BY_WOLVES": "was killed by the wolves"
 }

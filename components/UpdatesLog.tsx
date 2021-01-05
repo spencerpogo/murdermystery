@@ -5,6 +5,19 @@ import { FC } from "react";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import NameBadge from "./NameBadge";
 
+export function getKillText(reason: protobuf.KillReason): STRINGS {
+  switch (reason) {
+    case protobuf.KillReason.VOTED:
+      return STRINGS.VOTED_OUT;
+    case protobuf.KillReason.HEALERPOISON:
+      return STRINGS.KILLED_BY_HEALER;
+    case protobuf.KillReason.WOLVES:
+      return STRINGS.KILLED_BY_WOLVES;
+    default:
+      return STRINGS.WAS_KILLED;
+  }
+}
+
 export interface UpdateTextProps {
   update: protobuf.ISpectatorUpdate;
   IDToName: (id?: number | null) => string;
@@ -49,6 +62,15 @@ export const UpdateText: FC<UpdateTextProps> = ({
         {(update.healerHeal.healed || []).map((id) => (
           <NameBadge key={id} text={IDToName(id)} />
         ))}
+      </>
+    );
+  if (update.kill)
+    return (
+      <>
+        <NameBadge text={IDToName(update.kill.killed)} />
+        <Text>
+          {t(getKillText(update.kill.reason || protobuf.KillReason.UNKNOWN))}
+        </Text>
       </>
     );
   return null;

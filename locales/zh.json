@@ -61,5 +61,9 @@
   "ASSIGNED_CHARACTER": "分配了角色：",
   "ARE_SPECTATOR": "你是一个观众",
   "USED_PROPHET": "使用他的预言能力发现",
-  "USED_HEAL": "救了"
+  "USED_HEAL": "救了",
+  "WAS_KILLED": "死了",
+  "VOTED_OUT": "被投票死了",
+  "KILLED_BY_HEALER": "被女巫毒死了",
+  "KILLED_BY_WOLVES": "被狼人杀死了"
 }
