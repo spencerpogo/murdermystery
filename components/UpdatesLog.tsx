@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, Image, Text } from "@chakra-ui/react";
 import { characterToImg } from "lib/CharacterImg";
 import { STRINGS, useTranslator } from "lib/translate";
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import NameBadge from "./NameBadge";
 
@@ -18,6 +18,14 @@ export function getKillText(reason: protobuf.KillReason): STRINGS {
   }
 }
 
+interface UpdateProps {}
+
+const Update: FC<UpdateProps> = ({
+  children,
+}: PropsWithChildren<UpdateProps>) => {
+  return <Flex align="center">{children}</Flex>;
+};
+
 export interface UpdateTextProps {
   update: protobuf.ISpectatorUpdate;
   IDToName: (id?: number | null) => string;
@@ -31,7 +39,7 @@ export const UpdateText: FC<UpdateTextProps> = ({
 
   if (update.setChar)
     return (
-      <>
+      <Update>
         <Text>{t(STRINGS.ASSIGNED_CHARACTER)}</Text>
         <NameBadge text={IDToName(update.setChar.id)} />
         <Image
@@ -41,37 +49,37 @@ export const UpdateText: FC<UpdateTextProps> = ({
           )}
           height="2.5em"
         />
-      </>
+      </Update>
     );
   if (update.prophetReveal)
     return (
-      <>
+      <Update>
         <NameBadge text={IDToName(update.prophetReveal.prophetId)} />
         <Text>{t(STRINGS.USED_PROPHET)}</Text>
         <NameBadge text={IDToName(update.prophetReveal.choiceId)} />
         <Text>
           {t(update.prophetReveal.good ? STRINGS.IS_GOOD : STRINGS.IS_BAD)}
         </Text>
-      </>
+      </Update>
     );
   if (update.healerHeal)
     return (
-      <>
+      <Update>
         <NameBadge text={IDToName(update.healerHeal.healer)} />
         <Text>{t(STRINGS.USED_HEAL)}</Text>
         {(update.healerHeal.healed || []).map((id) => (
           <NameBadge key={id} text={IDToName(id)} />
         ))}
-      </>
+      </Update>
     );
   if (update.kill)
     return (
-      <>
+      <Update>
         <NameBadge text={IDToName(update.kill.killed)} />
         <Text>
           {t(getKillText(update.kill.reason || protobuf.KillReason.UNKNOWN))}
         </Text>
-      </>
+      </Update>
     );
   return null;
 };
@@ -91,13 +99,10 @@ export const UpdatesLog: FC<UpdatesLogProps> = ({
     <Box>
       <Heading mb="2">{t(STRINGS.ARE_SPECTATOR)}</Heading>
       {updates
-        .map((u, i) => (
-          // These updates are constant and will never change order.
-          // eslint-disable-next-line react/no-array-index-key
-          <Flex align="center" mb="2" key={i}>
-            <UpdateText update={u} IDToName={IDToName} />
-          </Flex>
-        ))
+        // This array will never change order so this is safe here
+        // eslint-disable-next-line react/no-array-index-key
+        .map((u, i) => <UpdateText key={i} update={u} IDToName={IDToName} />)
+        .filter(Boolean)
         .reverse()}
     </Box>
   );
