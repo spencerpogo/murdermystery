@@ -68,6 +68,7 @@ export enum STRINGS {
   ASSIGNED_CHARACTER,
   ARE_SPECTATOR,
   USED_PROPHET,
+  USED_HEAL,
 }
 
 export const S = STRINGS;

@@ -41,6 +41,16 @@ export const UpdateText: FC<UpdateTextProps> = ({
         </Text>
       </>
     );
+  if (update.healerHeal)
+    return (
+      <>
+        <NameBadge text={IDToName(update.healerHeal.healer)} />
+        <Text>{t(STRINGS.USED_HEAL)}</Text>
+        {(update.healerHeal.healed || []).map((id) => (
+          <NameBadge key={id} text={IDToName(id)} />
+        ))}
+      </>
+    );
   return null;
 };
 
