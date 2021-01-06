@@ -65,7 +65,7 @@ func (g *Game) handleDisconnect(s *melody.Session) {
 		return
 	}
 
-	log.Printf("[%v] Disconnected\n", c.ID)
+	log.Printf("[%v] Disconnected (game started: %v)\n", c.ID, g.started)
 	delete(g.clients, s)
 
 	if g.started {
