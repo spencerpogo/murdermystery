@@ -58,7 +58,7 @@
   "GAME_OVER": "Game Over",
   "ALIVE": "Alive",
   "DEAD": "Dead",
-  "ASSIGNED_CHARACTER": "Assigned character:",
+  "IS": "is",
   "ARE_SPECTATOR": "You are a spectator",
   "USED_PROPHET": "used their prophet ability to find:",
   "USED_HEAL": "healed",

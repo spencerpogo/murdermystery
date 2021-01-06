@@ -40,8 +40,8 @@ export const UpdateText: FC<UpdateTextProps> = ({
   if (update.setChar)
     return (
       <Update>
-        <Text>{t(STRINGS.ASSIGNED_CHARACTER)}</Text>
         <NameBadge text={IDToName(update.setChar.id)} />
+        <Text>{t(STRINGS.IS)}</Text>
         <Image
           ml="2"
           src={characterToImg(
