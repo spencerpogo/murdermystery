@@ -144,11 +144,6 @@ func (g *Game) EndWithError(reason pb.Error_EType) {
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
-	if !g.started {
-		return
-	}
-	g.started = false
-
 	msg, err := protocol.Marshal(&pb.Error{Msg: reason})
 	if err != nil {
 		return
