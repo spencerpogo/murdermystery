@@ -1,7 +1,7 @@
 import { useClientOnly } from "components/ClientOnly";
-import en from "locales/en";
-import zh from "locales/zh";
 import { useRouter } from "next/router";
+import enJSON from "../locales/en.json";
+import zhJSON from "../locales/zh.json";
 
 // ESLint is being weird
 // eslint-disable-next-line no-shadow
@@ -77,30 +77,19 @@ export enum STRINGS {
 
 export const S = STRINGS;
 
-export type TranslatedStrings = {
+type Language = {
   [key in keyof typeof STRINGS]: string;
 };
 
-export interface Language {
-  strings: TranslatedStrings;
-}
+const zh: Language = zhJSON;
+const en: Language = enJSON;
 
 export type Translator = (phrase: STRINGS) => string;
 
-const makeTranslator = (lang: Language): Translator => (phrase: STRINGS) => {
+const makeTranslator = (dict: Language): Translator => (phrase: STRINGS) => {
   const key: string = typeof phrase === "string" ? phrase : STRINGS[phrase];
-  return lang.strings[key];
+  return dict[key];
 };
-
-export function useLanguage(): Language | null {
-  const { query } = useRouter();
-
-  if (!useClientOnly()) {
-    return null;
-  }
-
-  return "zh" in query ? zh : en;
-}
 
 /**
  * Gets the current translator based on the querystring.
@@ -108,7 +97,11 @@ export function useLanguage(): Language | null {
  * otherwise will use english.
  */
 export function useTranslator(): Translator {
-  const lang = useLanguage();
+  const { query } = useRouter();
 
-  return lang ? makeTranslator(lang) : () => "";
+  if (!useClientOnly()) {
+    return () => "";
+  }
+
+  return makeTranslator("zh" in query ? zh : en);
 }
