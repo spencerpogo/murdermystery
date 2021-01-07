@@ -65,5 +65,15 @@
   "WAS_KILLED": "was killed",
   "VOTED_OUT": "was voted out",
   "KILLED_BY_HEALER": "was poisoned by the healer",
-  "KILLED_BY_WOLVES": "was killed by the wolves"
+  "KILLED_BY_WOLVES": "was killed by the wolves",
+  "WAITING_WOLVES_1": "The wolves",
+  "WAITING_WOLVES_2": "are picking someone to kill",
+  "WAITING_PROPHET_1": "The prophet",
+  "WAITING_PROPHET_2": "is picking someone",
+  "WAITING_HEAL_1": "The healer",
+  "WAITING_HEAL_2": "is deciding whether to heal",
+  "WAITING_POISON_1": "The healer",
+  "WAITING_POISON_2": "is deciding if they want to use their poison",
+  "WAITING_JURY": "All players are deciding who to vote out",
+  "VOTE_STARTED": "Vote started"
 }

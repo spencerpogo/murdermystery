@@ -65,5 +65,15 @@
   "WAS_KILLED": "死了",
   "VOTED_OUT": "被投票死了",
   "KILLED_BY_HEALER": "被女巫毒死了",
-  "KILLED_BY_WOLVES": "被狼人杀死了"
+  "KILLED_BY_WOLVES": "被狼人杀死了",
+  "WAITING_WOLVES_1": "狼人",
+  "WAITING_WOLVES_2": "在选人杀死",
+  "WAITING_PROPHET_1": "预言家",
+  "WAITING_PROPHET_2": "在选一个人来以利用他们的能力",
+  "WAITING_HEAL_1": "女巫",
+  "WAITING_HEAL_2": "在决定他要不要救",
+  "WAITING_POISON_1": "女巫",
+  "WAITING_POISON_2": "在决定他要不要用毒药",
+  "WAITING_JURY": "所有人在决定谁会被投票死了",
+  "VOTE_STARTED": "投票开始"
 }

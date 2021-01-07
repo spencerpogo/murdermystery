@@ -18,6 +18,32 @@ export function getKillText(reason: protobuf.KillReason): STRINGS {
   }
 }
 
+const VT = protobuf.VoteRequest.Type;
+
+export function getVoteRequestText(
+  t: protobuf.VoteRequest.Type
+): [STRINGS | null, STRINGS | null, boolean, boolean] {
+  switch (t) {
+    case VT.KILL:
+      return [STRINGS.WAITING_WOLVES_1, STRINGS.WAITING_WOLVES_2, false, true];
+    case VT.PROPHET:
+      return [
+        STRINGS.WAITING_PROPHET_1,
+        STRINGS.WAITING_PROPHET_2,
+        false,
+        true,
+      ];
+    case VT.HEALERHEAL:
+      return [STRINGS.WAITING_HEAL_1, STRINGS.WAITING_HEAL_2, true, true];
+    case VT.HEALERPOISON:
+      return [STRINGS.WAITING_POISON_1, STRINGS.WAITING_POISON_2, false, true];
+    case VT.JURY:
+      return [STRINGS.WAITING_JURY, null, false, false];
+    default:
+      return [STRINGS.VOTE_STARTED, null, false, false];
+  }
+}
+
 interface UpdateProps {}
 
 const Update: FC<UpdateProps> = ({
@@ -81,6 +107,28 @@ export const UpdateText: FC<UpdateTextProps> = ({
         </Text>
       </Update>
     );
+  if (update.voteRequest) {
+    const [before, after, showCandidates, showVoters] = getVoteRequestText(
+      update.voteRequest.voteRequest?.type || VT.UNKNOWN
+    );
+
+    return (
+      <Update>
+        {before ? <Text>{t(before)}</Text> : null}
+        {showVoters
+          ? (update.voteRequest.voters || []).map((id) => (
+              <NameBadge key={id} text={IDToName(id)} />
+            ))
+          : null}
+        {after ? <Text ml="1">{t(after)}</Text> : null}
+        {showCandidates
+          ? (update.voteRequest.voteRequest?.choice_IDs || []).map((id) => (
+              <NameBadge key={id} text={IDToName(id)} />
+            ))
+          : null}
+      </Update>
+    );
+  }
   return null;
 };
 
