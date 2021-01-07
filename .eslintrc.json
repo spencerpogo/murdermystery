@@ -48,7 +48,8 @@
         "react/react-in-jsx-scope": "off",
         "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".ts"] }],
         "react/jsx-curly-newline": "off",
-        "@typescript-eslint/no-empty-interface": "off"
+        "@typescript-eslint/no-empty-interface": "off",
+        "react/jsx-indent": "off"
       }
     }
   ]
