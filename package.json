@@ -16,7 +16,7 @@
     "go-vet": "cd backend && go vet ."
   },
   "dependencies": {
-    "@chakra-ui/react": "^1.1.1",
+    "@chakra-ui/react": "^1.1.2",
     "@chakra-ui/system": "^1.1.3",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
