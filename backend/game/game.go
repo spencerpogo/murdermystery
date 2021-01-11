@@ -391,7 +391,7 @@ func (g *Game) checkForGameOver() pb.GameOver_Reason {
 
 func (g *Game) handleGameOver(reason pb.GameOver_Reason) {
 	// Reveal all player characters
-	players := make([]*pb.GameOver_Player, len(g.clients))
+	players := make([]*pb.GameOver_Player, len(g.players))
 	i := 0
 	for _, c := range g.players {
 		players[i] = &pb.GameOver_Player{Id: c.ID, Character: c.role}
