@@ -337,7 +337,7 @@ func (g *Game) kill(s *melody.Session) {
 	// Remove them from players
 	delete(g.clients, s)
 	// Make them a spectator
-	g.addSpectator(s)
+	go g.addSpectator(s)
 }
 
 // commitKills kills all staged kills in g.killed. Assumes game is locked.

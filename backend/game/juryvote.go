@@ -43,6 +43,7 @@ func (g *Game) callJuryVote() {
 			printerr(err)
 		}
 	}
+	log.Println("Calling jury vote", clients, clients)
 	go g.callVote(clients, clients, pb.VoteRequest_JURY, g.juryVoteHandler(), true)
 }
 
