@@ -44,6 +44,8 @@ export function getVoteRequestText(
   }
 }
 
+const JR = protobuf.VoteResultType;
+
 interface UpdateProps {}
 
 const Update: FC<UpdateProps> = ({
@@ -55,11 +57,13 @@ const Update: FC<UpdateProps> = ({
 export interface UpdateTextProps {
   update: protobuf.ISpectatorUpdate;
   IDToName: (id?: number | null) => string;
+  lastVoteType: protobuf.VoteRequest.Type;
 }
 
 export const UpdateText: FC<UpdateTextProps> = ({
   update,
   IDToName,
+  lastVoteType,
 }: UpdateTextProps) => {
   const t = useTranslator();
 
@@ -129,6 +133,62 @@ export const UpdateText: FC<UpdateTextProps> = ({
       </Update>
     );
   }
+  if (update.voteOver) {
+    if (lastVoteType === VT.KILL) {
+      const result = (update.voteOver.voteOver?.result?.candidates || [])[0];
+
+      return (
+        <Update>
+          <Text>{t(STRINGS.WOLF_VOTE_OVER)}</Text>
+          {result && result.id ? (
+            <NameBadge text={IDToName(result.id)} />
+          ) : (
+            <NameBadge text={IDToName(-1)} />
+          )}
+        </Update>
+      );
+    }
+    if (lastVoteType === VT.JURY) {
+      const jury = update.voteOver.voteOver?.result?.jury;
+
+      const winner = (
+        update.voteOver.voteOver?.result?.candidates || []
+      ).reduce<{
+        id: number;
+        voters: number[];
+      }>(
+        (prev, u) => {
+          if (u && u.id && u.voters) {
+            return prev.voters.length > u.voters.length
+              ? prev
+              : { id: u.id || -1, voters: u.voters };
+          }
+          return prev;
+        },
+        { id: -1, voters: [] }
+      );
+      const totalVotes = (
+        update.voteOver.voteOver?.result?.candidates || []
+      ).reduce((prev, i) => prev + (i.voters?.length || 0), 0);
+
+      if (jury?.status === JR.WIN) {
+        return (
+          <Update>
+            <NameBadge text={IDToName(jury.winner)} />
+            <Text>{t(STRINGS.VOTED_OUT)}</Text>
+            <Text ml="2">(</Text>
+            <Text>{winner.voters.length}</Text>
+            <Text>/</Text>
+            <Text>{totalVotes}</Text>
+            <Text>{t(STRINGS.VOTES)}</Text>
+            <Text>)</Text>
+          </Update>
+        );
+      }
+    }
+    return null;
+  }
+
   return null;
 };
 
@@ -143,15 +203,37 @@ export const UpdatesLog: FC<UpdatesLogProps> = ({
 }: UpdatesLogProps) => {
   const t = useTranslator();
 
+  const revUpdates = updates.slice().reverse();
+  console.log(updates, revUpdates);
+
+  let lastVoteType = VT.UNKNOWN;
+  for (let i = 0; i < revUpdates.length; i += 1) {
+    const u = revUpdates[i];
+    if (u.voteRequest) {
+      const ut = u.voteRequest.voteRequest?.type || VT.UNKNOWN;
+      if (ut !== VT.UNKNOWN) {
+        lastVoteType = ut;
+        break;
+      }
+    }
+  }
+
   return (
     <Box>
       <Heading mb="2">{t(STRINGS.ARE_SPECTATOR)}</Heading>
-      {updates
+      {revUpdates
         // This array will never change order so this is safe here
-        // eslint-disable-next-line react/no-array-index-key
-        .map((u, i) => <UpdateText key={i} update={u} IDToName={IDToName} />)
-        .filter(Boolean)
-        .reverse()}
+        /* eslint-disable react/no-array-index-key */
+        .map((u, i) => (
+          <UpdateText
+            key={i}
+            update={u}
+            IDToName={IDToName}
+            lastVoteType={lastVoteType}
+          />
+        ))
+        /* eslint-enable react/no-array-index-key */
+        .filter(Boolean)}
     </Box>
   );
 };
