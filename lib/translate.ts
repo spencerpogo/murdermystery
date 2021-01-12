@@ -1,7 +1,8 @@
-import { useClientOnly } from "components/ClientOnly";
-import { useRouter } from "next/router";
+import { LangContext, LangContextType } from "components/LangContext";
+import { useContext } from "react";
 import enJSON from "../locales/en.json";
 import zhJSON from "../locales/zh.json";
+import Lang from "./langs";
 
 // ESLint is being weird
 // eslint-disable-next-line no-shadow
@@ -90,16 +91,20 @@ export enum STRINGS {
 
 export const S = STRINGS;
 
-type Language = {
+export type LanguageTranslations = {
   [key in keyof typeof STRINGS]: string;
 };
 
-const zh: Language = zhJSON;
-const en: Language = enJSON;
+export const languages: Record<Lang, LanguageTranslations> = {
+  [Lang.EN]: enJSON,
+  [Lang.ZH]: zhJSON,
+};
 
 export type Translator = (phrase: STRINGS) => string;
 
-const makeTranslator = (dict: Language): Translator => (phrase: STRINGS) => {
+const makeTranslator = (dict: LanguageTranslations): Translator => (
+  phrase: STRINGS
+) => {
   const key: string = typeof phrase === "string" ? phrase : STRINGS[phrase];
   return dict[key];
 };
@@ -110,11 +115,7 @@ const makeTranslator = (dict: Language): Translator => (phrase: STRINGS) => {
  * otherwise will use english.
  */
 export function useTranslator(): Translator {
-  const { query } = useRouter();
+  const { lang } = useContext<LangContextType>(LangContext);
 
-  if (!useClientOnly()) {
-    return () => "";
-  }
-
-  return makeTranslator("zh" in query ? zh : en);
+  return makeTranslator(languages[lang]);
 }
