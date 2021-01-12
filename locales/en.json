@@ -76,5 +76,7 @@
   "WAITING_POISON_2": "is deciding if they want to use their poison",
   "WAITING_JURY": "All players are deciding who to vote out",
   "VOTE_STARTED": "Vote started",
-  "WOLF_VOTE_OVER": "The wolves decided to kill"
+  "WOLF_VOTE_OVER": "The wolves decided to kill",
+  "VOTE_TIED_1": "The jury vote is tied with",
+  "VOTE_TIED_2": "votes"
 }

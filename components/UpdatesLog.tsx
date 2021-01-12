@@ -71,7 +71,7 @@ export const UpdateText: FC<UpdateTextProps> = ({
     return (
       <Update>
         <NameBadge text={IDToName(update.setChar.id)} />
-        <Text>{t(STRINGS.IS)}</Text>
+        <Text ml="2">{t(STRINGS.IS)}</Text>
         <Image
           ml="2"
           src={characterToImg(
@@ -170,6 +170,21 @@ export const UpdateText: FC<UpdateTextProps> = ({
       const totalVotes = (
         update.voteOver.voteOver?.result?.candidates || []
       ).reduce((prev, i) => prev + (i.voters?.length || 0), 0);
+      console.log(
+        "jury",
+        winner,
+        totalVotes,
+        jury,
+        jury?.status === JR.TIE,
+        "\n\n",
+        ...[
+          update,
+          update.voteOver,
+          update.voteOver.voteOver,
+          update.voteOver.voteOver?.result,
+          update.voteOver.voteOver?.result?.jury,
+        ].map((i) => JSON.stringify(i))
+      );
 
       if (jury?.status === JR.WIN) {
         return (
@@ -182,6 +197,17 @@ export const UpdateText: FC<UpdateTextProps> = ({
             <Text>{totalVotes}</Text>
             <Text>{t(STRINGS.VOTES)}</Text>
             <Text>)</Text>
+          </Update>
+        );
+      }
+      if (jury?.status === JR.TIE) {
+        return (
+          <Update>
+            <Text>{t(STRINGS.VOTE_TIED_1)}</Text>
+            <Text as="b" ml="1" mr="1">
+              {winner.voters.length}
+            </Text>
+            <Text>{t(STRINGS.VOTE_TIED_2)}</Text>
           </Update>
         );
       }
@@ -203,37 +229,31 @@ export const UpdatesLog: FC<UpdatesLogProps> = ({
 }: UpdatesLogProps) => {
   const t = useTranslator();
 
-  const revUpdates = updates.slice().reverse();
-  console.log(updates, revUpdates);
-
+  const eles = [];
   let lastVoteType = VT.UNKNOWN;
-  for (let i = 0; i < revUpdates.length; i += 1) {
-    const u = revUpdates[i];
+  for (let i = 0; i < updates.length; i += 1) {
+    const u = updates[i];
     if (u.voteRequest) {
       const ut = u.voteRequest.voteRequest?.type || VT.UNKNOWN;
       if (ut !== VT.UNKNOWN) {
         lastVoteType = ut;
-        break;
       }
     }
+    console.log(lastVoteType, VT[lastVoteType]);
+    eles.push(
+      <UpdateText
+        key={i}
+        update={u}
+        IDToName={IDToName}
+        lastVoteType={lastVoteType}
+      />
+    );
   }
 
   return (
     <Box>
       <Heading mb="2">{t(STRINGS.ARE_SPECTATOR)}</Heading>
-      {revUpdates
-        // This array will never change order so this is safe here
-        /* eslint-disable react/no-array-index-key */
-        .map((u, i) => (
-          <UpdateText
-            key={i}
-            update={u}
-            IDToName={IDToName}
-            lastVoteType={lastVoteType}
-          />
-        ))
-        /* eslint-enable react/no-array-index-key */
-        .filter(Boolean)}
+      {eles.slice().reverse()}
     </Box>
   );
 };

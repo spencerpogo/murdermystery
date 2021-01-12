@@ -76,5 +76,7 @@
   "WAITING_POISON_2": "在决定他要不要用毒药",
   "WAITING_JURY": "所有人在决定谁会被投票死了",
   "VOTE_STARTED": "投票开始",
-  "WOLF_VOTE_OVER": "狼人选了杀死"
+  "WOLF_VOTE_OVER": "狼人选了杀死",
+  "VOTE_TIED_1": "票与",
+  "VOTE_TIED_2": "票并列"
 }

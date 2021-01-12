@@ -84,6 +84,8 @@ export enum STRINGS {
   WAITING_JURY,
   VOTE_STARTED,
   WOLF_VOTE_OVER,
+  VOTE_TIED_1,
+  VOTE_TIED_2,
 }
 
 export const S = STRINGS;
