@@ -1,5 +1,4 @@
-import { LangContext, LangContextType } from "components/LangContext";
-import { useContext } from "react";
+import { useLanguage } from "components/LangContext";
 import enJSON from "../locales/en.json";
 import zhJSON from "../locales/zh.json";
 import Lang from "./langs";
@@ -87,6 +86,7 @@ export enum STRINGS {
   WOLF_VOTE_OVER,
   VOTE_TIED_1,
   VOTE_TIED_2,
+  CHANGE_LANGUAGE,
 }
 
 export const S = STRINGS;
@@ -115,7 +115,23 @@ const makeTranslator = (dict: LanguageTranslations): Translator => (
  * otherwise will use english.
  */
 export function useTranslator(): Translator {
-  const { lang } = useContext<LangContextType>(LangContext);
+  const lang = useLanguage();
+  console.log("lang", lang);
 
-  return makeTranslator(languages[lang]);
+  return lang ? makeTranslator(languages[lang]) : () => "";
+}
+
+export function oppositeLang(lang: Lang): Lang {
+  return lang === Lang.EN ? Lang.ZH : Lang.EN;
+}
+
+export function useChangeLanguageText(): string {
+  const lang = useLanguage();
+
+  if (!lang) return "";
+
+  // Since there are only 2 supported languages, return the text in the other language
+  const oppLang = oppositeLang(lang);
+
+  return makeTranslator(languages[oppLang])(STRINGS.CHANGE_LANGUAGE);
 }
