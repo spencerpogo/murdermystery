@@ -79,5 +79,9 @@
   "WOLF_VOTE_OVER": "狼人选了杀死",
   "VOTE_TIED_1": "票与",
   "VOTE_TIED_2": "票并列",
-  "CHANGE_LANGUAGE": "中文"
+  "CHANGE_LANGUAGE": "中文",
+  "YOU_WERE_KILLED": "你被杀死了！",
+  "PDEATH_VOTED": "你被投票死了",
+  "PDEATH_HEALER": "你被女巫毒死了",
+  "PDEATH_WOLVES": "你被狼人杀死了"
 }

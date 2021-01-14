@@ -20,6 +20,7 @@ import { murdermystery as protobuf } from "../pbjs/protobuf.js";
 import CharacterSpinner from "./CharacterSpinner";
 import FellowWolves from "./FellowWolves";
 import GameOver from "./GameOver";
+import Killed from "./Killed";
 import Loader from "./Loader";
 import Lobby from "./Lobby";
 import NameBadge from "./NameBadge";
@@ -71,12 +72,14 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     gameOverRef,
     alive,
     spectatorUpdates,
+    killed,
     // State setters
     setShowFellowWolves,
     setProphetReveal,
     setAlertContent,
     setVoteResult,
     setAlive,
+    setKilled,
   } = useMessageHandler(onError, onGameOver);
 
   const { isConnected, send } = useGameSocket(
@@ -211,6 +214,8 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     // Use the websocket readyState as the single source of truth for whether the
     //  connection is open.
     return <Loader />;
+  } else if (killed) {
+    view = <Killed reason={killed.reason} onDone={() => setKilled(null)} />;
   } else if (alive && alive.length) {
     const aliveNames: string[] = [];
     const deadNames: string[] = [];

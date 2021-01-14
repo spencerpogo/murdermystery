@@ -79,5 +79,9 @@
   "WOLF_VOTE_OVER": "The wolves decided to kill",
   "VOTE_TIED_1": "The jury vote is tied with",
   "VOTE_TIED_2": "votes",
-  "CHANGE_LANGUAGE": "ENG"
+  "CHANGE_LANGUAGE": "ENG",
+  "YOU_WERE_KILLED": "You were killed!",
+  "PDEATH_VOTED": "You were voted out",
+  "PDEATH_HEALER": "You were poisoned by the healer",
+  "PDEATH_WOLVES": "You were killed by the wolves"
 }

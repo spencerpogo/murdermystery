@@ -64,6 +64,7 @@ export default function useMessageHandler(
   const [spectatorUpdates, setSpectatorUpdates] = useState<
     protobuf.ISpectatorUpdate[] | null
   >(null);
+  const [killed, setKilled] = useState<protobuf.IKilled | null>(null);
 
   // Message handlers
   function handleHost(msg: protobuf.IHost) {
@@ -169,6 +170,10 @@ export default function useMessageHandler(
     );
   }
 
+  function handleKilled(msg: protobuf.IKilled) {
+    setKilled(msg);
+  }
+
   // Call the proper handler based on the ServerMessage.
   // Protobuf guarantees only one of these cases will be true due to `oneof`, so this
   //  is the best way to call the correct handler.
@@ -189,6 +194,7 @@ export default function useMessageHandler(
     if (msg.spectatorUpdate) return handleSpectatorUpdate(msg.spectatorUpdate);
     if (msg.bulkSpectatorUpdate)
       return handleBulkSpectatorUpdate(msg.bulkSpectatorUpdate);
+    if (msg.killed) return handleKilled(msg.killed);
     throw new Error("Not implemented. ");
   };
 
@@ -227,11 +233,13 @@ export default function useMessageHandler(
     gameOverRef,
     alive,
     spectatorUpdates,
+    killed,
     // State setters
     setShowFellowWolves,
     setProphetReveal,
     setAlertContent,
     setVoteResult,
     setAlive,
+    setKilled,
   };
 }
