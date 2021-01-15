@@ -49,8 +49,8 @@ func (CryptoRandSource) Seed(_ int64) {}
 func genCharacterArray(numPlayers int) []pb.Character {
 	// There is one healer and one prophet always
 	res := []pb.Character{pb.Character_HEALER, pb.Character_PROPHET}
-	var numCits int = int(math.Floor(float64(numPlayers-2) / 2.0))
-	var numWolves int = (numPlayers - 2) - numCits
+	var numWolves int = int(math.Floor(float64(numPlayers-2) / 2.0))
+	var numCits int = (numPlayers - 2) - numWolves
 
 	log.Println("2 special", numCits, "citizen", numWolves, "wolves")
 
