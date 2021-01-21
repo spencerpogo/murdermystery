@@ -18,6 +18,7 @@ func (g *Game) callHealerHealVote() {
 		if len(healers) < 1 {
 			// Healer is dead, skip this vote.
 			go g.callJuryVote()
+			return
 		}
 		if len(healers) > 1 {
 			log.Printf("Error: Healers length >1: %v", healers)
