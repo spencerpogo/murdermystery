@@ -19,8 +19,8 @@
     }
   },
   "rules": {
-    "import/extensions": "off",
-    "no-console": "off" // This will be removed in prod
+    "import/extensions": "off"
+    //"no-console": "off" // This will be removed in prod
   },
   "overrides": [
     {

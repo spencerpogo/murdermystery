@@ -170,21 +170,6 @@ export const UpdateText: FC<UpdateTextProps> = ({
       const totalVotes = (
         update.voteOver.voteOver?.result?.candidates || []
       ).reduce((prev, i) => prev + (i.voters?.length || 0), 0);
-      console.log(
-        "jury",
-        winner,
-        totalVotes,
-        jury,
-        jury?.status === JR.TIE,
-        "\n\n",
-        ...[
-          update,
-          update.voteOver,
-          update.voteOver.voteOver,
-          update.voteOver.voteOver?.result,
-          update.voteOver.voteOver?.result?.jury,
-        ].map((i) => JSON.stringify(i))
-      );
 
       if (jury?.status === JR.WIN) {
         return (
@@ -239,7 +224,6 @@ export const UpdatesLog: FC<UpdatesLogProps> = ({
         lastVoteType = ut;
       }
     }
-    console.log(lastVoteType, VT[lastVoteType]);
     eles.push(
       <UpdateText
         key={i}

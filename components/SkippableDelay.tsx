@@ -18,7 +18,6 @@ const SkippableDelay: FC<SkippableDelayProps> = ({
 
   useTimeout(() => {
     onDone();
-    console.log("called");
   }, duration * 1000);
 
   return (

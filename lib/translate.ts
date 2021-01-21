@@ -120,7 +120,6 @@ const makeTranslator = (dict: LanguageTranslations): Translator => (
  */
 export function useTranslator(): Translator {
   const lang = useLanguage();
-  console.log("lang", lang);
 
   return lang ? makeTranslator(languages[lang]) : () => "";
 }

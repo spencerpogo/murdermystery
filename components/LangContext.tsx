@@ -52,7 +52,6 @@ export const LangProvider: FC<LangProviderProps> = ({
   const isClient = useClientOnly();
 
   useEffect(() => {
-    console.log(query, isClient);
     if (isClient) setLang(getDefaultLang(query));
   }, [query, isClient]);
 

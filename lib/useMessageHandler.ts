@@ -203,9 +203,11 @@ export default function useMessageHandler(
     let msg: protobuf.IServerMessage;
     try {
       msg = protobuf.ServerMessage.decode(new Uint8Array(ev.data));
-      console.log(msg);
+      // eslint-disable-next-line no-console
+      console.log("↓", msg);
       callHandler(msg);
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error("Message decode error:", e);
     }
   };

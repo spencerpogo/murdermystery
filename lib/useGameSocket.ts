@@ -20,10 +20,12 @@ export default function useGameSocket(
   // Send encodes and sends a protobuf message to the server.
   const send = (msg: protobuf.IClientMessage) => {
     if (!ws) {
+      // eslint-disable-next-line no-console
       console.error("Try to send() while ws is null");
       return;
     }
-    console.log(msg);
+    // eslint-disable-next-line no-console
+    console.log("↑", msg);
     ws.send(protobuf.ClientMessage.encode(msg).finish());
   };
 
@@ -35,9 +37,12 @@ export default function useGameSocket(
 
   // setup websocket
   useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log("Connecting to", wsUrl);
     try {
       wsRef.current = new WebSocket(wsUrl);
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e);
       onError(STRINGS.ERROR_OPENING_CONN);
       return;
@@ -53,6 +58,8 @@ export default function useGameSocket(
     ws.addEventListener("message", (ev: MessageEvent) => parseMessage(ev));
     // Handle discconects
     ws.addEventListener("close", () => {
+      // eslint-disable-next-line no-console
+      console.log("Connection closed");
       onError(STRINGS.SERVER_DISCONNECTED);
     });
 
