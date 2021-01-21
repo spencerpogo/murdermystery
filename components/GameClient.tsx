@@ -216,28 +216,6 @@ const GameClientInner: FC<GameClientInnerProps> = ({
     return <Loader />;
   } else if (killed) {
     view = <Killed reason={killed.reason} onDone={() => setKilled(null)} />;
-  } else if (alive && alive.length) {
-    const aliveNames: string[] = [];
-    const deadNames: string[] = [];
-
-    Object.keys(players).forEach((id) => {
-      const { name } = players[id];
-      if (name) {
-        if (alive.includes(Number(id))) {
-          aliveNames.push(name);
-        } else {
-          deadNames.push(name);
-        }
-      }
-    });
-
-    view = (
-      <PlayerStatus
-        aliveNames={aliveNames}
-        deadNames={deadNames}
-        onDone={() => setAlive(null)}
-      />
-    );
   } else if (spectatorUpdates) {
     view = <UpdatesLog updates={spectatorUpdates} IDToName={IDToName} />;
   } else if (playerID === -1) {
@@ -279,6 +257,28 @@ const GameClientInner: FC<GameClientInnerProps> = ({
       }
     });
     view = <VoteResult votes={votes} onDone={() => setVoteResult(null)} />;
+  } else if (alive && alive.length) {
+    const aliveNames: string[] = [];
+    const deadNames: string[] = [];
+
+    Object.keys(players).forEach((id) => {
+      const { name } = players[id];
+      if (name) {
+        if (alive.includes(Number(id))) {
+          aliveNames.push(name);
+        } else {
+          deadNames.push(name);
+        }
+      }
+    });
+
+    view = (
+      <PlayerStatus
+        aliveNames={aliveNames}
+        deadNames={deadNames}
+        onDone={() => setAlive(null)}
+      />
+    );
   } else if (voteRequest) {
     view = (
       <Vote
