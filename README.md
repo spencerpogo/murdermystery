@@ -2,6 +2,18 @@
 
 Murdermystery is an online multiplayer game of deception.
 
+## Run on repl.it
+
+1. Create a [new bash repl](https://repl.it/l/bash)
+2. Paste this into `main.sh`: 
+```bash
+wget -O murdermystery https://github.com/Scoder12/murdermystery/releases/latest/download/server_linux_x64
+
+chmod +x murdermystery
+./murdermystery -addr 0.0.0.0:8080
+```
+3. Visit your repl url + `/game?id=1` (I didn't implement game creation, so any id value is valid). You'll need 5 of your friends (or other tabs). 
+
 ## Architecture
 
 The client is built with next.js, typescript, and react.
