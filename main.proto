@@ -1,7 +1,7 @@
 syntax = "proto3";
 package murdermystery;
 
-option go_package = "/pb";
+option go_package = "github.com/Scoder12/murdermystery/backend/protocol/pb";
 
 // Server Messages
 message Handshake {
