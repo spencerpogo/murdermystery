@@ -26,7 +26,7 @@ if [[ "$2" != "--no-golang" ]]; then
 
   echo "Generating go code..."
   mkdir -p $GO_PB_PKG
-  protoc -I=$ROOT --go_out=$GO_PB_PKG $ROOT/*.proto
+  protoc -I=$ROOT --go_out=$GO_PB_PKG --go_opt=paths=source_relative $ROOT/*.proto
 
   # This is absolutely terrible, but protobuf has forced my hand. 
   echo "type IsServerMessage_Data = isServerMessage_Data" >> $GO_PB_PKG/main.pb.go
