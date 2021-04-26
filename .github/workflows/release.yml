@@ -57,16 +57,16 @@ jobs:
           asset_path: ./build/backend
           asset_name: server_linux_x64
           asset_content_type: application/octet-stream
-      
+
       - name: Install repl.it CLI
         run: npm i -g replit
-      
+
       - name: Set up repl.it CLI
         run: replit auth -k "$TOKEN" && replit local 43df7835-2bf0-45ad-9ef9-6b6e1f58dffe
         env:
           TOKEN: ${{ secrets.REPLIT_TOKEN }}
-      
+
       - name: Deploy to Repl.it
         run: replit bulk \
-              cp build/backend repl:murdermystery -- \
-              run --restart
+          cp build/backend repl:murdermystery -- \
+          run --restart
