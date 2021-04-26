@@ -48,3 +48,6 @@ pages/debug.tsx
 
 # ESLint Cache
 .eslintcache
+
+# Husky
+.husky
