@@ -19,7 +19,7 @@ import {
 } from "react";
 import SkippableDelay, { RightFloatSkippableDelay } from "./SkippableDelay";
 
-const MotionBox = motion.custom(Box);
+const MotionBox = motion(Box);
 
 const WIDTH = 226;
 const HEIGHT = 330;
