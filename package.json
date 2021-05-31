@@ -20,7 +20,7 @@
     "@chakra-ui/system": "^1.6.4",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.3.0",
-    "framer-motion": "^4.1.10",
+    "framer-motion": "^4.1.17",
     "next": "^10.2.3",
     "protobufjs": "^6.10.2",
     "react": "16.14.0",
